@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-import sqlite3
+from flask_sqlalchemy import SQLAlchemy
+import psycopg2 # Though often handled by Flask-SQLAlchemy, good practice to list
+from dotenv import load_dotenv
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -9,6 +11,15 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key_here_change_in_production'
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
+load_dotenv()
+
+# CRITICAL: Use the environment variable for database URL
+# Render will inject this variable into the environment for the live app
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///hospital.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = os.environ.get('SECRET_KEY', 'your_secret_key_here_change_in_production')
+
+db = SQLAlchemy(app) # Initialize SQLAlchemy
 
 # Ensure upload folder exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
