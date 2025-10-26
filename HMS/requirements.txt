@@ -1,0 +1,8 @@
+Flask
+Flask-SQLAlchemy
+gunicorn
+python-dotenv
+werkzeug
+# Database Drivers
+psycopg2-binary  # Required for PostgreSQL
+# sqlite3 is part of Python's standard library and does NOT need to be listed.
