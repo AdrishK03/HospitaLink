@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
-from werkwerkzeug.utils import secure_filename
+from werkzeug.utils import secure_filename
 from datetime import datetime
 from sqlalchemy import or_ # func is not needed in the final queries, so removing it for cleanup
 
