@@ -1,0 +1,11 @@
+Flask
+sqlite3
+werkzeug
+python-dotenv
+gunicornFlask
+werkzeug
+python-dotenv
+gunicorn
+# New database dependencies
+Flask-SQLAlchemy
+psycopg2-binary
