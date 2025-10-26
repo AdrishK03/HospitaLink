@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing - Hospital Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .btn-logout, .btn-back {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .btn-logout:hover, .btn-back:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #f093fb;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #f093fb;
+        }
+
+        .btn-submit {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .btn {
+            padding: 6px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s;
+            margin: 2px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-pay {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-pay:hover {
+            background: #218838;
+        }
+
+        .alert {
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-size: 1.1em;
+        }
+
+        .summary-box {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .summary-box h3 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .summary-box p {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>💰 Billing & Payments</h1>
+        <div class="user-info">
+            <span>{{ session.user_name }}</span>
+            {% if session.user_role == 'doctor' %}
+                <a href="/doctor/dashboard" class="btn-back">← Dashboard</a>
+            {% elif session.user_role == 'patient' %}
+                <a href="/patient/dashboard" class="btn-back">← Dashboard</a>
+            {% elif session.user_role == 'admin' %}
+                <a href="/admin/dashboard" class="btn-back">← Dashboard</a>
+            {% endif %}
+            <a href="/logout" class="btn-logout">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if session.user_role == 'patient' %}
+        <div class="summary-box">
+            <h3>₹{{ bills|sum(attribute='total_amount') if bills else 0 }}</h3>
+            <p>Total Outstanding Amount</p>
+        </div>
+        {% endif %}
+
+        {% if session.user_role == 'admin' %}
+        <div class="card">
+            <h2 class="section-title">Generate New Bill</h2>
+            <form method="POST" action="/add_bill" onsubmit="return validateBill()">
+                <div class="form-group">
+                    <label for="patient_id">Select Patient</label>
+                    <select id="patient_id" name="patient_id" required>
+                        <option value="">Choose a patient</option>
+                        {% for patient in patients %}
+                        <option value="{{ patient.id }}">{{ patient.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="doctor_id">Select Doctor</label>
+                    <select id="doctor_id" name="doctor_id" required>
+                        <option value="">Choose a doctor</option>
+                        {% for doctor in doctors %}
+                        <option value="{{ doctor.id }}">{{ doctor.name }} - {{ doctor.specialization }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" rows="3" placeholder="Enter billing description (e.g., Consultation, Tests, Medicine)" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="total_amount">Total Amount (₹)</label>
+                    <input type="number" id="total_amount" name="total_amount" step="0.01" min="0" placeholder="Enter amount" required>
+                </div>
+
+                <button type="submit" class="btn-submit">Create Bill</button>
+            </form>
+        </div>
+        {% endif %}
+
+        <div class="card">
+            <h2 class="section-title">Billing History</h2>
+            {% if bills %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Bill ID</th>
+                        {% if session.user_role == 'doctor' %}
+                        <th>Patient Name</th>
+                        {% elif session.user_role == 'patient' %}
+                        <th>Doctor Name</th>
+                        {% else %}
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        {% endif %}
+                        <th>Description</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        {% if session.user_role == 'admin' or session.user_role == 'patient' %}
+                        <th>Actions</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bill in bills %}
+                    <tr>
+                        <td>{{ bill.id }}</td>
+                        {% if session.user_role == 'doctor' %}
+                        <td>{{ bill.patient_name }}</td>
+                        {% elif session.user_role == 'patient' %}
+                        <td>{{ bill.doctor_name }}</td>
+                        {% else %}
+                        <td>{{ bill.patient_name }}</td>
+                        <td>{{ bill.doctor_name }}</td>
+                        {% endif %}
+                        <td>{{ bill.description }}</td>
+                        <td>₹{{ bill.total_amount }}</td>
+                        <td>{{ bill.date }}</td>
+                        <td>
+                            {% if bill.status == 'Paid' %}
+                                <span class="badge badge-success">{{ bill.status }}</span>
+                            {% else %}
+                                <span class="badge badge-danger">{{ bill.status }}</span>
+                            {% endif %}
+                        </td>
+                        {% if session.user_role == 'admin' or session.user_role == 'patient' %}
+                        <td>
+                            {% if bill.status == 'Unpaid' %}
+                                <a href="/update_bill_status/{{ bill.id }}/Paid" class="btn btn-pay">Mark as Paid</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="no-data">No billing records found.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        function validateBill() {
+            const patientId = document.getElementById('patient_id').value;
+            const doctorId = document.getElementById('doctor_id').value;
+            const description = document.getElementById('description').value;
+            const amount = document.getElementById('total_amount').value;
+
+            if (!patientId || !doctorId || !description || !amount) {
+                alert('Please fill in all required fields');
+                return false;
+            }
+
+            if (parseFloat(amount) <= 0) {
+                alert('Amount must be greater than 0');
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+</body>
+</html>

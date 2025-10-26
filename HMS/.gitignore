@@ -1,0 +1,11 @@
+# Python files
+*.pyc
+__pycache__/
+venv/
+.env
+
+# Database
+hospital.db
+
+# Uploads directory
+static/uploads/

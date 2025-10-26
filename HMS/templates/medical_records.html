@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Records - Hospital Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .btn-logout, .btn-back {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .btn-logout:hover, .btn-back:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group small {
+            color: #888;
+            font-size: 0.85em;
+        }
+
+        .btn-submit {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .alert {
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-size: 1.1em;
+        }
+
+        .download-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .download-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            table {
+                font-size: 0.9em;
+                display: block;
+                overflow-x: auto;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📋 Medical Records</h1>
+        <div class="user-info">
+            <span>{{ session.user_name }}</span>
+            {% if session.user_role == 'doctor' %}
+                <a href="/doctor/dashboard" class="btn-back">← Dashboard</a>
+            {% elif session.user_role == 'patient' %}
+                <a href="/patient/dashboard" class="btn-back">← Dashboard</a>
+            {% elif session.user_role == 'admin' %}
+                <a href="/admin/dashboard" class="btn-back">← Dashboard</a>
+            {% endif %}
+            <a href="/logout" class="btn-logout">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if session.user_role == 'doctor' %}
+        <div class="card">
+            <h2 class="section-title">Add Medical Record</h2>
+            <form method="POST" action="/add_medical_record" enctype="multipart/form-data" onsubmit="return validateRecord()">
+                <div class="form-group">
+                    <label for="patient_id">Select Patient</label>
+                    <select id="patient_id" name="patient_id" required>
+                        <option value="">Choose a patient</option>
+                        {% if patients %}
+                            {% for patient in patients %}
+                            <option value="{{ patient.id }}">{{ patient.name }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="diagnosis">Diagnosis</label>
+                    <textarea id="diagnosis" name="diagnosis" rows="3" placeholder="Enter diagnosis details" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="prescription">Prescription</label>
+                    <textarea id="prescription" name="prescription" rows="4" placeholder="Enter prescription details" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="report">Upload Report (Optional)</label>
+                    <input type="file" id="report" name="report" accept=".pdf,.jpg,.jpeg,.png">
+                    <small>Accepted formats: PDF, JPG, PNG (Max 16MB)</small>
+                </div>
+
+                <button type="submit" class="btn-submit">Add Medical Record</button>
+            </form>
+        </div>
+        {% endif %}
+
+        <div class="card">
+            <h2 class="section-title">Medical Records History</h2>
+            {% if records %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        {% if session.user_role == 'doctor' %}
+                        <th>Patient Name</th>
+                        {% elif session.user_role == 'patient' %}
+                        <th>Doctor Name</th>
+                        {% else %}
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        {% endif %}
+                        <th>Date</th>
+                        <th>Diagnosis</th>
+                        <th>Prescription</th>
+                        <th>Report</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in records %}
+                    <tr>
+                        <td>{{ record.id }}</td>
+                        {% if session.user_role == 'doctor' %}
+                        <td>{{ record.patient_name }}</td>
+                        {% elif session.user_role == 'patient' %}
+                        <td>Dr. {{ record.doctor_name }}</td>
+                        {% else %}
+                        <td>{{ record.patient_name }}</td>
+                        <td>Dr. {{ record.doctor_name }}</td>
+                        {% endif %}
+                        <td>{{ record.date }}</td>
+                        <td>{{ record.diagnosis }}</td>
+                        <td>{{ record.prescription }}</td>
+                        <td>
+                            {% if record.report_filename %}
+                            <a href="/static/uploads/{{ record.report_filename }}" class="download-link" target="_blank">📥 Download</a>
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="no-data">No medical records found.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        function validateRecord() {
+            const patientId = document.getElementById('patient_id').value;
+            const diagnosis = document.getElementById('diagnosis').value;
+            const prescription = document.getElementById('prescription').value;
+
+            if (!patientId || !diagnosis || !prescription) {
+                alert('Please fill in all required fields');
+                return false;
+            }
+
+            if (diagnosis.trim().length < 10) {
+                alert('Please provide a detailed diagnosis (at least 10 characters)');
+                return false;
+            }
+
+            if (prescription.trim().length < 10) {
+                alert('Please provide a detailed prescription (at least 10 characters)');
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+</body>
+</html>
