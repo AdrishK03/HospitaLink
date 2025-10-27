@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient Dashboard - Hospital Management System</title>
+    <title>Appointments - Hospital Management System</title>
     <style>
         * {
             margin: 0;
@@ -14,8 +14,6 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f0f2f5;
-            color: #333;
-            line-height: 1.6;
         }
 
         .header {
@@ -60,205 +58,20 @@
             padding: 0 20px;
         }
 
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 30px;
-        }
-
-        .sidebar {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            height: fit-content;
-        }
-
-        .sidebar h2 {
-            font-size: 1.4em;
-            color: #333;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #fa709a;
-        }
-
-        .sidebar ul {
-            list-style: none;
-        }
-
-        .sidebar li {
-            margin-bottom: 15px;
-        }
-
-        .sidebar a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #555;
-            text-decoration: none;
-            padding: 10px 15px;
-            border-radius: 8px;
-            transition: all 0.3s;
-        }
-
-        .sidebar a:hover, .sidebar a.active {
-            background: #f8f9fa;
-            color: #fa709a;
-        }
-
-        .main-content {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
-
         .card {
             background: white;
             border-radius: 12px;
             padding: 30px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
         }
 
         .section-title {
             font-size: 1.5em;
             color: #333;
             margin-bottom: 20px;
-            padding-bottom: 10px;
             border-bottom: 3px solid #fa709a;
-        }
-
-        .welcome-message {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        .welcome-message h2 {
-            font-size: 1.8em;
-            margin-bottom: 10px;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: white;
-            color: #333;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            border-left: 5px solid #fa709a;
-            text-align: center;
-        }
-
-        .stat-card h3 {
-            font-size: 2em;
-            margin-bottom: 5px;
-        }
-
-        .stat-card p {
-            font-size: 1em;
-            opacity: 0.9;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        th {
-            background: #f8f9fa;
-            font-weight: 600;
-            color: #555;
-        }
-
-        tr:hover {
-            background: #f8f9fa;
-        }
-
-        .badge {
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: 600;
-        }
-
-        .badge-success {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .badge-warning {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .badge-danger {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .badge-info {
-            background: #d1ecf1;
-            color: #0c5460;
-        }
-
-        .btn {
-            padding: 6px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: all 0.2s;
-            margin: 2px;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-cancel {
-            background: #dc3545;
-            color: white;
-        }
-
-        .btn-cancel:hover {
-            background: #c82333;
-        }
-
-        .btn-book {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            display: inline-block;
-            margin-top: 15px;
-            transition: transform 0.2s;
-        }
-
-        .btn-book:hover {
-            transform: translateY(-2px);
-        }
-
-        .no-data {
-            text-align: center;
-            padding: 40px;
-            color: #999;
-            font-size: 1.1em;
+            padding-bottom: 10px;
         }
 
         .tabs {
@@ -344,11 +157,83 @@
             transform: translateY(-2px);
         }
 
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .btn {
+            padding: 6px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s;
+            margin: 2px;
+            text-decoration: none;
+            display: inline-block;
+            color: white;
+        }
+
+        .btn-complete {
+            background: #28a745;
+        }
+
+        .btn-complete:hover {
+            background: #218838;
+        }
+
+        .btn-cancel {
+            background: #dc3545;
+        }
+
+        .btn-cancel:hover {
+            background: #c82333;
+        }
+
         .alert {
             padding: 12px 20px;
             border-radius: 8px;
             margin-bottom: 20px;
-            display: none;
         }
 
         .alert-success {
@@ -357,24 +242,68 @@
             border: 1px solid #c3e6cb;
         }
 
-        .alert-danger {
-            background-color: #fee;
-            color: #c33;
-            border: 1px solid #fcc;
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-size: 1.1em;
         }
 
-        @media (max-width: 1024px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .sidebar {
-                order: 2;
-            }
-            
-            .main-content {
-                order: 1;
-            }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            color: #333;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #fa709a;
+        }
+
+        .stat-card h3 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        .filter-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .filter-section .form-group {
+            margin-bottom: 0;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .btn-filter {
+            padding: 12px 25px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .btn-filter:hover {
+            background: #5568d3;
         }
 
         @media (max-width: 768px) {
@@ -392,203 +321,218 @@
             th, td {
                 padding: 8px;
             }
-            
-            .stats {
-                grid-template-columns: 1fr 1fr;
+
+            .filter-section {
+                flex-direction: column;
+            }
+
+            .filter-section .form-group {
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>🏥 Hospital Management System</h1>
+        <h1>📅 Appointments</h1>
         <div class="user-info">
-            <span>Welcome, Admin Karmakar</span>
+            <span>{{ session.user_name }}</span>
+            {% if session.user_role == 'doctor' %}
+                <a href="/doctor/dashboard" class="btn-back">← Dashboard</a>
+            {% elif session.user_role == 'patient' %}
+                <a href="/patient/dashboard" class="btn-back">← Dashboard</a>
+            {% elif session.user_role == 'admin' %}
+                <a href="/admin/dashboard" class="btn-back">← Dashboard</a>
+            {% endif %}
             <a href="/logout" class="btn-logout">Logout</a>
         </div>
     </div>
 
     <div class="container">
-        <div class="dashboard-grid">
-            <div class="sidebar">
-                <h2>Patient Dashboard</h2>
-                <ul>
-                    <li><a href="#" class="active">📋 My Appointments</a></li>
-                    <li><a href="#">📄 Medical Records</a></li>
-                    <li><a href="#">💰 View Bills</a></li>
-                    <li><a href="#">⚙️ Profile Settings</a></li>
-                </ul>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if appointments %}
+        <div class="stats">
+            <div class="stat-card">
+                <h3>{{ appointments|length }}</h3>
+                <p>Total Appointments</p>
             </div>
-
-            <div class="main-content">
-                <div class="welcome-message">
-                    <h2>Welcome back, Admin Karmakar!</h2>
-                    <p>Manage your appointments and medical records in one place</p>
-                </div>
-
-                <div class="stats">
-                    <div class="stat-card">
-                        <h3 id="total-appointments">2</h3>
-                        <p>Total Appointments</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3 id="pending-appointments">1</h3>
-                        <p>Pending</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3 id="completed-appointments">1</h3>
-                        <p>Completed</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3 id="cancelled-appointments">0</h3>
-                        <p>Cancelled</p>
-                    </div>
-                </div>
-
-                <div class="alert alert-success" id="success-alert">
-                    Appointment cancelled successfully!
-                </div>
-
-                <div class="card">
-                    <h2 class="section-title">My Appointments</h2>
-                    <a href="#book-appointment" class="btn-book">+ Book New Appointment</a>
-                    
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Doctor</th>
-                                <th>Specialization</th>
-                                <th>Date</th>
-                                <th>Time</th>
-                                <th>Reason</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="appointments-table-body">
-                            <tr id="appointment-1">
-                                <td>1</td>
-                                <td>Admin</td>
-                                <td>None</td>
-                                <td>2025-12-12</td>
-                                <td>07:30</td>
-                                <td>Bloating</td>
-                                <td>
-                                    <span class="badge badge-warning">⏳ Pending</span>
-                                </td>
-                                <td>
-                                    <button class="btn btn-cancel" onclick="cancelAppointment(1)">Cancel</button>
-                                </td>
-                            </tr>
-                            <tr id="appointment-2">
-                                <td>2</td>
-                                <td>Van Hussen</td>
-                                <td>Surgeon</td>
-                                <td>2025-10-26</td>
-                                <td>22:30</td>
-                                <td>Stomach</td>
-                                <td>
-                                    <span class="badge badge-success">✓ Completed</span>
-                                </td>
-                                <td>
-                                    <button class="btn btn-cancel" disabled>Cancel</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="card">
-                    <div class="tabs">
-                        <button class="tab-button active" onclick="showTab(event, 'book-appointment')">📝 Book Appointment</button>
-                        <button class="tab-button" onclick="showTab(event, 'appointment-history')">📋 Appointment History</button>
-                    </div>
-
-                    <div id="book-appointment" class="tab-content active">
-                        <h2 class="section-title">Book New Appointment</h2>
-                        <form onsubmit="bookAppointment(event)">
-                            <div class="form-group">
-                                <label for="doctor">Select Doctor</label>
-                                <select id="doctor" required>
-                                    <option value="">Choose a doctor</option>
-                                    <option value="1">Dr. Smith - Cardiologist</option>
-                                    <option value="2">Dr. Johnson - Neurologist</option>
-                                    <option value="3">Dr. Williams - Pediatrician</option>
-                                    <option value="4">Dr. Brown - Surgeon</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="appointment-date">Appointment Date</label>
-                                <input type="date" id="appointment-date" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="appointment-time">Appointment Time</label>
-                                <input type="time" id="appointment-time" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="reason">Reason for Visit</label>
-                                <textarea id="reason" rows="4" placeholder="Describe your symptoms or reason for appointment" required></textarea>
-                            </div>
-
-                            <button type="submit" class="btn-submit">Book Appointment</button>
-                        </form>
-                    </div>
-
-                    <div id="appointment-history" class="tab-content">
-                        <h2 class="section-title">Appointment History</h2>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Doctor</th>
-                                    <th>Date</th>
-                                    <th>Time</th>
-                                    <th>Reason</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>2</td>
-                                    <td>Van Hussen</td>
-                                    <td>2025-10-26</td>
-                                    <td>22:30</td>
-                                    <td>Stomach</td>
-                                    <td>
-                                        <span class="badge badge-success">✓ Completed</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>3</td>
-                                    <td>Dr. Smith</td>
-                                    <td>2025-09-15</td>
-                                    <td>14:00</td>
-                                    <td>Regular Checkup</td>
-                                    <td>
-                                        <span class="badge badge-success">✓ Completed</span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            <div class="stat-card">
+                <h3>{{ appointments|selectattr('status', 'equalto', 'Pending')|list|length }}</h3>
+                <p>Pending</p>
+            </div>
+            <div class="stat-card">
+                <h3>{{ appointments|selectattr('status', 'equalto', 'Completed')|list|length }}</h3>
+                <p>Completed</p>
+            </div>
+            <div class="stat-card">
+                <h3>{{ appointments|selectattr('status', 'equalto', 'Cancelled')|list|length }}</h3>
+                <p>Cancelled</p>
             </div>
         </div>
+        {% endif %}
+
+        {% if session.user_role == 'patient' %}
+        <div class="tabs">
+            <button class="tab-button" onclick="showTab('book-appointment')">📝 Book Appointment</button>
+            <button class="tab-button active" onclick="showTab('my-appointments')">📋 My Appointments</button>
+        </div>
+
+        <div id="book-appointment" class="tab-content">
+            <div class="card">
+                <h2 class="section-title">Book New Appointment</h2>
+                <form method="POST" action="/appointments" onsubmit="return validateAppointment()">
+                    <div class="form-group">
+                        <label for="doctor_id">Select Doctor</label>
+                        <select id="doctor_id" name="doctor_id" required>
+                            <option value="">Choose a doctor</option>
+                            {% for doctor in doctors %}
+                            <option value="{{ doctor.id }}">Dr. {{ doctor.name }} - {{ doctor.specialization }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date">Appointment Date</label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="time">Appointment Time</label>
+                        <input type="time" id="time" name="time" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reason">Reason for Visit</label>
+                        <textarea id="reason" name="reason" rows="4" placeholder="Describe your symptoms or reason for appointment" required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-submit">Book Appointment</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="my-appointments" class="tab-content active">
+        {% endif %}
+
+            <div class="card">
+                <h2 class="section-title">
+                    {% if session.user_role == 'patient' %}
+                        My Appointments
+                    {% elif session.user_role == 'doctor' %}
+                        Scheduled Appointments
+                    {% else %}
+                        All Appointments
+                    {% endif %}
+                </h2>
+
+                {% if session.user_role == 'admin' %}
+                <div class="filter-section">
+                    <div class="form-group">
+                        <label for="filter-status">Filter by Status</label>
+                        <select id="filter-status" onchange="filterTable()">
+                            <option value="">All Status</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-date">Filter by Date</label>
+                        <input type="date" id="filter-date" onchange="filterTable()">
+                    </div>
+                    <button class="btn-filter" onclick="resetFilters()">Reset Filters</button>
+                </div>
+                {% endif %}
+
+                {% if appointments %}
+                <table id="appointmentsTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            {% if session.user_role == 'doctor' or session.user_role == 'admin' %}
+                            <th>Patient Name</th>
+                            {% endif %}
+                            {% if session.user_role == 'patient' or session.user_role == 'admin' %}
+                            <th>Doctor Name</th>
+                            {% endif %}
+                            {% if session.user_role == 'doctor' %}
+                            <th>Contact</th>
+                            {% endif %}
+                            {% if session.user_role == 'patient' %}
+                            <th>Specialization</th>
+                            {% endif %}
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                            {% if session.user_role != 'admin' %}
+                            <th>Actions</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appointment in appointments %}
+                        <tr data-status="{{ appointment.status }}" data-date="{{ appointment.date }}">
+                            <td>{{ appointment.id }}</td>
+                            {% if session.user_role == 'doctor' or session.user_role == 'admin' %}
+                            <td>{{ appointment.patient_name }}</td>
+                            {% endif %}
+                            {% if session.user_role == 'patient' or session.user_role == 'admin' %}
+                            <td>Dr. {{ appointment.doctor_name }}</td>
+                            {% endif %}
+                            {% if session.user_role == 'doctor' %}
+                            <td>{{ appointment.contact }}</td>
+                            {% endif %}
+                            {% if session.user_role == 'patient' %}
+                            <td>{{ appointment.specialization }}</td>
+                            {% endif %}
+                            <td>{{ appointment.date }}</td>
+                            <td>{{ appointment.time }}</td>
+                            <td>{{ appointment.reason }}</td>
+                            <td>
+                                {% if appointment.status == 'Completed' %}
+                                    <span class="badge badge-success">✓ {{ appointment.status }}</span>
+                                {% elif appointment.status == 'Cancelled' %}
+                                    <span class="badge badge-danger">✗ {{ appointment.status }}</span>
+                                {% else %}
+                                    <span class="badge badge-warning">⏳ {{ appointment.status }}</span>
+                                {% endif %}
+                            </td>
+                            {% if session.user_role != 'admin' %}
+                            <td>
+                                {% if session.user_role == 'doctor' and appointment.status == 'Pending' %}
+                                    <a href="/doctor/update_appointment/{{ appointment.id }}/Completed" class="btn btn-complete">Complete</a>
+                                    <a href="/doctor/update_appointment/{{ appointment.id }}/Cancelled" class="btn btn-cancel" onclick="return confirm('Cancel this appointment?')">Cancel</a>
+                                {% elif session.user_role == 'patient' and appointment.status == 'Pending' %}
+                                    <a href="/patient/cancel_appointment/{{ appointment.id }}" class="btn btn-cancel" onclick="return confirm('Are you sure you want to cancel this appointment?')">Cancel</a>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="no-data">No appointments found.</p>
+                {% endif %}
+            </div>
+
+        {% if session.user_role == 'patient' %}
+        </div>
+        {% endif %}
     </div>
 
     <script>
-        // Appointment data
-        let appointments = [
-            { id: 1, doctor: "Admin", specialization: "None", date: "2025-12-12", time: "07:30", reason: "Bloating", status: "Pending" },
-            { id: 2, doctor: "Van Hussen", specialization: "Surgeon", date: "2025-10-26", time: "22:30", reason: "Stomach", status: "Completed" }
-        ];
-
-        // Tab switching functionality
-        function showTab(event, tabName) {
+        function showTab(tabName) {
             const tabs = document.querySelectorAll('.tab-content');
             const buttons = document.querySelectorAll('.tab-button');
             
@@ -596,130 +540,69 @@
             buttons.forEach(btn => btn.classList.remove('active'));
             
             document.getElementById(tabName).classList.add('active');
-            event.currentTarget.classList.add('active');
+            event.target.classList.add('active');
         }
 
-        // Set minimum date to today for booking
+        function validateAppointment() {
+            const doctorId = document.getElementById('doctor_id').value;
+            const date = document.getElementById('date').value;
+            const time = document.getElementById('time').value;
+            const reason = document.getElementById('reason').value;
+
+            if (!doctorId || !date || !time || !reason) {
+                alert('Please fill in all fields');
+                return false;
+            }
+
+            const selectedDate = new Date(date);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            if (selectedDate < today) {
+                alert('Please select a future date');
+                return false;
+            }
+
+            return true;
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
-            const dateInput = document.getElementById('appointment-date');
+            const dateInput = document.getElementById('date');
             if (dateInput) {
                 const today = new Date().toISOString().split('T')[0];
                 dateInput.setAttribute('min', today);
             }
-            updateStats();
         });
 
-        // Cancel appointment function
-        function cancelAppointment(appointmentId) {
-            if (confirm('Are you sure you want to cancel this appointment?')) {
-                // Find the appointment in our data
-                const appointmentIndex = appointments.findIndex(a => a.id === appointmentId);
+        function filterTable() {
+            const statusFilter = document.getElementById('filter-status').value.toLowerCase();
+            const dateFilter = document.getElementById('filter-date').value;
+            const table = document.getElementById('appointmentsTable');
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                const status = row.getAttribute('data-status').toLowerCase();
+                const date = row.getAttribute('data-date');
                 
-                if (appointmentIndex !== -1) {
-                    // Update the appointment status
-                    appointments[appointmentIndex].status = "Cancelled";
-                    
-                    // Update the UI
-                    const appointmentRow = document.getElementById(`appointment-${appointmentId}`);
-                    if (appointmentRow) {
-                        // Update status badge
-                        const statusCell = appointmentRow.cells[6];
-                        statusCell.innerHTML = '<span class="badge badge-danger">✗ Cancelled</span>';
-                        
-                        // Disable the cancel button
-                        const cancelButton = appointmentRow.querySelector('.btn-cancel');
-                        if (cancelButton) {
-                            cancelButton.disabled = true;
-                            cancelButton.textContent = 'Cancelled';
-                        }
-                    }
-                    
-                    // Show success message
-                    const alert = document.getElementById('success-alert');
-                    alert.style.display = 'block';
-                    setTimeout(() => {
-                        alert.style.display = 'none';
-                    }, 3000);
-                    
-                    // Update stats
-                    updateStats();
+                let showRow = true;
+                
+                if (statusFilter && !status.includes(statusFilter)) {
+                    showRow = false;
                 }
+                
+                if (dateFilter && date !== dateFilter) {
+                    showRow = false;
+                }
+                
+                row.style.display = showRow ? '' : 'none';
             }
         }
 
-        // Book appointment function
-        function bookAppointment(event) {
-            event.preventDefault();
-            
-            const doctor = document.getElementById('doctor');
-            const date = document.getElementById('appointment-date');
-            const time = document.getElementById('appointment-time');
-            const reason = document.getElementById('reason');
-            
-            if (!doctor.value || !date.value || !time.value || !reason.value) {
-                alert('Please fill in all fields');
-                return;
-            }
-            
-            const selectedDate = new Date(date.value);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            
-            if (selectedDate < today) {
-                alert('Please select a future date');
-                return;
-            }
-            
-            // Create new appointment
-            const newAppointment = {
-                id: appointments.length + 1,
-                doctor: doctor.options[doctor.selectedIndex].text.split(' - ')[0],
-                specialization: doctor.options[doctor.selectedIndex].text.split(' - ')[1],
-                date: date.value,
-                time: time.value,
-                reason: reason.value,
-                status: "Pending"
-            };
-            
-            // Add to appointments array
-            appointments.push(newAppointment);
-            
-            // Add to UI
-            const tableBody = document.getElementById('appointments-table-body');
-            const newRow = document.createElement('tr');
-            newRow.id = `appointment-${newAppointment.id}`;
-            newRow.innerHTML = `
-                <td>${newAppointment.id}</td>
-                <td>${newAppointment.doctor}</td>
-                <td>${newAppointment.specialization}</td>
-                <td>${newAppointment.date}</td>
-                <td>${newAppointment.time}</td>
-                <td>${newAppointment.reason}</td>
-                <td><span class="badge badge-warning">⏳ Pending</span></td>
-                <td><button class="btn btn-cancel" onclick="cancelAppointment(${newAppointment.id})">Cancel</button></td>
-            `;
-            tableBody.appendChild(newRow);
-            
-            // Reset form
-            event.target.reset();
-            
-            // Update stats
-            updateStats();
-            
-            alert('Appointment booked successfully!');
-        }
-
-        // Update statistics
-        function updateStats() {
-            const total = appointments.length;
-            const pending = appointments.filter(a => a.status === "Pending").length;
-            const completed = appointments.filter(a => a.status === "Completed").length;
-            const cancelled = appointments.filter(a => a.status === "Cancelled").length;
-            
-            document.getElementById('total-appointments').textContent = total;
-            document.getElementById('pending-appointments').textContent = pending;
-            document.getElementById('completed-appointments').textContent = completed;
-            document.getElementById('cancelled-appointments').textContent = cancelled;
+        function resetFilters() {
+            document.getElementById('filter-status').value = '';
+            document.getElementById('filter-date').value = '';
+            filterTable();
         }
     </script>
 </body>
