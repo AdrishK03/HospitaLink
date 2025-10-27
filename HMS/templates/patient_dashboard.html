@@ -97,6 +97,7 @@
             font-size: 1em;
             transition: all 0.3s;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            font-weight: 500;
         }
 
         .tab-button.active {
@@ -219,6 +220,27 @@
             color: #721c24;
         }
 
+        .btn {
+            padding: 6px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s;
+            margin: 2px;
+            text-decoration: none;
+            display: inline-block;
+            color: white;
+        }
+
+        .btn-cancel {
+            background: #dc3545;
+        }
+
+        .btn-cancel:hover {
+            background: #c82333;
+        }
+
         .alert {
             padding: 12px 20px;
             border-radius: 8px;
@@ -246,34 +268,13 @@
 
             table {
                 font-size: 0.9em;
+                display: block;
+                overflow-x: auto;
             }
 
             th, td {
                 padding: 8px;
             }
-        }
-        /* Styling for the option items - inconsistent support */
-        select option {
-            background-color: #f0f0f0; /* Light gray background for all options */
-            color: #333;
-        }
-
-        /* Styling for the option on hover - even less reliable support */
-        select option:hover {
-            background-color: #a0a0a0; /* Gray background on hover */
-            color: white;
-        }
-
-        /* Styling for the selected option - generally ineffective */
-        select option:checked {
-            background-color: #d2b6b6ff; /* Red background for selected item - rarely works */
-        }
-
-        /* To change the background of the SELECT box itself (not the dropdown list) */
-        select {
-            background-color: #e6e6ff; /* Light purple background for the input box */
-            border: 1px solid #ccc;
-            padding: 5px;
         }
     </style>
 </head>
@@ -296,13 +297,14 @@
         {% endwith %}
 
         <div class="nav-links">
+            <a href="/appointments">📅 Appointments</a>
             <a href="/medical_records">📋 Medical Records</a>
             <a href="/billing">💰 View Bills</a>
         </div>
 
         <div class="tabs">
-            <button class="tab-button active" onclick="showTab('book-appointment')">Book Appointment</button>
-            <button class="tab-button" onclick="showTab('my-appointments')">My Appointments</button>
+            <button class="tab-button active" onclick="showTab('book-appointment')">📝 Book Appointment</button>
+            <button class="tab-button" onclick="showTab('my-appointments')">📋 My Appointments</button>
         </div>
 
         <!-- Book Appointment Tab -->
@@ -312,14 +314,9 @@
                 <div class="form-group">
                     <label for="doctor_id">Select Doctor</label>
                     <select id="doctor_id" name="doctor_id" required>
-                        <option selected disabled >Choose a doctor</option>
-                        <option value="001">Dr A Sen  -  General Surgeon</option>
-                        <option value="001">Dr S Das  -  Cardiac Surgeon</option>
-                        <option value="001">Dr A K Mukherjee  -  Medicine</option>
-                        <option value="001">Dr P K Banerjee  -  Orthopedist</option>
-                        <option value="001">Dr N Ghosh  -  Dermatologist</option>
+                        <option value="">Choose a doctor</option>
                         {% for doctor in doctors %}
-                        <option value="{{ doctor.id }}">{{ doctor.name }} - {{ doctor.specialization }}</option>
+                        <option value="{{ doctor.id }}">Dr. {{ doctor.name }} - {{ doctor.specialization }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -357,24 +354,32 @@
                         <th>Time</th>
                         <th>Reason</th>
                         <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for appointment in appointments %}
                     <tr>
                         <td>{{ appointment.id }}</td>
-                        <td>{{ appointment.doctor_name }}</td>
+                        <td>Dr. {{ appointment.doctor_name }}</td>
                         <td>{{ appointment.specialization }}</td>
                         <td>{{ appointment.date }}</td>
                         <td>{{ appointment.time }}</td>
                         <td>{{ appointment.reason }}</td>
                         <td>
                             {% if appointment.status == 'Completed' %}
-                                <span class="badge badge-success">{{ appointment.status }}</span>
+                                <span class="badge badge-success">✓ {{ appointment.status }}</span>
                             {% elif appointment.status == 'Cancelled' %}
-                                <span class="badge badge-danger">{{ appointment.status }}</span>
+                                <span class="badge badge-danger">✗ {{ appointment.status }}</span>
                             {% else %}
-                                <span class="badge badge-warning">{{ appointment.status }}</span>
+                                <span class="badge badge-warning">⏳ {{ appointment.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if appointment.status == 'Pending' %}
+                                <a href="/patient/cancel_appointment/{{ appointment.id }}" class="btn btn-cancel" onclick="return confirm('Are you sure you want to cancel this appointment?')">Cancel</a>
+                            {% else %}
+                                -
                             {% endif %}
                         </td>
                     </tr>
