@@ -1,29 +1,35 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import os
+from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from datetime import datetime
 
-# --- PostgreSQL Libraries (CRITICAL IMPORTS) ---
+# --- PostgreSQL Libraries ---
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from sqlalchemy import or_
 
 # --- CONFIGURATION & INITIALIZATION ---
 
+# Load environment variables (locally from .env, or from Render)
 app = Flask(__name__)
+# NOTE: Removed load_dotenv() from here as it's cleaner to handle at the start of the script, 
+# but Flask does not strictly require it here if Gunicorn handles environment variables.
 
-# IMPORTANT: These must be set as Environment Variables in the Render dashboard.
-app.secret_key = os.environ.get('SECRET_KEY')
+# IMPORTANT: Read variables from environment
+app.secret_key = os.environ.get('SECRET_KEY', 'default_secret_key_for_safety')
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
 # Read database URL from environment
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
+# Define the immutable Admin email
+ADMIN_EMAIL = 'admin@hospital.com'
+
 # Ensure upload folder exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-
 
 # --- DATABASE CONNECTION & SETUP FUNCTIONS ---
 
@@ -35,10 +41,9 @@ if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
 def get_db():
     """Establish and return a new PostgreSQL database connection."""
     if not DATABASE_URL:
-        # This error confirms the essential DATABASE_URL variable is missing.
+        # Raise an explicit error if the URL is missing (expected during failed deployment config)
         raise EnvironmentError("DATABASE_URL not set. Cannot connect to PostgreSQL.")
         
-    # Use RealDictCursor to return results as dictionaries (like sqlite3.Row)
     conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
     return conn
 
@@ -62,9 +67,6 @@ def init_db():
         )
     ''')
 
-    # Appointments, Medical Records, and Billing Tables (SQL shortened for brevity)
-    # ... [Table creation logic for appointments, medical_records, billing remains here]
-    
     # Appointments Table
     c.execute('''
         CREATE TABLE IF NOT EXISTS appointments (
@@ -106,12 +108,12 @@ def init_db():
     ''')
 
     # Create Default Admin (if not exists)
-    c.execute("SELECT * FROM users WHERE email = %s", ('admin@hospital.com',))
+    c.execute("SELECT id FROM users WHERE email = %s", (ADMIN_EMAIL,))
     if not c.fetchone():
         admin_password = generate_password_hash('admin123')
         c.execute(
             "INSERT INTO users (name, email, password, role, approved) VALUES (%s, %s, %s, %s, %s)",
-            ('Admin', 'admin@hospital.com', admin_password, 'admin', 1)
+            ('Admin', ADMIN_EMAIL, admin_password, 'admin', 1)
         )
 
     conn.commit()
@@ -142,10 +144,12 @@ def login():
             flash('Database configuration error. Contact admin.', 'danger')
             return redirect(url_for('login'))
         except Exception as e:
+            # THIS CATCHES THE INTERNAL SERVER ERROR
             print(f"DB Runtime Error on login: {e}")
             flash('Internal server error during login. Check server logs.', 'danger')
             return redirect(url_for('login'))
         
+        # FIX: Check if user exists before attempting password hash check
         if user and check_password_hash(user['password'], password):
             if role == 'doctor' and user['approved'] == 0:
                 flash('Your account is pending approval from admin.', 'warning')
@@ -176,11 +180,23 @@ def register():
         contact = request.form['contact']
         specialization = request.form.get('specialization', '')
         
+        # --- FIX: Prevent registering as Admin ---
+        if role == 'admin' or email == ADMIN_EMAIL:
+            flash('Cannot register with the admin role or admin email.', 'danger')
+            return redirect(url_for('register'))
+        # ----------------------------------------
+        
         conn = get_db()
         c = conn.cursor()
         try:
+            # Check if email exists
+            c.execute("SELECT id FROM users WHERE email = %s", (email,))
+            if c.fetchone():
+                 flash('Email already exists!', 'danger')
+                 return redirect(url_for('register'))
+                 
             approved = 1 if role == 'patient' else 0
-            # CORRECT: Use %s for PostgreSQL placeholders
+            
             c.execute(
                 "INSERT INTO users (name, email, password, role, specialization, contact, approved) VALUES (%s, %s, %s, %s, %s, %s, %s)",
                 (name, email, password, role, specialization, contact, approved)
@@ -541,11 +557,12 @@ def update_bill_status(bill_id, status):
 if __name__ == '__main__':
     # Initialize DB for local testing
     try:
-        init_db()
+        # Check if the database URL is set (i.e., running locally with local PostgreSQL or test setup)
+        if DATABASE_URL:
+            init_db()
+        else:
+            print("WARNING: DATABASE_URL not set. Running locally without DB initialization.")
     except EnvironmentError as e:
         print(f"WARNING: Database initialization skipped locally because {e}")
-        print("Set DATABASE_URL in your .env for local PostgreSQL testing.")
-    except Exception as e:
-        print(f"FATAL ERROR during local DB initialization: {e}")
         
     app.run(debug=True)
