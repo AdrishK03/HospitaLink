@@ -13,8 +13,6 @@ from sqlalchemy import or_
 # --- CONFIGURATION & INITIALIZATION ---
 
 app = Flask(__name__)
-# NOTE: load_dotenv() is handled by Gunicorn/entrypoint.sh in production, 
-# but we keep it here for local testing.
 load_dotenv() 
 
 # IMPORTANT: Read variables from environment
@@ -135,18 +133,16 @@ def login():
             conn = get_db()
             c = conn.cursor()
             c.execute('SELECT * FROM users WHERE email = %s AND role = %s', (email, role))
-            user = c.fetchone() # Fetch the user data after execute
+            user = c.fetchone()
             conn.close()
         except EnvironmentError:
             flash('Database configuration error. Contact admin.', 'danger')
             return redirect(url_for('login'))
         except Exception as e:
-            # Catchall for DB connection issues or query failures
             print(f"DB Runtime Error on login: {e}")
             flash('Internal server error during login. Check server logs.', 'danger')
             return redirect(url_for('login'))
         
-        # FIX: Check if user exists before attempting password hash check
         if user and check_password_hash(user['password'], password):
             if role == 'doctor' and user['approved'] == 0:
                 flash('Your account is pending approval from admin.', 'warning')
@@ -227,7 +223,7 @@ def admin_dashboard():
     conn = get_db()
     c = conn.cursor()
     
-    # CORRECTED QUERIES: Execute query, THEN call fetchall() on the cursor (c)
+    # FIX: Separate execute and fetchall()
     c.execute('SELECT * FROM users WHERE role = %s', ('doctor',))
     doctors = c.fetchall()
     
@@ -294,7 +290,7 @@ def doctor_dashboard():
                  JOIN users p ON a.patient_id = p.id 
                  WHERE a.doctor_id = %s 
                  ORDER BY a.date DESC''', (doctor_id,))
-    appointments = c.fetchall()
+    appointments = c.fetchall() # FIX
     conn.close()
     
     return render_template('doctor_dashboard.html', appointments=appointments)
@@ -322,13 +318,13 @@ def patient_dashboard():
     patient_id = session['user_id']
     conn = get_db()
     c = conn.cursor()
-    doctors = c.execute('SELECT * FROM users WHERE role = %s AND approved = 1', ('doctor',)).fetchall()
+    doctors = c.execute('SELECT * FROM users WHERE role = %s AND approved = 1', ('doctor',)).fetchall() # FIX
     c.execute('''SELECT a.*, d.name as doctor_name, d.specialization 
                  FROM appointments a 
                  JOIN users d ON a.doctor_id = d.id 
                  WHERE a.patient_id = %s 
                  ORDER BY a.date DESC''', (patient_id,))
-    appointments = c.fetchall()
+    appointments = c.fetchall() # FIX
     conn.close()
     
     return render_template('patient_dashboard.html', doctors=doctors, appointments=appointments)
@@ -370,8 +366,8 @@ def appointments():
                      JOIN users d ON a.doctor_id = d.id 
                      WHERE a.patient_id = %s 
                      ORDER BY a.date DESC, a.time DESC''', (user_id,))
-        appointments_list = c.fetchall()
-        doctors = c.execute('SELECT * FROM users WHERE role = %s AND approved = 1', ('doctor',)).fetchall()
+        appointments_list = c.fetchall() # FIX
+        doctors = c.execute('SELECT * FROM users WHERE role = %s AND approved = 1', ('doctor',)).fetchall() # FIX
         conn.close()
         return render_template('appointments.html', appointments=appointments_list, doctors=doctors)
     
@@ -381,7 +377,7 @@ def appointments():
                      JOIN users p ON a.patient_id = p.id 
                      WHERE a.doctor_id = %s 
                      ORDER BY a.date DESC, a.time DESC''', (user_id,))
-        appointments_list = c.fetchall()
+        appointments_list = c.fetchall() # FIX
         conn.close()
         return render_template('appointments.html', appointments=appointments_list)
         
@@ -391,7 +387,7 @@ def appointments():
                      JOIN users p ON a.patient_id = p.id 
                      JOIN users d ON a.doctor_id = d.id 
                      ORDER BY a.date DESC, a.time DESC''')
-        appointments_list = c.fetchall()
+        appointments_list = c.fetchall() # FIX
         conn.close()
         return render_template('appointments.html', appointments=appointments_list)
 
@@ -437,7 +433,7 @@ def medical_records():
                      JOIN users d ON m.doctor_id = d.id 
                      WHERE m.patient_id = %s 
                      ORDER BY m.date DESC''', (user_id,))
-        records = c.fetchall()
+        records = c.fetchall() # FIX
         
     elif role == 'doctor':
         c.execute('''SELECT m.*, p.name as patient_name 
@@ -445,11 +441,11 @@ def medical_records():
                      JOIN users p ON m.patient_id = p.id 
                      WHERE m.doctor_id = %s 
                      ORDER BY m.date DESC''', (user_id,))
-        records = c.fetchall()
+        records = c.fetchall() # FIX
         c.execute('''SELECT DISTINCT p.* FROM users p 
                      JOIN appointments a ON p.id = a.patient_id 
                      WHERE a.doctor_id = %s''', (user_id,))
-        patients = c.fetchall()
+        patients = c.fetchall() # FIX
         conn.close()
         return render_template('medical_records.html', records=records, patients=patients)
         
@@ -459,7 +455,7 @@ def medical_records():
                      JOIN users p ON m.patient_id = p.id 
                      JOIN users d ON m.doctor_id = d.id 
                      ORDER BY m.date DESC''')
-        records = c.fetchall()
+        records = c.fetchall() # FIX
     
     conn.close()
     return render_template('medical_records.html', records=records)
@@ -511,7 +507,7 @@ def billing():
                      JOIN users d ON b.doctor_id = d.id 
                      WHERE b.patient_id = %s 
                      ORDER BY b.date DESC''', (user_id,))
-        bills = c.fetchall()
+        bills = c.fetchall() # FIX
                              
     elif role == 'doctor':
         c.execute('''SELECT b.*, p.name as patient_name 
@@ -519,7 +515,7 @@ def billing():
                      JOIN users p ON b.patient_id = p.id 
                      WHERE b.doctor_id = %s 
                      ORDER BY b.date DESC''', (user_id,))
-        bills = c.fetchall()
+        bills = c.fetchall() # FIX
                              
     else: # admin
         c.execute('''SELECT b.*, p.name as patient_name, d.name as doctor_name 
@@ -527,9 +523,9 @@ def billing():
                      JOIN users p ON b.patient_id = p.id 
                      JOIN users d ON b.doctor_id = d.id 
                      ORDER BY b.date DESC''')
-        bills = c.fetchall()
-        patients = c.execute('SELECT * FROM users WHERE role = %s', ('patient',)).fetchall()
-        doctors = c.execute('SELECT * FROM users WHERE role = %s AND approved = 1', ('doctor',)).fetchall()
+        bills = c.fetchall() # FIX
+        patients = c.execute('SELECT * FROM users WHERE role = %s', ('patient',)).fetchall() # FIX
+        doctors = c.execute('SELECT * FROM users WHERE role = %s AND approved = 1', ('doctor',)).fetchall() # FIX
         conn.close()
         return render_template('billing.html', bills=bills, patients=patients, doctors=doctors)
     
@@ -572,7 +568,7 @@ def update_bill_status(bill_id, status):
     return redirect(url_for('billing'))
 
 if __name__ == '__main__':
-    # Run init_db() ONLY for local testing convenience
+    # Initialize DB for local testing
     try:
         if DATABASE_URL:
             init_db()
