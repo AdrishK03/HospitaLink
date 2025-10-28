@@ -43,6 +43,27 @@ def get_db():
     return conn
 
 
+def fix_appointment_status():
+    """Update all appointments with NULL/None status to 'Pending' - Run on startup"""
+    try:
+        conn = get_db()
+        c = conn.cursor()
+        
+        # Update NULL/empty status to 'Pending'
+        c.execute("UPDATE appointments SET status = 'Pending' WHERE status IS NULL OR status = ''")
+        rows_affected = c.rowcount
+        
+        conn.commit()
+        conn.close()
+        
+        if rows_affected > 0:
+            print(f"✅ Fixed {rows_affected} appointments with NULL/None status")
+        return True
+    except Exception as e:
+        print(f"⚠️  Error fixing appointment statuses: {e}")
+        return False
+
+
 def init_db():
     """Initialize all tables and create default admin if missing. Executed by entrypoint.sh."""
     conn = get_db()
@@ -113,6 +134,10 @@ def init_db():
 
     conn.commit()
     conn.close()
+    
+    # Fix any existing appointments with NULL status
+    print("🔧 Checking for appointments with NULL status...")
+    fix_appointment_status()
 
 
 # --- ROUTES ---
@@ -353,9 +378,10 @@ def appointments():
         try:
             conn = get_db()
             c = conn.cursor()
+            # FIX: Explicitly set status to 'Pending' to avoid NULL/None values
             c.execute(
-                "INSERT INTO appointments (patient_id, doctor_id, date, time, reason) VALUES (%s, %s, %s, %s, %s)",
-                (patient_id, doctor_id, date, time, reason)
+                "INSERT INTO appointments (patient_id, doctor_id, date, time, reason, status) VALUES (%s, %s, %s, %s, %s, %s)",
+                (patient_id, doctor_id, date, time, reason, 'Pending')
             )
             conn.commit()
             conn.close()
@@ -667,10 +693,12 @@ if __name__ == '__main__':
     # Initialize DB for local testing
     try:
         if DATABASE_URL:
+            print("🚀 Initializing database...")
             init_db()
+            print("✅ Database initialized successfully!")
         else:
-            print("WARNING: DATABASE_URL not set. Running locally without DB initialization.")
+            print("⚠️  WARNING: DATABASE_URL not set. Running locally without DB initialization.")
     except Exception as e:
-        print(f"FATAL ERROR during local DB initialization: {e}")
+        print(f"❌ FATAL ERROR during local DB initialization: {e}")
         
     app.run(debug=True)
