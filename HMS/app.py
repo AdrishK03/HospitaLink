@@ -333,7 +333,7 @@ def patient_dashboard():
     
     return render_template('patient_dashboard.html', doctors=doctors, appointments=appointments)
 
-# Appointments Routes
+# Appointments Routes - FIXED
 @app.route('/appointments', methods=['GET', 'POST'])
 def appointments():
     if 'user_id' not in session:
@@ -349,6 +349,7 @@ def appointments():
         time = request.form['time']
         reason = request.form['reason']
         
+        conn = None
         try:
             conn = get_db()
             c = conn.cursor()
@@ -361,15 +362,18 @@ def appointments():
             flash('Appointment booked successfully!', 'success')
             return redirect(url_for('appointments'))
         except Exception as e:
+            if conn:
+                conn.close()
             print(f"Error booking appointment: {e}")
             flash(f'Error booking appointment: {str(e)}', 'danger')
             return redirect(url_for('appointments'))
     
     # GET request - show appointments page
-    conn = get_db()
-    c = conn.cursor()
-    
+    conn = None
     try:
+        conn = get_db()
+        c = conn.cursor()
+        
         if role == 'patient':
             c.execute('''SELECT a.*, d.name as doctor_name, d.specialization 
                          FROM appointments a 
@@ -378,7 +382,7 @@ def appointments():
                          ORDER BY a.date DESC, a.time DESC''', (user_id,))
             appointments_list = c.fetchall()
             
-            # FIX: Execute separate query for doctors
+            # FIX: Always fetch doctors list for patients
             c.execute('SELECT * FROM users WHERE role = %s AND approved = 1', ('doctor',))
             doctors = c.fetchall()
             conn.close()
@@ -404,22 +408,29 @@ def appointments():
             conn.close()
             return render_template('appointments.html', appointments=appointments_list)
     except Exception as e:
-        conn.close()
+        if conn:
+            conn.close()
         print(f"Error fetching appointments: {e}")
         flash(f'Error loading appointments: {str(e)}', 'danger')
-        return redirect(url_for('patient_dashboard'))
+        if role == 'patient':
+            return redirect(url_for('patient_dashboard'))
+        elif role == 'doctor':
+            return redirect(url_for('doctor_dashboard'))
+        else:
+            return redirect(url_for('admin_dashboard'))
 
-# Patient cancel appointment route
+# Patient cancel appointment route - FIXED
 @app.route('/patient/cancel_appointment/<int:appointment_id>')
 def cancel_appointment(appointment_id):
     if 'user_id' not in session or session['user_role'] != 'patient':
         flash('Access denied!', 'danger')
         return redirect(url_for('login'))
     
-    conn = get_db()
-    c = conn.cursor()
-    
+    conn = None
     try:
+        conn = get_db()
+        c = conn.cursor()
+        
         # Verify the appointment belongs to the logged-in patient
         c.execute('SELECT id FROM appointments WHERE id = %s AND patient_id = %s', 
                   (appointment_id, session['user_id']))
@@ -434,11 +445,17 @@ def cancel_appointment(appointment_id):
         
         conn.close()
     except Exception as e:
-        conn.close()
+        if conn:
+            conn.close()
         print(f"Error cancelling appointment: {e}")
         flash(f'Error cancelling appointment: {str(e)}', 'danger')
     
-    return redirect(url_for('appointments'))
+    # FIX: Check if request came from appointments page or dashboard
+    referrer = request.referrer
+    if referrer and '/appointments' in referrer:
+        return redirect(url_for('appointments'))
+    else:
+        return redirect(url_for('patient_dashboard'))
 
 # Medical Records Routes
 @app.route('/medical_records')
@@ -448,10 +465,12 @@ def medical_records():
     
     user_id = session['user_id']
     role = session['user_role']
-    conn = get_db()
-    c = conn.cursor()
+    conn = None
     
     try:
+        conn = get_db()
+        c = conn.cursor()
+        
         if role == 'patient':
             c.execute('''SELECT m.*, d.name as doctor_name 
                          FROM medical_records m 
@@ -487,7 +506,8 @@ def medical_records():
             conn.close()
             return render_template('medical_records.html', records=records)
     except Exception as e:
-        conn.close()
+        if conn:
+            conn.close()
         print(f"Error fetching medical records: {e}")
         flash(f'Error loading medical records: {str(e)}', 'danger')
         return redirect(url_for('patient_dashboard'))
@@ -511,9 +531,10 @@ def add_medical_record():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             report_filename = filename
     
-    conn = get_db()
-    c = conn.cursor()
+    conn = None
     try:
+        conn = get_db()
+        c = conn.cursor()
         c.execute(
             "INSERT INTO medical_records (patient_id, doctor_id, diagnosis, prescription, report_filename, date) VALUES (%s, %s, %s, %s, %s, %s)",
             (patient_id, doctor_id, diagnosis, prescription, report_filename, date)
@@ -521,11 +542,13 @@ def add_medical_record():
         conn.commit()
         flash('Medical record added successfully!', 'success')
     except Exception as e:
-        conn.rollback()
+        if conn:
+            conn.rollback()
         print(f"Error adding medical record: {e}")
         flash(f'Error adding medical record: {str(e)}', 'danger')
     finally:
-        conn.close()
+        if conn:
+            conn.close()
     
     return redirect(url_for('medical_records'))
 
@@ -537,10 +560,12 @@ def billing():
     
     user_id = session['user_id']
     role = session['user_role']
-    conn = get_db()
-    c = conn.cursor()
+    conn = None
     
     try:
+        conn = get_db()
+        c = conn.cursor()
+        
         if role == 'patient':
             c.execute('''SELECT b.*, d.name as doctor_name 
                          FROM billing b 
@@ -577,7 +602,8 @@ def billing():
             conn.close()
             return render_template('billing.html', bills=bills, patients=patients, doctors=doctors)
     except Exception as e:
-        conn.close()
+        if conn:
+            conn.close()
         print(f"Error fetching billing: {e}")
         flash(f'Error loading billing: {str(e)}', 'danger')
         return redirect(url_for('patient_dashboard'))
@@ -593,9 +619,10 @@ def add_bill():
     total_amount = request.form['total_amount']
     date = datetime.now().strftime('%Y-%m-%d')
     
-    conn = get_db()
-    c = conn.cursor()
+    conn = None
     try:
+        conn = get_db()
+        c = conn.cursor()
         c.execute(
             "INSERT INTO billing (patient_id, doctor_id, description, total_amount, date) VALUES (%s, %s, %s, %s, %s)",
             (patient_id, doctor_id, description, total_amount, date)
@@ -603,11 +630,13 @@ def add_bill():
         conn.commit()
         flash('Bill created successfully!', 'success')
     except Exception as e:
-        conn.rollback()
+        if conn:
+            conn.rollback()
         print(f"Error adding bill: {e}")
         flash(f'Error creating bill: {str(e)}', 'danger')
     finally:
-        conn.close()
+        if conn:
+            conn.close()
     
     return redirect(url_for('billing'))
 
@@ -616,18 +645,21 @@ def update_bill_status(bill_id, status):
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
-    conn = get_db()
-    c = conn.cursor()
+    conn = None
     try:
+        conn = get_db()
+        c = conn.cursor()
         c.execute('UPDATE billing SET status = %s WHERE id = %s', (status, bill_id))
         conn.commit()
         flash('Bill status updated!', 'success')
     except Exception as e:
-        conn.rollback()
+        if conn:
+            conn.rollback()
         print(f"Error updating bill: {e}")
         flash(f'Error updating bill status: {str(e)}', 'danger')
     finally:
-        conn.close()
+        if conn:
+            conn.close()
     
     return redirect(url_for('billing'))
 
