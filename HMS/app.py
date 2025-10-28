@@ -1,20 +1,20 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import os
-from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from datetime import datetime
 
-# --- PostgreSQL Libraries ---
+# --- PostgreSQL Libraries (CRITICAL IMPORTS) ---
 import psycopg2
 from psycopg2.extras import RealDictCursor
-# NOTE: Make sure 'psycopg2-binary' is in your requirements.txt
+from sqlalchemy import or_
+
+# --- CONFIGURATION & INITIALIZATION ---
 
 app = Flask(__name__)
-load_dotenv()
 
-# --- CONFIGURATION ---
-app.secret_key = os.environ.get('SECRET_KEY', 'your_secret_key_here_change_in_production')
+# IMPORTANT: These must be set as Environment Variables in the Render dashboard.
+app.secret_key = os.environ.get('SECRET_KEY')
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
@@ -24,7 +24,8 @@ DATABASE_URL = os.environ.get("DATABASE_URL")
 # Ensure upload folder exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-# --- DATABASE CONNECTION & SETUP ---
+
+# --- DATABASE CONNECTION & SETUP FUNCTIONS ---
 
 # Fix Render’s "postgres://" format for psycopg2
 if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
@@ -34,7 +35,7 @@ if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
 def get_db():
     """Establish and return a new PostgreSQL database connection."""
     if not DATABASE_URL:
-        # This will raise an error if not configured, which is expected in production
+        # This error confirms the essential DATABASE_URL variable is missing.
         raise EnvironmentError("DATABASE_URL not set. Cannot connect to PostgreSQL.")
         
     # Use RealDictCursor to return results as dictionaries (like sqlite3.Row)
@@ -43,7 +44,7 @@ def get_db():
 
 
 def init_db():
-    """Initialize all tables and create default admin if missing."""
+    """Initialize all tables and create default admin if missing. Executed by entrypoint.sh."""
     conn = get_db()
     c = conn.cursor()
 
@@ -61,6 +62,9 @@ def init_db():
         )
     ''')
 
+    # Appointments, Medical Records, and Billing Tables (SQL shortened for brevity)
+    # ... [Table creation logic for appointments, medical_records, billing remains here]
+    
     # Appointments Table
     c.execute('''
         CREATE TABLE IF NOT EXISTS appointments (
@@ -134,9 +138,12 @@ def login():
             c.execute('SELECT * FROM users WHERE email = %s AND role = %s', (email, role))
             user = c.fetchone()
             conn.close()
+        except EnvironmentError:
+            flash('Database configuration error. Contact admin.', 'danger')
+            return redirect(url_for('login'))
         except Exception as e:
-            print(f"DB Error on login: {e}")
-            flash('Database error during login. Check server logs.', 'danger')
+            print(f"DB Runtime Error on login: {e}")
+            flash('Internal server error during login. Check server logs.', 'danger')
             return redirect(url_for('login'))
         
         if user and check_password_hash(user['password'], password):
@@ -206,7 +213,6 @@ def admin_dashboard():
     
     conn = get_db()
     c = conn.cursor()
-    # CORRECT: Use %s for PostgreSQL placeholders
     doctors = c.execute('SELECT * FROM users WHERE role = %s', ('doctor',)).fetchall()
     patients = c.execute('SELECT * FROM users WHERE role = %s', ('patient',)).fetchall()
     
@@ -233,7 +239,6 @@ def approve_doctor(doctor_id):
     
     conn = get_db()
     c = conn.cursor()
-    # CORRECT: Use %s for PostgreSQL placeholders
     c.execute('UPDATE users SET approved = 1 WHERE id = %s', (doctor_id,))
     conn.commit()
     conn.close()
@@ -247,7 +252,6 @@ def delete_user(user_id):
     
     conn = get_db()
     c = conn.cursor()
-    # CORRECT: Use %s for PostgreSQL placeholders
     c.execute('DELETE FROM users WHERE id = %s', (user_id,))
     conn.commit()
     conn.close()
@@ -280,7 +284,6 @@ def update_appointment_status(appointment_id, status):
     
     conn = get_db()
     c = conn.cursor()
-    # CORRECT: Use %s for PostgreSQL placeholders
     c.execute('UPDATE appointments SET status = %s WHERE id = %s', (status, appointment_id))
     conn.commit()
     conn.close()
@@ -325,7 +328,6 @@ def appointments():
         
         conn = get_db()
         c = conn.cursor()
-        # CORRECT: Use %s for PostgreSQL placeholders
         c.execute(
             "INSERT INTO appointments (patient_id, doctor_id, date, time, reason) VALUES (%s, %s, %s, %s, %s)",
             (patient_id, doctor_id, date, time, reason)
@@ -383,7 +385,6 @@ def cancel_appointment(appointment_id):
     appointment = c.fetchone()
     
     if appointment:
-        # CORRECT: Use %s for PostgreSQL placeholders
         c.execute('UPDATE appointments SET status = %s WHERE id = %s', ('Cancelled', appointment_id))
         conn.commit()
         flash('Appointment cancelled successfully!', 'success')
@@ -449,7 +450,6 @@ def add_medical_record():
         file = request.files['report']
         if file.filename != '':
             filename = secure_filename(file.filename)
-            # This line saves the filename, but actual file storage needs cloud setup (S3, etc.)
             os.path.join(app.config['UPLOAD_FOLDER'], filename)
             report_filename = filename
     
