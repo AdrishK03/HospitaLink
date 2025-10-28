@@ -318,7 +318,8 @@ def patient_dashboard():
     patient_id = session['user_id']
     conn = get_db()
     c = conn.cursor()
-    doctors = c.execute('SELECT * FROM users WHERE role = %s AND approved = 1', ('doctor',)).fetchall() # FIX
+    c.execute('SELECT * FROM users WHERE role = %s AND approved = 1', ('doctor',))
+    doctors = c.fetchall() # FIX
     c.execute('''SELECT a.*, d.name as doctor_name, d.specialization 
                  FROM appointments a 
                  JOIN users d ON a.doctor_id = d.id 
