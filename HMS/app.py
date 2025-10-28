@@ -14,82 +14,89 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 # Database initialization
-def init_db():
-    conn = sqlite3.connect('hospital.db')
-    c = conn.cursor()
-    
-    # Users table
-    c.execute('''CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        email TEXT UNIQUE NOT NULL,
-        password TEXT NOT NULL,
-        role TEXT NOT NULL,
-        specialization TEXT,
-        contact TEXT,
-        approved INTEGER DEFAULT 0
-    )''')
-    
-    # Appointments table
-    c.execute('''CREATE TABLE IF NOT EXISTS appointments (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        patient_id INTEGER NOT NULL,
-        doctor_id INTEGER NOT NULL,
-        date TEXT NOT NULL,
-        time TEXT NOT NULL,
-        reason TEXT,
-        status TEXT DEFAULT 'Pending',
-        FOREIGN KEY (patient_id) REFERENCES users(id),
-        FOREIGN KEY (doctor_id) REFERENCES users(id)
-    )''')
-    
-    # Medical records table
-    c.execute('''CREATE TABLE IF NOT EXISTS medical_records (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        patient_id INTEGER NOT NULL,
-        doctor_id INTEGER NOT NULL,
-        diagnosis TEXT,
-        prescription TEXT,
-        report_filename TEXT,
-        date TEXT NOT NULL,
-        FOREIGN KEY (patient_id) REFERENCES users(id),
-        FOREIGN KEY (doctor_id) REFERENCES users(id)
-    )''')
-    
-    # Billing table
-    c.execute('''CREATE TABLE IF NOT EXISTS billing (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        patient_id INTEGER NOT NULL,
-        doctor_id INTEGER NOT NULL,
-        appointment_id INTEGER,
-        description TEXT,
-        total_amount REAL NOT NULL,
-        status TEXT DEFAULT 'Unpaid',
-        date TEXT NOT NULL,
-        FOREIGN KEY (patient_id) REFERENCES users(id),
-        FOREIGN KEY (doctor_id) REFERENCES users(id),
-        FOREIGN KEY (appointment_id) REFERENCES appointments(id)
-    )''')
-    
-    # Create default admin if not exists
-    c.execute("SELECT * FROM users WHERE email = 'admin@hospital.com'")
-    if not c.fetchone():
-        admin_password = generate_password_hash('admin123')
-        c.execute("INSERT INTO users (name, email, password, role, approved) VALUES (?, ?, ?, ?, ?)",
-                  ('Admin', 'admin@hospital.com', admin_password, 'admin', 1))
-    
-    conn.commit()
-    conn.close()
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Initialize database on startup
-init_db()
+# Fix Render’s "postgres://" format for psycopg2
+if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
-# Helper function to get database connection
+
 def get_db():
-    conn = sqlite3.connect('hospital.db')
-    conn.row_factory = sqlite3.Row
+    """Establish and return a new database connection."""
+    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
     return conn
 
+
+def init_db():
+    """Initialize all tables and create default admin if missing."""
+    conn = get_db()
+    c = conn.cursor()
+
+    # Users Table
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            name TEXT NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            role TEXT NOT NULL,
+            specialization TEXT,
+            contact TEXT,
+            approved INTEGER DEFAULT 0
+        )
+    ''')
+
+    # Appointments Table
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS appointments (
+            id SERIAL PRIMARY KEY,
+            patient_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            doctor_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            date TEXT NOT NULL,
+            time TEXT NOT NULL,
+            reason TEXT,
+            status TEXT DEFAULT 'Pending'
+        )
+    ''')
+
+    # Medical Records Table
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS medical_records (
+            id SERIAL PRIMARY KEY,
+            patient_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            doctor_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            diagnosis TEXT,
+            prescription TEXT,
+            report_filename TEXT,
+            date TEXT NOT NULL
+        )
+    ''')
+
+    # Billing Table
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS billing (
+            id SERIAL PRIMARY KEY,
+            patient_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            doctor_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            appointment_id INTEGER,
+            description TEXT,
+            total_amount REAL NOT NULL,
+            status TEXT DEFAULT 'Unpaid',
+            date TEXT NOT NULL
+        )
+    ''')
+
+    # ✅ Create Default Admin (if not exists)
+    c.execute("SELECT * FROM users WHERE email = %s", ('admin@hospital.com',))
+    if not c.fetchone():
+        admin_password = generate_password_hash('admin123')
+        c.execute(
+            "INSERT INTO users (name, email, password, role, approved) VALUES (%s, %s, %s, %s, %s)",
+            ('Admin', 'admin@hospital.com', admin_password, 'admin', 1)
+        )
+
+    conn.commit()
+    conn.close()
 # Routes
 @app.route('/')
 def index():
