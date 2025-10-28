@@ -405,7 +405,7 @@
             if (event && event.currentTarget) {
                 event.currentTarget.classList.add('active');
             } else {
-                // Fallback for direct calls
+                // Fallback (shouldn't be needed after fix)
                 const fallbackButton = document.querySelector(`.tab-button[onclick*="'${tabName}'"]`);
                 if (fallbackButton) {
                     fallbackButton.classList.add('active');
@@ -442,7 +442,7 @@
             const today = new Date().toISOString().split('T')[0];
             dateInput.setAttribute('min', today);
 
-            // Re-bind onclick to pass the event argument correctly
+            // Re-bind onclick to pass the event argument correctly (just in case)
             document.querySelectorAll('.tabs .tab-button').forEach(btn => {
                 const tabNameMatch = btn.getAttribute('onclick').match(/'([^']+)'/);
                 if (tabNameMatch && tabNameMatch[1]) {
