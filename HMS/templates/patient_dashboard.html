@@ -45,6 +45,7 @@
             cursor: pointer;
             text-decoration: none;
             transition: background 0.3s;
+            font-weight: 500;
         }
 
         .btn-logout:hover {
@@ -303,11 +304,10 @@
         </div>
 
         <div class="tabs">
-            <button class="tab-button active" onclick="showTab('book-appointment')">📝 Book Appointment</button>
-            <button class="tab-button" onclick="showTab('my-appointments')">📋 My Appointments</button>
+            <button class="tab-button active" onclick="showTab(event, 'book-appointment')">📝 Book Appointment</button>
+            <button class="tab-button" onclick="showTab(event, 'my-appointments')">📋 My Appointments</button>
         </div>
 
-        <!-- Book Appointment Tab -->
         <div id="book-appointment" class="tab-content active">
             <h2 class="section-title">Book New Appointment</h2>
             <form method="POST" action="/appointments" onsubmit="return validateAppointment()">
@@ -340,7 +340,6 @@
             </form>
         </div>
 
-        <!-- My Appointments Tab -->
         <div id="my-appointments" class="tab-content">
             <h2 class="section-title">My Appointments</h2>
             {% if appointments %}
@@ -393,7 +392,7 @@
     </div>
 
     <script>
-        function showTab(tabName) {
+        function showTab(event, tabName) {
             const tabs = document.querySelectorAll('.tab-content');
             const buttons = document.querySelectorAll('.tab-button');
             
@@ -401,7 +400,17 @@
             buttons.forEach(btn => btn.classList.remove('active'));
             
             document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
+            
+            // FIX: Use event.currentTarget for reliable button activation
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            } else {
+                // Fallback for direct calls
+                const fallbackButton = document.querySelector(`.tab-button[onclick*="'${tabName}'"]`);
+                if (fallbackButton) {
+                    fallbackButton.classList.add('active');
+                }
+            }
         }
 
         function validateAppointment() {
@@ -427,11 +436,28 @@
             return true;
         }
 
-        // Set minimum date to today
+        // Set minimum date to today and initialize tab state
         document.addEventListener('DOMContentLoaded', function() {
             const dateInput = document.getElementById('date');
             const today = new Date().toISOString().split('T')[0];
             dateInput.setAttribute('min', today);
+
+            // Re-bind onclick to pass the event argument correctly
+            document.querySelectorAll('.tabs .tab-button').forEach(btn => {
+                const tabNameMatch = btn.getAttribute('onclick').match(/'([^']+)'/);
+                if (tabNameMatch && tabNameMatch[1]) {
+                    btn.setAttribute('onclick', `showTab(event, '${tabNameMatch[1]}')`);
+                }
+            });
+            
+            // Ensure the first tab is shown correctly on load
+            const activeTabButton = document.querySelector('.tabs .tab-button.active');
+            if (activeTabButton) {
+                const tabNameMatch = activeTabButton.getAttribute('onclick').match(/'([^']+)'/);
+                if (tabNameMatch && tabNameMatch[1]) {
+                     document.getElementById(tabNameMatch[1]).classList.add('active');
+                }
+            }
         });
     </script>
 </body>
