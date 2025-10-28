@@ -8,7 +8,6 @@ from datetime import datetime
 # --- PostgreSQL Libraries ---
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from sqlalchemy import or_
 
 # --- CONFIGURATION & INITIALIZATION ---
 
@@ -30,7 +29,7 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 # --- DATABASE CONNECTION & SETUP FUNCTIONS ---
 
-# Fix Render’s "postgres://" format for psycopg2
+# Fix Render's "postgres://" format for psycopg2
 if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
@@ -186,6 +185,7 @@ def register():
             c.execute("SELECT id FROM users WHERE email = %s", (email,))
             if c.fetchone():
                  flash('Email already exists!', 'danger')
+                 conn.close()
                  return redirect(url_for('register'))
                  
             approved = 1 if role == 'patient' else 0
@@ -198,11 +198,15 @@ def register():
             flash('Registration successful! Please login.', 'success')
             if role == 'doctor':
                 flash('Your account will be activated after admin approval.', 'info')
+            conn.close()
             return redirect(url_for('login'))
         except psycopg2.IntegrityError:
             conn.rollback()
             flash('Email already exists!', 'danger')
-        finally:
+            conn.close()
+        except Exception as e:
+            conn.rollback()
+            flash(f'Registration error: {str(e)}', 'danger')
             conn.close()
     
     return render_template('register.html')
@@ -223,7 +227,6 @@ def admin_dashboard():
     conn = get_db()
     c = conn.cursor()
     
-    # FIX: Separate execute and fetchall()
     c.execute('SELECT * FROM users WHERE role = %s', ('doctor',))
     doctors = c.fetchall()
     
@@ -290,7 +293,7 @@ def doctor_dashboard():
                  JOIN users p ON a.patient_id = p.id 
                  WHERE a.doctor_id = %s 
                  ORDER BY a.date DESC''', (doctor_id,))
-    appointments = c.fetchall() # FIX
+    appointments = c.fetchall()
     conn.close()
     
     return render_template('doctor_dashboard.html', appointments=appointments)
@@ -319,13 +322,13 @@ def patient_dashboard():
     conn = get_db()
     c = conn.cursor()
     c.execute('SELECT * FROM users WHERE role = %s AND approved = 1', ('doctor',))
-    doctors = c.fetchall() # FIX
+    doctors = c.fetchall()
     c.execute('''SELECT a.*, d.name as doctor_name, d.specialization 
                  FROM appointments a 
                  JOIN users d ON a.doctor_id = d.id 
                  WHERE a.patient_id = %s 
                  ORDER BY a.date DESC''', (patient_id,))
-    appointments = c.fetchall() # FIX
+    appointments = c.fetchall()
     conn.close()
     
     return render_template('patient_dashboard.html', doctors=doctors, appointments=appointments)
@@ -346,51 +349,65 @@ def appointments():
         time = request.form['time']
         reason = request.form['reason']
         
-        conn = get_db()
-        c = conn.cursor()
-        c.execute(
-            "INSERT INTO appointments (patient_id, doctor_id, date, time, reason) VALUES (%s, %s, %s, %s, %s)",
-            (patient_id, doctor_id, date, time, reason)
-        )
-        conn.commit()
-        conn.close()
-        flash('Appointment booked successfully!', 'success')
-        return redirect(url_for('appointments'))
+        try:
+            conn = get_db()
+            c = conn.cursor()
+            c.execute(
+                "INSERT INTO appointments (patient_id, doctor_id, date, time, reason) VALUES (%s, %s, %s, %s, %s)",
+                (patient_id, doctor_id, date, time, reason)
+            )
+            conn.commit()
+            conn.close()
+            flash('Appointment booked successfully!', 'success')
+            return redirect(url_for('appointments'))
+        except Exception as e:
+            print(f"Error booking appointment: {e}")
+            flash(f'Error booking appointment: {str(e)}', 'danger')
+            return redirect(url_for('appointments'))
     
     # GET request - show appointments page
     conn = get_db()
     c = conn.cursor()
     
-    if role == 'patient':
-        c.execute('''SELECT a.*, d.name as doctor_name, d.specialization 
-                     FROM appointments a 
-                     JOIN users d ON a.doctor_id = d.id 
-                     WHERE a.patient_id = %s 
-                     ORDER BY a.date DESC, a.time DESC''', (user_id,))
-        appointments_list = c.fetchall() # FIX
-        doctors = c.execute('SELECT * FROM users WHERE role = %s AND approved = 1', ('doctor',)).fetchall() # FIX
-        conn.close()
-        return render_template('appointments.html', appointments=appointments_list, doctors=doctors)
-    
-    elif role == 'doctor':
-        c.execute('''SELECT a.*, p.name as patient_name, p.contact 
-                     FROM appointments a 
-                     JOIN users p ON a.patient_id = p.id 
-                     WHERE a.doctor_id = %s 
-                     ORDER BY a.date DESC, a.time DESC''', (user_id,))
-        appointments_list = c.fetchall() # FIX
-        conn.close()
-        return render_template('appointments.html', appointments=appointments_list)
+    try:
+        if role == 'patient':
+            c.execute('''SELECT a.*, d.name as doctor_name, d.specialization 
+                         FROM appointments a 
+                         JOIN users d ON a.doctor_id = d.id 
+                         WHERE a.patient_id = %s 
+                         ORDER BY a.date DESC, a.time DESC''', (user_id,))
+            appointments_list = c.fetchall()
+            
+            # FIX: Execute separate query for doctors
+            c.execute('SELECT * FROM users WHERE role = %s AND approved = 1', ('doctor',))
+            doctors = c.fetchall()
+            conn.close()
+            return render_template('appointments.html', appointments=appointments_list, doctors=doctors)
         
-    else:  # admin
-        c.execute('''SELECT a.*, p.name as patient_name, d.name as doctor_name 
-                     FROM appointments a 
-                     JOIN users p ON a.patient_id = p.id 
-                     JOIN users d ON a.doctor_id = d.id 
-                     ORDER BY a.date DESC, a.time DESC''')
-        appointments_list = c.fetchall() # FIX
+        elif role == 'doctor':
+            c.execute('''SELECT a.*, p.name as patient_name, p.contact 
+                         FROM appointments a 
+                         JOIN users p ON a.patient_id = p.id 
+                         WHERE a.doctor_id = %s 
+                         ORDER BY a.date DESC, a.time DESC''', (user_id,))
+            appointments_list = c.fetchall()
+            conn.close()
+            return render_template('appointments.html', appointments=appointments_list)
+            
+        else:  # admin
+            c.execute('''SELECT a.*, p.name as patient_name, d.name as doctor_name 
+                         FROM appointments a 
+                         JOIN users p ON a.patient_id = p.id 
+                         JOIN users d ON a.doctor_id = d.id 
+                         ORDER BY a.date DESC, a.time DESC''')
+            appointments_list = c.fetchall()
+            conn.close()
+            return render_template('appointments.html', appointments=appointments_list)
+    except Exception as e:
         conn.close()
-        return render_template('appointments.html', appointments=appointments_list)
+        print(f"Error fetching appointments: {e}")
+        flash(f'Error loading appointments: {str(e)}', 'danger')
+        return redirect(url_for('patient_dashboard'))
 
 # Patient cancel appointment route
 @app.route('/patient/cancel_appointment/<int:appointment_id>')
@@ -402,19 +419,25 @@ def cancel_appointment(appointment_id):
     conn = get_db()
     c = conn.cursor()
     
-    # Verify the appointment belongs to the logged-in patient
-    c.execute('SELECT id FROM appointments WHERE id = %s AND patient_id = %s', 
-              (appointment_id, session['user_id']))
-    appointment = c.fetchone()
+    try:
+        # Verify the appointment belongs to the logged-in patient
+        c.execute('SELECT id FROM appointments WHERE id = %s AND patient_id = %s', 
+                  (appointment_id, session['user_id']))
+        appointment = c.fetchone()
+        
+        if appointment:
+            c.execute('UPDATE appointments SET status = %s WHERE id = %s', ('Cancelled', appointment_id))
+            conn.commit()
+            flash('Appointment cancelled successfully!', 'success')
+        else:
+            flash('Appointment not found or access denied!', 'danger')
+        
+        conn.close()
+    except Exception as e:
+        conn.close()
+        print(f"Error cancelling appointment: {e}")
+        flash(f'Error cancelling appointment: {str(e)}', 'danger')
     
-    if appointment:
-        c.execute('UPDATE appointments SET status = %s WHERE id = %s', ('Cancelled', appointment_id))
-        conn.commit()
-        flash('Appointment cancelled successfully!', 'success')
-    else:
-        flash('Appointment not found or access denied!', 'danger')
-    
-    conn.close()
     return redirect(url_for('appointments'))
 
 # Medical Records Routes
@@ -428,38 +451,46 @@ def medical_records():
     conn = get_db()
     c = conn.cursor()
     
-    if role == 'patient':
-        c.execute('''SELECT m.*, d.name as doctor_name 
-                     FROM medical_records m 
-                     JOIN users d ON m.doctor_id = d.id 
-                     WHERE m.patient_id = %s 
-                     ORDER BY m.date DESC''', (user_id,))
-        records = c.fetchall() # FIX
-        
-    elif role == 'doctor':
-        c.execute('''SELECT m.*, p.name as patient_name 
-                     FROM medical_records m 
-                     JOIN users p ON m.patient_id = p.id 
-                     WHERE m.doctor_id = %s 
-                     ORDER BY m.date DESC''', (user_id,))
-        records = c.fetchall() # FIX
-        c.execute('''SELECT DISTINCT p.* FROM users p 
-                     JOIN appointments a ON p.id = a.patient_id 
-                     WHERE a.doctor_id = %s''', (user_id,))
-        patients = c.fetchall() # FIX
+    try:
+        if role == 'patient':
+            c.execute('''SELECT m.*, d.name as doctor_name 
+                         FROM medical_records m 
+                         JOIN users d ON m.doctor_id = d.id 
+                         WHERE m.patient_id = %s 
+                         ORDER BY m.date DESC''', (user_id,))
+            records = c.fetchall()
+            conn.close()
+            return render_template('medical_records.html', records=records)
+            
+        elif role == 'doctor':
+            c.execute('''SELECT m.*, p.name as patient_name 
+                         FROM medical_records m 
+                         JOIN users p ON m.patient_id = p.id 
+                         WHERE m.doctor_id = %s 
+                         ORDER BY m.date DESC''', (user_id,))
+            records = c.fetchall()
+            
+            c.execute('''SELECT DISTINCT p.* FROM users p 
+                         JOIN appointments a ON p.id = a.patient_id 
+                         WHERE a.doctor_id = %s''', (user_id,))
+            patients = c.fetchall()
+            conn.close()
+            return render_template('medical_records.html', records=records, patients=patients)
+            
+        else: # admin
+            c.execute('''SELECT m.*, p.name as patient_name, d.name as doctor_name 
+                         FROM medical_records m 
+                         JOIN users p ON m.patient_id = p.id 
+                         JOIN users d ON m.doctor_id = d.id 
+                         ORDER BY m.date DESC''')
+            records = c.fetchall()
+            conn.close()
+            return render_template('medical_records.html', records=records)
+    except Exception as e:
         conn.close()
-        return render_template('medical_records.html', records=records, patients=patients)
-        
-    else: # admin
-        c.execute('''SELECT m.*, p.name as patient_name, d.name as doctor_name 
-                     FROM medical_records m 
-                     JOIN users p ON m.patient_id = p.id 
-                     JOIN users d ON m.doctor_id = d.id 
-                     ORDER BY m.date DESC''')
-        records = c.fetchall() # FIX
-    
-    conn.close()
-    return render_template('medical_records.html', records=records)
+        print(f"Error fetching medical records: {e}")
+        flash(f'Error loading medical records: {str(e)}', 'danger')
+        return redirect(url_for('patient_dashboard'))
 
 @app.route('/add_medical_record', methods=['POST'])
 def add_medical_record():
@@ -477,18 +508,25 @@ def add_medical_record():
         file = request.files['report']
         if file.filename != '':
             filename = secure_filename(file.filename)
-            os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             report_filename = filename
     
     conn = get_db()
     c = conn.cursor()
-    c.execute(
-        "INSERT INTO medical_records (patient_id, doctor_id, diagnosis, prescription, report_filename, date) VALUES (%s, %s, %s, %s, %s, %s)",
-        (patient_id, doctor_id, diagnosis, prescription, report_filename, date)
-    )
-    conn.commit()
-    conn.close()
-    flash('Medical record added successfully!', 'success')
+    try:
+        c.execute(
+            "INSERT INTO medical_records (patient_id, doctor_id, diagnosis, prescription, report_filename, date) VALUES (%s, %s, %s, %s, %s, %s)",
+            (patient_id, doctor_id, diagnosis, prescription, report_filename, date)
+        )
+        conn.commit()
+        flash('Medical record added successfully!', 'success')
+    except Exception as e:
+        conn.rollback()
+        print(f"Error adding medical record: {e}")
+        flash(f'Error adding medical record: {str(e)}', 'danger')
+    finally:
+        conn.close()
+    
     return redirect(url_for('medical_records'))
 
 # Billing Routes
@@ -502,36 +540,47 @@ def billing():
     conn = get_db()
     c = conn.cursor()
     
-    if role == 'patient':
-        c.execute('''SELECT b.*, d.name as doctor_name 
-                     FROM billing b 
-                     JOIN users d ON b.doctor_id = d.id 
-                     WHERE b.patient_id = %s 
-                     ORDER BY b.date DESC''', (user_id,))
-        bills = c.fetchall() # FIX
-                             
-    elif role == 'doctor':
-        c.execute('''SELECT b.*, p.name as patient_name 
-                     FROM billing b 
-                     JOIN users p ON b.patient_id = p.id 
-                     WHERE b.doctor_id = %s 
-                     ORDER BY b.date DESC''', (user_id,))
-        bills = c.fetchall() # FIX
-                             
-    else: # admin
-        c.execute('''SELECT b.*, p.name as patient_name, d.name as doctor_name 
-                     FROM billing b 
-                     JOIN users p ON b.patient_id = p.id 
-                     JOIN users d ON b.doctor_id = d.id 
-                     ORDER BY b.date DESC''')
-        bills = c.fetchall() # FIX
-        patients = c.execute('SELECT * FROM users WHERE role = %s', ('patient',)).fetchall() # FIX
-        doctors = c.execute('SELECT * FROM users WHERE role = %s AND approved = 1', ('doctor',)).fetchall() # FIX
+    try:
+        if role == 'patient':
+            c.execute('''SELECT b.*, d.name as doctor_name 
+                         FROM billing b 
+                         JOIN users d ON b.doctor_id = d.id 
+                         WHERE b.patient_id = %s 
+                         ORDER BY b.date DESC''', (user_id,))
+            bills = c.fetchall()
+            conn.close()
+            return render_template('billing.html', bills=bills)
+                                 
+        elif role == 'doctor':
+            c.execute('''SELECT b.*, p.name as patient_name 
+                         FROM billing b 
+                         JOIN users p ON b.patient_id = p.id 
+                         WHERE b.doctor_id = %s 
+                         ORDER BY b.date DESC''', (user_id,))
+            bills = c.fetchall()
+            conn.close()
+            return render_template('billing.html', bills=bills)
+                                 
+        else: # admin
+            c.execute('''SELECT b.*, p.name as patient_name, d.name as doctor_name 
+                         FROM billing b 
+                         JOIN users p ON b.patient_id = p.id 
+                         JOIN users d ON b.doctor_id = d.id 
+                         ORDER BY b.date DESC''')
+            bills = c.fetchall()
+            
+            c.execute('SELECT * FROM users WHERE role = %s', ('patient',))
+            patients = c.fetchall()
+            
+            c.execute('SELECT * FROM users WHERE role = %s AND approved = 1', ('doctor',))
+            doctors = c.fetchall()
+            conn.close()
+            return render_template('billing.html', bills=bills, patients=patients, doctors=doctors)
+    except Exception as e:
         conn.close()
-        return render_template('billing.html', bills=bills, patients=patients, doctors=doctors)
-    
-    conn.close()
-    return render_template('billing.html', bills=bills)
+        print(f"Error fetching billing: {e}")
+        flash(f'Error loading billing: {str(e)}', 'danger')
+        return redirect(url_for('patient_dashboard'))
 
 @app.route('/add_bill', methods=['POST'])
 def add_bill():
@@ -546,13 +595,20 @@ def add_bill():
     
     conn = get_db()
     c = conn.cursor()
-    c.execute(
-        "INSERT INTO billing (patient_id, doctor_id, description, total_amount, date) VALUES (%s, %s, %s, %s, %s)",
-        (patient_id, doctor_id, description, total_amount, date)
-    )
-    conn.commit()
-    conn.close()
-    flash('Bill created successfully!', 'success')
+    try:
+        c.execute(
+            "INSERT INTO billing (patient_id, doctor_id, description, total_amount, date) VALUES (%s, %s, %s, %s, %s)",
+            (patient_id, doctor_id, description, total_amount, date)
+        )
+        conn.commit()
+        flash('Bill created successfully!', 'success')
+    except Exception as e:
+        conn.rollback()
+        print(f"Error adding bill: {e}")
+        flash(f'Error creating bill: {str(e)}', 'danger')
+    finally:
+        conn.close()
+    
     return redirect(url_for('billing'))
 
 @app.route('/update_bill_status/<int:bill_id>/<status>')
@@ -562,10 +618,17 @@ def update_bill_status(bill_id, status):
     
     conn = get_db()
     c = conn.cursor()
-    c.execute('UPDATE billing SET status = %s WHERE id = %s', (status, bill_id))
-    conn.commit()
-    conn.close()
-    flash('Bill status updated!', 'success')
+    try:
+        c.execute('UPDATE billing SET status = %s WHERE id = %s', (status, bill_id))
+        conn.commit()
+        flash('Bill status updated!', 'success')
+    except Exception as e:
+        conn.rollback()
+        print(f"Error updating bill: {e}")
+        flash(f'Error updating bill status: {str(e)}', 'danger')
+    finally:
+        conn.close()
+    
     return redirect(url_for('billing'))
 
 if __name__ == '__main__':
