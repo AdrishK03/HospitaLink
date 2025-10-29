@@ -1,164 +1,43 @@
+"""
+app.py
+------
+Main Flask application for Hospital Management System.
+
+This is the entry point of the application.
+Run this file to start the web server: python app.py
+"""
+
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import os
-from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from datetime import datetime
-
-# --- PostgreSQL Libraries ---
 import psycopg2
-from psycopg2.extras import RealDictCursor
 
-# --- CONFIGURATION & INITIALIZATION ---
+# Import database functions
+from database import get_db, init_db, ADMIN_EMAIL
 
+# Flask Configuration
 app = Flask(__name__)
-load_dotenv() 
-
-# IMPORTANT: Read variables from environment
 app.secret_key = os.environ.get('SECRET_KEY', 'default_secret_key_for_safety')
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 # 16MB max file size
-
-# Read database URL from environment
-DATABASE_URL = os.environ.get("DATABASE_URL")
-ADMIN_EMAIL = 'admin@hospital.com'
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
 # Ensure upload folder exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 
-# --- DATABASE CONNECTION & SETUP FUNCTIONS ---
-
-# Fix Render's "postgres://" format for psycopg2
-if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
-    DATABASE_URL = DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
-
-
-def get_db():
-    """Establish and return a new PostgreSQL database connection."""
-    if not DATABASE_URL:
-        raise EnvironmentError("DATABASE_URL not set. Cannot connect to PostgreSQL.")
-        
-    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
-    return conn
-
-
-def fix_appointment_status():
-    """Update all appointments with NULL/None status to 'Pending' - Run on startup"""
-    try:
-        conn = get_db()
-        c = conn.cursor()
-        
-        # Update NULL/empty status to 'Pending'
-        c.execute("UPDATE appointments SET status = 'Pending' WHERE status IS NULL OR status = ''")
-        rows_affected = c.rowcount
-        
-        conn.commit()
-        conn.close()
-        
-        if rows_affected > 0:
-            print(f"✅ Fixed {rows_affected} appointments with NULL/None status")
-        return True
-    except Exception as e:
-        print(f"⚠️ Error fixing appointment statuses: {e}")
-        return False
-
-
-def init_db():
-    """Initialize all tables and create default admin if missing. Executed by entrypoint.sh or startup."""
-    conn = get_db()
-    c = conn.cursor()
-
-    # Users Table
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            id SERIAL PRIMARY KEY,
-            name TEXT NOT NULL,
-            email TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL,
-            role TEXT NOT NULL,
-            specialization TEXT,
-            contact TEXT,
-            approved INTEGER DEFAULT 0
-        )
-    ''')
-
-    # Appointments Table
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS appointments (
-            id SERIAL PRIMARY KEY,
-            patient_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-            doctor_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-            date TEXT NOT NULL,
-            time TEXT NOT NULL,
-            reason TEXT,
-            status TEXT DEFAULT 'Pending'
-        )
-    ''')
-
-    # Medical Records Table
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS medical_records (
-            id SERIAL PRIMARY KEY,
-            patient_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-            doctor_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-            diagnosis TEXT,
-            prescription TEXT,
-            report_filename TEXT,
-            date TEXT NOT NULL
-        )
-    ''')
-
-    # Billing Table
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS billing (
-            id SERIAL PRIMARY KEY,
-            patient_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-            doctor_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-            appointment_id INTEGER,
-            description TEXT,
-            total_amount REAL NOT NULL,
-            status TEXT DEFAULT 'Unpaid',
-            date TEXT NOT NULL
-        )
-    ''')
-
-    # Create Default Admin (if not exists)
-    c.execute("SELECT id FROM users WHERE email = %s", (ADMIN_EMAIL,))
-    if not c.fetchone():
-        admin_password = generate_password_hash('admin123')
-        c.execute(
-            "INSERT INTO users (name, email, password, role, approved) VALUES (%s, %s, %s, %s, %s)",
-            ('Admin', ADMIN_EMAIL, admin_password, 'admin', 1)
-        )
-
-    conn.commit()
-    conn.close()
-    
-    # Fix any existing appointments with NULL status
-    print("🔧 Checking for appointments with NULL status...")
-    fix_appointment_status()
-
-# ----------------------------------------------------
-# This function is added only to satisfy the incorrect 
-# external call from the deployment log (if it exists).
-# The actual initialization should use init_db().
-# ----------------------------------------------------
-def setup_database():
-    """Wrapper function to catch incorrect deployment call."""
-    print("⚠️ WARNING: setup_database() called. Redirecting to init_db().")
-    init_db()
-# ----------------------------------------------------
-
-
-# --- ROUTES ---
+# ==================== AUTHENTICATION ROUTES ====================
 
 @app.route('/')
 def index():
+    """Redirect to login page"""
     return redirect(url_for('login'))
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    """Handle user login"""
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
@@ -170,12 +49,9 @@ def login():
             c.execute('SELECT * FROM users WHERE email = %s AND role = %s', (email, role))
             user = c.fetchone()
             conn.close()
-        except EnvironmentError:
-            flash('Database configuration error. Contact admin.', 'danger')
-            return redirect(url_for('login'))
         except Exception as e:
-            print(f"DB Runtime Error on login: {e}")
-            flash('Internal server error during login. Check server logs.', 'danger')
+            print(f"DB Error on login: {e}")
+            flash('Database error. Please try again.', 'danger')
             return redirect(url_for('login'))
         
         if user and check_password_hash(user['password'], password):
@@ -198,8 +74,10 @@ def login():
     
     return render_template('login.html')
 
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    """Handle user registration"""
     if request.method == 'POST':
         name = request.form['name']
         email = request.form['email']
@@ -208,11 +86,10 @@ def register():
         contact = request.form['contact']
         specialization = request.form.get('specialization', '')
         
-        # --- FIX: Prevent registering as Admin ---
+        # Prevent admin registration
         if role == 'admin' or email == ADMIN_EMAIL:
             flash('Cannot register with the admin role or admin email.', 'danger')
             return redirect(url_for('register'))
-        # ----------------------------------------
         
         conn = get_db()
         c = conn.cursor()
@@ -223,7 +100,7 @@ def register():
                 flash('Email already exists!', 'danger')
                 conn.close()
                 return redirect(url_for('register'))
-                
+            
             approved = 1 if role == 'patient' else 0
             
             c.execute(
@@ -247,15 +124,20 @@ def register():
     
     return render_template('register.html')
 
+
 @app.route('/logout')
 def logout():
+    """Handle user logout"""
     session.clear()
     flash('Logged out successfully!', 'success')
     return redirect(url_for('login'))
 
-# Admin Routes
+
+# ==================== ADMIN ROUTES ====================
+
 @app.route('/admin/dashboard')
 def admin_dashboard():
+    """Admin dashboard"""
     if 'user_id' not in session or session['user_role'] != 'admin':
         flash('Access denied!', 'danger')
         return redirect(url_for('login'))
@@ -275,7 +157,7 @@ def admin_dashboard():
                  JOIN users d ON a.doctor_id = d.id 
                  ORDER BY a.date DESC''')
     appointments = c.fetchall()
-                        
+    
     c.execute('''SELECT b.*, p.name as patient_name, d.name as doctor_name 
                  FROM billing b 
                  JOIN users p ON b.patient_id = p.id 
@@ -288,8 +170,10 @@ def admin_dashboard():
     return render_template('admin_dashboard.html', doctors=doctors, patients=patients, 
                            appointments=appointments, billing=billing)
 
+
 @app.route('/admin/approve_doctor/<int:doctor_id>')
 def approve_doctor(doctor_id):
+    """Approve doctor registration"""
     if 'user_id' not in session or session['user_role'] != 'admin':
         return redirect(url_for('login'))
     
@@ -301,8 +185,10 @@ def approve_doctor(doctor_id):
     flash('Doctor approved successfully!', 'success')
     return redirect(url_for('admin_dashboard'))
 
+
 @app.route('/admin/delete_user/<int:user_id>')
 def delete_user(user_id):
+    """Delete user account"""
     if 'user_id' not in session or session['user_role'] != 'admin':
         return redirect(url_for('login'))
     
@@ -314,9 +200,12 @@ def delete_user(user_id):
     flash('User deleted successfully!', 'success')
     return redirect(url_for('admin_dashboard'))
 
-# Doctor Routes
+
+# ==================== DOCTOR ROUTES ====================
+
 @app.route('/doctor/dashboard')
 def doctor_dashboard():
+    """Doctor dashboard"""
     if 'user_id' not in session or session['user_role'] != 'doctor':
         flash('Access denied!', 'danger')
         return redirect(url_for('login'))
@@ -334,8 +223,10 @@ def doctor_dashboard():
     
     return render_template('doctor_dashboard.html', appointments=appointments)
 
+
 @app.route('/doctor/update_appointment/<int:appointment_id>/<status>')
 def update_appointment_status(appointment_id, status):
+    """Update appointment status (Complete/Cancel)"""
     if 'user_id' not in session or session['user_role'] != 'doctor':
         return redirect(url_for('login'))
     
@@ -347,9 +238,12 @@ def update_appointment_status(appointment_id, status):
     flash(f'Appointment {status.lower()} successfully!', 'success')
     return redirect(url_for('doctor_dashboard'))
 
-# Patient Routes
+
+# ==================== PATIENT ROUTES ====================
+
 @app.route('/patient/dashboard')
 def patient_dashboard():
+    """Patient dashboard"""
     if 'user_id' not in session or session['user_role'] != 'patient':
         flash('Access denied!', 'danger')
         return redirect(url_for('login'))
@@ -369,9 +263,51 @@ def patient_dashboard():
     
     return render_template('patient_dashboard.html', doctors=doctors, appointments=appointments)
 
-# Appointments Routes - FIXED
+
+@app.route('/patient/cancel_appointment/<int:appointment_id>')
+def cancel_appointment(appointment_id):
+    """Patient cancel appointment"""
+    if 'user_id' not in session or session['user_role'] != 'patient':
+        flash('Access denied!', 'danger')
+        return redirect(url_for('login'))
+    
+    conn = None
+    try:
+        conn = get_db()
+        c = conn.cursor()
+        
+        # Verify ownership
+        c.execute('SELECT id FROM appointments WHERE id = %s AND patient_id = %s', 
+                  (appointment_id, session['user_id']))
+        appointment = c.fetchone()
+        
+        if appointment:
+            c.execute('UPDATE appointments SET status = %s WHERE id = %s', ('Cancelled', appointment_id))
+            conn.commit()
+            flash('Appointment cancelled successfully!', 'success')
+        else:
+            flash('Appointment not found or access denied!', 'danger')
+        
+        conn.close()
+    except Exception as e:
+        if conn:
+            conn.close()
+        print(f"Error cancelling appointment: {e}")
+        flash(f'Error cancelling appointment: {str(e)}', 'danger')
+    
+    # Smart redirect based on referrer
+    referrer = request.referrer
+    if referrer and ('/appointments' in referrer or '/patient/dashboard' in referrer):
+        return redirect(referrer)
+    else:
+        return redirect(url_for('patient_dashboard'))
+
+
+# ==================== APPOINTMENTS ROUTES ====================
+
 @app.route('/appointments', methods=['GET', 'POST'])
 def appointments():
+    """View and book appointments"""
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
@@ -389,7 +325,7 @@ def appointments():
         try:
             conn = get_db()
             c = conn.cursor()
-            # FIX: Explicitly set status to 'Pending' to avoid NULL/None values
+            # Explicitly set status to 'Pending'
             c.execute(
                 "INSERT INTO appointments (patient_id, doctor_id, date, time, reason, status) VALUES (%s, %s, %s, %s, %s, %s)",
                 (patient_id, doctor_id, date, time, reason, 'Pending')
@@ -419,7 +355,6 @@ def appointments():
                           ORDER BY a.date DESC, a.time DESC''', (user_id,))
             appointments_list = c.fetchall()
             
-            # FIX: Always fetch doctors list for patients
             c.execute('SELECT * FROM users WHERE role = %s AND approved = 1', ('doctor',))
             doctors = c.fetchall()
             conn.close()
@@ -435,7 +370,7 @@ def appointments():
             conn.close()
             return render_template('appointments.html', appointments=appointments_list)
             
-        else: # admin
+        else:  # admin
             c.execute('''SELECT a.*, p.name as patient_name, d.name as doctor_name 
                           FROM appointments a 
                           JOIN users p ON a.patient_id = p.id 
@@ -449,6 +384,7 @@ def appointments():
             conn.close()
         print(f"Error fetching appointments: {e}")
         flash(f'Error loading appointments: {str(e)}', 'danger')
+        
         if role == 'patient':
             return redirect(url_for('patient_dashboard'))
         elif role == 'doctor':
@@ -456,48 +392,12 @@ def appointments():
         else:
             return redirect(url_for('admin_dashboard'))
 
-# Patient cancel appointment route - FIXED
-@app.route('/patient/cancel_appointment/<int:appointment_id>')
-def cancel_appointment(appointment_id):
-    if 'user_id' not in session or session['user_role'] != 'patient':
-        flash('Access denied!', 'danger')
-        return redirect(url_for('login'))
-    
-    conn = None
-    try:
-        conn = get_db()
-        c = conn.cursor()
-        
-        # Verify the appointment belongs to the logged-in patient
-        c.execute('SELECT id FROM appointments WHERE id = %s AND patient_id = %s', 
-                  (appointment_id, session['user_id']))
-        appointment = c.fetchone()
-        
-        if appointment:
-            c.execute('UPDATE appointments SET status = %s WHERE id = %s', ('Cancelled', appointment_id))
-            conn.commit()
-            flash('Appointment cancelled successfully!', 'success')
-        else:
-            flash('Appointment not found or access denied!', 'danger')
-        
-        conn.close()
-    except Exception as e:
-        if conn:
-            conn.close()
-        print(f"Error cancelling appointment: {e}")
-        flash(f'Error cancelling appointment: {str(e)}', 'danger')
-    
-    # FIX: Check if request came from appointments page or dashboard
-    referrer = request.referrer
-    if referrer and ('/appointments' in referrer or '/patient/dashboard' in referrer):
-        return redirect(referrer)
-    else:
-        # Default fallback
-        return redirect(url_for('patient_dashboard'))
 
-# Medical Records Routes
+# ==================== MEDICAL RECORDS ROUTES ====================
+
 @app.route('/medical_records')
 def medical_records():
+    """View medical records"""
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
@@ -534,7 +434,7 @@ def medical_records():
             conn.close()
             return render_template('medical_records.html', records=records, patients=patients)
             
-        else: # admin
+        else:  # admin
             c.execute('''SELECT m.*, p.name as patient_name, d.name as doctor_name 
                           FROM medical_records m 
                           JOIN users p ON m.patient_id = p.id 
@@ -550,8 +450,10 @@ def medical_records():
         flash(f'Error loading medical records: {str(e)}', 'danger')
         return redirect(url_for('patient_dashboard'))
 
+
 @app.route('/add_medical_record', methods=['POST'])
 def add_medical_record():
+    """Add new medical record"""
     if 'user_id' not in session or session['user_role'] != 'doctor':
         return redirect(url_for('login'))
     
@@ -590,9 +492,12 @@ def add_medical_record():
     
     return redirect(url_for('medical_records'))
 
-# Billing Routes
+
+# ==================== BILLING ROUTES ====================
+
 @app.route('/billing')
 def billing():
+    """View billing records"""
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
@@ -624,7 +529,7 @@ def billing():
             conn.close()
             return render_template('billing.html', bills=bills)
                          
-        else: # admin
+        else:  # admin
             c.execute('''SELECT b.*, p.name as patient_name, d.name as doctor_name 
                           FROM billing b 
                           JOIN users p ON b.patient_id = p.id 
@@ -646,8 +551,10 @@ def billing():
         flash(f'Error loading billing: {str(e)}', 'danger')
         return redirect(url_for('patient_dashboard'))
 
+
 @app.route('/add_bill', methods=['POST'])
 def add_bill():
+    """Create new bill"""
     if 'user_id' not in session or session['user_role'] != 'admin':
         return redirect(url_for('login'))
     
@@ -678,8 +585,10 @@ def add_bill():
     
     return redirect(url_for('billing'))
 
+
 @app.route('/update_bill_status/<int:bill_id>/<status>')
 def update_bill_status(bill_id, status):
+    """Update bill payment status"""
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
@@ -701,16 +610,31 @@ def update_bill_status(bill_id, status):
     
     return redirect(url_for('billing'))
 
+
+# ==================== APPLICATION STARTUP ====================
+
 if __name__ == '__main__':
-    # Initialize DB for local testing
+    # Initialize database on startup
     try:
-        if DATABASE_URL:
-            print("🚀 Initializing database...")
-            init_db()
-            print("✅ Database initialized successfully!")
-        else:
-            print("⚠️ WARNING: DATABASE_URL not set. Running locally without DB initialization.")
-    except Exception as e:
-        print(f"❌ FATAL ERROR during local DB initialization: {e}")
+        print("\n" + "=" * 60)
+        print("🏥 Hospital Management System Starting...")
+        print("=" * 60)
         
+        DATABASE_URL = os.environ.get("DATABASE_URL")
+        
+        if DATABASE_URL:
+            init_db()  # Initialize database from database.py
+        else:
+            print("⚠️  WARNING: DATABASE_URL not set.")
+            print("   Running without database initialization.")
+            print("   Set DATABASE_URL environment variable for production.")
+        
+        print("\n✅ Application ready!")
+        print("🌐 Starting Flask server...\n")
+        
+    except Exception as e:
+        print(f"\n❌ FATAL ERROR during startup: {e}")
+        print("   Please check your database configuration.\n")
+    
+    # Start Flask application
     app.run(debug=True)
