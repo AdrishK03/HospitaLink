@@ -201,6 +201,93 @@ def delete_user(user_id):
     return redirect(url_for('admin_dashboard'))
 
 
+@app.route('/admin/update_doctor', methods=['POST'])
+def update_doctor():
+    """Update doctor details"""
+    if 'user_id' not in session or session['user_role'] != 'admin':
+        flash('Access denied!', 'danger')
+        return redirect(url_for('login'))
+    
+    user_id = request.form['user_id']
+    name = request.form['name']
+    email = request.form['email']
+    specialization = request.form['specialization']
+    contact = request.form['contact']
+    
+    conn = None
+    try:
+        conn = get_db()
+        c = conn.cursor()
+        
+        # Check if email is already taken by another user
+        c.execute('SELECT id FROM users WHERE email = %s AND id != %s', (email, user_id))
+        if c.fetchone():
+            flash('Email already exists for another user!', 'danger')
+            conn.close()
+            return redirect(url_for('admin_dashboard'))
+        
+        # Update doctor details
+        c.execute('''UPDATE users 
+                     SET name = %s, email = %s, specialization = %s, contact = %s 
+                     WHERE id = %s AND role = 'doctor' ''',
+                  (name, email, specialization, contact, user_id))
+        conn.commit()
+        flash('Doctor details updated successfully!', 'success')
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        print(f"Error updating doctor: {e}")
+        flash(f'Error updating doctor: {str(e)}', 'danger')
+    finally:
+        if conn:
+            conn.close()
+    
+    return redirect(url_for('admin_dashboard'))
+
+
+@app.route('/admin/update_patient', methods=['POST'])
+def update_patient():
+    """Update patient details"""
+    if 'user_id' not in session or session['user_role'] != 'admin':
+        flash('Access denied!', 'danger')
+        return redirect(url_for('login'))
+    
+    user_id = request.form['user_id']
+    name = request.form['name']
+    email = request.form['email']
+    contact = request.form['contact']
+    
+    conn = None
+    try:
+        conn = get_db()
+        c = conn.cursor()
+        
+        # Check if email is already taken by another user
+        c.execute('SELECT id FROM users WHERE email = %s AND id != %s', (email, user_id))
+        if c.fetchone():
+            flash('Email already exists for another user!', 'danger')
+            conn.close()
+            return redirect(url_for('admin_dashboard'))
+        
+        # Update patient details
+        c.execute('''UPDATE users 
+                     SET name = %s, email = %s, contact = %s 
+                     WHERE id = %s AND role = 'patient' ''',
+                  (name, email, contact, user_id))
+        conn.commit()
+        flash('Patient details updated successfully!', 'success')
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        print(f"Error updating patient: {e}")
+        flash(f'Error updating patient: {str(e)}', 'danger')
+    finally:
+        if conn:
+            conn.close()
+    
+    return redirect(url_for('admin_dashboard'))
+
+
 # ==================== DOCTOR ROUTES ====================
 
 @app.route('/doctor/dashboard')
