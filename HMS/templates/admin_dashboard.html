@@ -205,6 +205,15 @@
             background: #218838;
         }
 
+        .btn-edit {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #0056b3;
+        }
+
         .btn-delete {
             background: #dc3545;
             color: white;
@@ -236,6 +245,12 @@
             background-color: #fff3cd;
             color: #856404;
             border: 1px solid #ffeaa7;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
         }
 
         .no-data {
@@ -270,6 +285,125 @@
             opacity: 0.9;
         }
 
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #333;
+            font-size: 1.5em;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-save {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-cancel-modal {
+            padding: 12px 30px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: background 0.2s;
+        }
+
+        .btn-cancel-modal:hover {
+            background: #5a6268;
+        }
+
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
@@ -294,6 +428,11 @@
             th, td {
                 padding: 8px;
                 white-space: nowrap;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
             }
         }
     </style>
@@ -355,6 +494,7 @@
         <div id="doctors" class="tab-content active">
             <h2 class="section-title">Manage Doctors</h2>
             {% if doctors %}
+            <div style="overflow-x: auto;">
             <table>
                 <thead>
                     <tr>
@@ -386,12 +526,14 @@
                             {% if not doctor.approved %}
                                 <a href="/admin/approve_doctor/{{ doctor.id }}" class="btn btn-approve">Approve</a>
                             {% endif %}
+                            <button class="btn btn-edit" onclick='editDoctor({{ doctor.id }}, "{{ doctor.name }}", "{{ doctor.email }}", "{{ doctor.specialization }}", "{{ doctor.contact }}")'>Edit</button>
                             <a href="/admin/delete_user/{{ doctor.id }}" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete Dr. {{ doctor.name }}?')">Delete</a>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            </div>
             {% else %}
             <p class="no-data">📭 No doctors registered yet.</p>
             {% endif %}
@@ -401,6 +543,7 @@
         <div id="patients" class="tab-content">
             <h2 class="section-title">Manage Patients</h2>
             {% if patients %}
+            <div style="overflow-x: auto;">
             <table>
                 <thead>
                     <tr>
@@ -419,12 +562,14 @@
                         <td>{{ patient.email }}</td>
                         <td>{{ patient.contact }}</td>
                         <td>
+                            <button class="btn btn-edit" onclick='editPatient({{ patient.id }}, "{{ patient.name }}", "{{ patient.email }}", "{{ patient.contact }}")'>Edit</button>
                             <a href="/admin/delete_user/{{ patient.id }}" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete {{ patient.name }}?')">Delete</a>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            </div>
             {% else %}
             <p class="no-data">📭 No patients registered yet.</p>
             {% endif %}
@@ -434,6 +579,7 @@
         <div id="appointments" class="tab-content">
             <h2 class="section-title">All Appointments</h2>
             {% if appointments %}
+            <div style="overflow-x: auto;">
             <table>
                 <thead>
                     <tr>
@@ -468,6 +614,7 @@
                     {% endfor %}
                 </tbody>
             </table>
+            </div>
             {% else %}
             <p class="no-data">📭 No appointments found.</p>
             {% endif %}
@@ -477,6 +624,7 @@
         <div id="billing" class="tab-content">
             <h2 class="section-title">All Billing Records</h2>
             {% if billing %}
+            <div style="overflow-x: auto;">
             <table>
                 <thead>
                     <tr>
@@ -509,25 +657,171 @@
                     {% endfor %}
                 </tbody>
             </table>
+            </div>
             {% else %}
             <p class="no-data">📭 No billing records found.</p>
             {% endif %}
         </div>
     </div>
 
+    <!-- Edit Doctor Modal -->
+    <div id="editDoctorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>✏️ Edit Doctor Details</h2>
+                <span class="close" onclick="closeModal('editDoctorModal')">&times;</span>
+            </div>
+            <form action="/admin/update_doctor" method="POST" onsubmit="return validateDoctorForm()">
+                <input type="hidden" id="doctor_id" name="user_id">
+                
+                <div class="form-group">
+                    <label for="doctor_name">Full Name</label>
+                    <input type="text" id="doctor_name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="doctor_email">Email Address</label>
+                    <input type="email" id="doctor_email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="doctor_specialization">Specialization</label>
+                    <input type="text" id="doctor_specialization" name="specialization" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="doctor_contact">Contact Number</label>
+                    <input type="tel" id="doctor_contact" name="contact" required>
+                </div>
+
+                <button type="submit" class="btn-save">💾 Save Changes</button>
+                <button type="button" class="btn-cancel-modal" onclick="closeModal('editDoctorModal')">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Patient Modal -->
+    <div id="editPatientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>✏️ Edit Patient Details</h2>
+                <span class="close" onclick="closeModal('editPatientModal')">&times;</span>
+            </div>
+            <form action="/admin/update_patient" method="POST" onsubmit="return validatePatientForm()">
+                <input type="hidden" id="patient_id" name="user_id">
+                
+                <div class="form-group">
+                    <label for="patient_name">Full Name</label>
+                    <input type="text" id="patient_name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="patient_email">Email Address</label>
+                    <input type="email" id="patient_email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="patient_contact">Contact Number</label>
+                    <input type="tel" id="patient_contact" name="contact" required>
+                </div>
+
+                <button type="submit" class="btn-save">💾 Save Changes</button>
+                <button type="button" class="btn-cancel-modal" onclick="closeModal('editPatientModal')">Cancel</button>
+            </form>
+        </div>
+    </div>
+
     <script>
         function showTab(tabName) {
-            // Get all tab contents and buttons
             const tabs = document.querySelectorAll('.tab-content');
             const buttons = document.querySelectorAll('.tab-button');
             
-            // Remove active class from all
             tabs.forEach(tab => tab.classList.remove('active'));
             buttons.forEach(btn => btn.classList.remove('active'));
             
-            // Add active class to selected tab and button
             document.getElementById(tabName).classList.add('active');
             event.target.classList.add('active');
+        }
+
+        function editDoctor(id, name, email, specialization, contact) {
+            document.getElementById('doctor_id').value = id;
+            document.getElementById('doctor_name').value = name;
+            document.getElementById('doctor_email').value = email;
+            document.getElementById('doctor_specialization').value = specialization;
+            document.getElementById('doctor_contact').value = contact;
+            document.getElementById('editDoctorModal').style.display = 'block';
+        }
+
+        function editPatient(id, name, email, contact) {
+            document.getElementById('patient_id').value = id;
+            document.getElementById('patient_name').value = name;
+            document.getElementById('patient_email').value = email;
+            document.getElementById('patient_contact').value = contact;
+            document.getElementById('editPatientModal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function validateDoctorForm() {
+            const name = document.getElementById('doctor_name').value.trim();
+            const email = document.getElementById('doctor_email').value.trim();
+            const specialization = document.getElementById('doctor_specialization').value.trim();
+            const contact = document.getElementById('doctor_contact').value.trim();
+
+            if (!name || !email || !specialization || !contact) {
+                alert('Please fill in all fields');
+                return false;
+            }
+
+            if (!email.includes('@')) {
+                alert('Please enter a valid email address');
+                return false;
+            }
+
+            if (contact.length < 10) {
+                alert('Please enter a valid contact number');
+                return false;
+            }
+
+            return true;
+        }
+
+        function validatePatientForm() {
+            const name = document.getElementById('patient_name').value.trim();
+            const email = document.getElementById('patient_email').value.trim();
+            const contact = document.getElementById('patient_contact').value.trim();
+
+            if (!name || !email || !contact) {
+                alert('Please fill in all fields');
+                return false;
+            }
+
+            if (!email.includes('@')) {
+                alert('Please enter a valid email address');
+                return false;
+            }
+
+            if (contact.length < 10) {
+                alert('Please enter a valid contact number');
+                return false;
+            }
+
+            return true;
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const doctorModal = document.getElementById('editDoctorModal');
+            const patientModal = document.getElementById('editPatientModal');
+            
+            if (event.target == doctorModal) {
+                doctorModal.style.display = 'none';
+            }
+            if (event.target == patientModal) {
+                patientModal.style.display = 'none';
+            }
         }
     </script>
 </body>
