@@ -13,6 +13,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from datetime import datetime
 import psycopg2
+from psycopg2 import errors
 
 # Import database functions
 from database import get_db, init_db, ADMIN_EMAIL
@@ -188,16 +189,74 @@ def approve_doctor(doctor_id):
 
 @app.route('/admin/delete_user/<int:user_id>')
 def delete_user(user_id):
-    """Delete user account"""
+    """Delete user account with cascade handling"""
     if 'user_id' not in session or session['user_role'] != 'admin':
+        flash('Access denied!', 'danger')
         return redirect(url_for('login'))
     
-    conn = get_db()
-    c = conn.cursor()
-    c.execute('DELETE FROM users WHERE id = %s', (user_id,))
-    conn.commit()
-    conn.close()
-    flash('User deleted successfully!', 'success')
+    # Prevent admin from deleting themselves
+    if user_id == session['user_id']:
+        flash('You cannot delete your own admin account!', 'danger')
+        return redirect(url_for('admin_dashboard'))
+    
+    conn = None
+    try:
+        conn = get_db()
+        c = conn.cursor()
+        
+        # Get user details before deletion
+        c.execute('SELECT name, role FROM users WHERE id = %s', (user_id,))
+        user = c.fetchone()
+        
+        if not user:
+            flash('User not found!', 'danger')
+            conn.close()
+            return redirect(url_for('admin_dashboard'))
+        
+        user_name = user['name']
+        user_role = user['role']
+        
+        # PostgreSQL CASCADE should handle related records automatically
+        # But let's add explicit handling for better control and feedback
+        
+        # Check for related records
+        c.execute('SELECT COUNT(*) as count FROM appointments WHERE patient_id = %s OR doctor_id = %s', 
+                  (user_id, user_id))
+        appointment_count = c.fetchone()['count']
+        
+        c.execute('SELECT COUNT(*) as count FROM medical_records WHERE patient_id = %s OR doctor_id = %s', 
+                  (user_id, user_id))
+        records_count = c.fetchone()['count']
+        
+        c.execute('SELECT COUNT(*) as count FROM billing WHERE patient_id = %s OR doctor_id = %s', 
+                  (user_id, user_id))
+        billing_count = c.fetchone()['count']
+        
+        # Delete the user (CASCADE will handle related records)
+        c.execute('DELETE FROM users WHERE id = %s', (user_id,))
+        conn.commit()
+        
+        # Create detailed success message
+        message = f'{user_role.capitalize()} "{user_name}" deleted successfully!'
+        if appointment_count > 0 or records_count > 0 or billing_count > 0:
+            message += f' ({appointment_count} appointments, {records_count} medical records, and {billing_count} billing records also removed)'
+        
+        flash(message, 'success')
+        
+    except psycopg2.errors.ForeignKeyViolation as e:
+        if conn:
+            conn.rollback()
+        print(f"Foreign key error deleting user: {e}")
+        flash('Cannot delete user: Related records exist. Please contact system administrator.', 'danger')
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        print(f"Error deleting user {user_id}: {e}")
+        flash(f'Error deleting user: {str(e)}', 'danger')
+    finally:
+        if conn:
+            conn.close()
+    
     return redirect(url_for('admin_dashboard'))
 
 
