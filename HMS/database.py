@@ -83,6 +83,8 @@ def create_tables():
         - appointments: Patient appointments
         - medical_records: Patient medical history
         - billing: Billing and payment records
+    
+    Note: All foreign keys use ON DELETE CASCADE for safe deletion
     """
     conn = get_db()
     c = conn.cursor()
@@ -101,49 +103,55 @@ def create_tables():
         )
     ''')
 
-    # Appointments Table
+    # Appointments Table - CASCADE DELETE
     c.execute('''
         CREATE TABLE IF NOT EXISTS appointments (
             id SERIAL PRIMARY KEY,
-            patient_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-            doctor_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            patient_id INTEGER NOT NULL,
+            doctor_id INTEGER NOT NULL,
             date TEXT NOT NULL,
             time TEXT NOT NULL,
             reason TEXT,
-            status TEXT DEFAULT 'Pending'
+            status TEXT DEFAULT 'Pending',
+            CONSTRAINT fk_patient FOREIGN KEY (patient_id) REFERENCES users(id) ON DELETE CASCADE,
+            CONSTRAINT fk_doctor FOREIGN KEY (doctor_id) REFERENCES users(id) ON DELETE CASCADE
         )
     ''')
 
-    # Medical Records Table
+    # Medical Records Table - CASCADE DELETE
     c.execute('''
         CREATE TABLE IF NOT EXISTS medical_records (
             id SERIAL PRIMARY KEY,
-            patient_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-            doctor_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            patient_id INTEGER NOT NULL,
+            doctor_id INTEGER NOT NULL,
             diagnosis TEXT,
             prescription TEXT,
             report_filename TEXT,
-            date TEXT NOT NULL
+            date TEXT NOT NULL,
+            CONSTRAINT fk_med_patient FOREIGN KEY (patient_id) REFERENCES users(id) ON DELETE CASCADE,
+            CONSTRAINT fk_med_doctor FOREIGN KEY (doctor_id) REFERENCES users(id) ON DELETE CASCADE
         )
     ''')
 
-    # Billing Table
+    # Billing Table - CASCADE DELETE
     c.execute('''
         CREATE TABLE IF NOT EXISTS billing (
             id SERIAL PRIMARY KEY,
-            patient_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-            doctor_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            patient_id INTEGER NOT NULL,
+            doctor_id INTEGER NOT NULL,
             appointment_id INTEGER,
             description TEXT,
             total_amount REAL NOT NULL,
             status TEXT DEFAULT 'Unpaid',
-            date TEXT NOT NULL
+            date TEXT NOT NULL,
+            CONSTRAINT fk_bill_patient FOREIGN KEY (patient_id) REFERENCES users(id) ON DELETE CASCADE,
+            CONSTRAINT fk_bill_doctor FOREIGN KEY (doctor_id) REFERENCES users(id) ON DELETE CASCADE
         )
     ''')
 
     conn.commit()
     conn.close()
-    print("✅ Database tables created successfully!")
+    print("✅ Database tables created successfully with CASCADE constraints!")
 
 
 def create_default_admin():
