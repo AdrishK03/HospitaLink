@@ -770,6 +770,36 @@ if __name__ == '__main__':
         
         if DATABASE_URL:
             init_db()  # Initialize database from database.py
+            
+            # Auto-fix foreign key constraints for existing databases
+            print("\n🔧 Fixing foreign key constraints...")
+            try:
+                conn = get_db()
+                c = conn.cursor()
+                
+                # Fix appointments table
+                c.execute("ALTER TABLE appointments DROP CONSTRAINT IF EXISTS appointments_patient_id_fkey CASCADE")
+                c.execute("ALTER TABLE appointments DROP CONSTRAINT IF EXISTS appointments_doctor_id_fkey CASCADE")
+                c.execute("ALTER TABLE appointments ADD CONSTRAINT IF NOT EXISTS fk_patient FOREIGN KEY (patient_id) REFERENCES users(id) ON DELETE CASCADE")
+                c.execute("ALTER TABLE appointments ADD CONSTRAINT IF NOT EXISTS fk_doctor FOREIGN KEY (doctor_id) REFERENCES users(id) ON DELETE CASCADE")
+                
+                # Fix medical_records table
+                c.execute("ALTER TABLE medical_records DROP CONSTRAINT IF EXISTS medical_records_patient_id_fkey CASCADE")
+                c.execute("ALTER TABLE medical_records DROP CONSTRAINT IF EXISTS medical_records_doctor_id_fkey CASCADE")
+                c.execute("ALTER TABLE medical_records ADD CONSTRAINT IF NOT EXISTS fk_med_patient FOREIGN KEY (patient_id) REFERENCES users(id) ON DELETE CASCADE")
+                c.execute("ALTER TABLE medical_records ADD CONSTRAINT IF NOT EXISTS fk_med_doctor FOREIGN KEY (doctor_id) REFERENCES users(id) ON DELETE CASCADE")
+                
+                # Fix billing table
+                c.execute("ALTER TABLE billing DROP CONSTRAINT IF EXISTS billing_patient_id_fkey CASCADE")
+                c.execute("ALTER TABLE billing DROP CONSTRAINT IF EXISTS billing_doctor_id_fkey CASCADE")
+                c.execute("ALTER TABLE billing ADD CONSTRAINT IF NOT EXISTS fk_bill_patient FOREIGN KEY (patient_id) REFERENCES users(id) ON DELETE CASCADE")
+                c.execute("ALTER TABLE billing ADD CONSTRAINT IF NOT EXISTS fk_bill_doctor FOREIGN KEY (doctor_id) REFERENCES users(id) ON DELETE CASCADE")
+                
+                conn.commit()
+                conn.close()
+                print("✅ Foreign key constraints fixed!")
+            except Exception as e:
+                print(f"⚠️ Constraint fix (may already be correct): {e}")
         else:
             print("⚠️  WARNING: DATABASE_URL not set.")
             print("   Running without database initialization.")
