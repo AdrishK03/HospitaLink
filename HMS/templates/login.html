@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hospital Management System - Login</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,60 +12,23 @@
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* Animated Background Particles */
-        .particles {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        .particle {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            animation: float 15s infinite ease-in-out;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.3; }
-            50% { transform: translateY(-100px) rotate(180deg); opacity: 0.6; }
         }
 
         .login-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 30px;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             overflow: hidden;
             width: 100%;
-            max-width: 1000px;
+            max-width: 900px;
             display: flex;
-            position: relative;
-            z-index: 10;
-            animation: slideIn 0.8s ease-out;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .login-left {
@@ -77,241 +39,90 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .login-left::before {
-            content: '';
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            top: -100px;
-            right: -100px;
-            animation: pulse 3s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .hospital-icon {
-            font-size: 120px;
-            margin-bottom: 30px;
-            animation: bounce 2s infinite;
-            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
         }
 
         .login-left h1 {
             font-size: 2.5em;
             margin-bottom: 20px;
-            text-align: center;
-            animation: fadeInUp 1s ease-out 0.3s both;
         }
 
         .login-left p {
             font-size: 1.1em;
-            line-height: 1.8;
-            opacity: 0.95;
-            text-align: center;
-            animation: fadeInUp 1s ease-out 0.5s both;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            line-height: 1.6;
+            opacity: 0.9;
         }
 
         .login-right {
             flex: 1;
-            padding: 60px 50px;
-            animation: fadeInRight 1s ease-out 0.4s both;
-        }
-
-        @keyframes fadeInRight {
-            from {
-                opacity: 0;
-                transform: translateX(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            padding: 60px 40px;
         }
 
         .login-right h2 {
             color: #333;
-            margin-bottom: 10px;
-            font-size: 2.2em;
-            font-weight: 700;
-        }
-
-        .login-subtitle {
-            color: #666;
             margin-bottom: 30px;
-            font-size: 0.95em;
+            font-size: 2em;
         }
 
         .form-group {
             margin-bottom: 25px;
-            position: relative;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             color: #555;
             font-weight: 500;
-            font-size: 0.95em;
-        }
-
-        .input-wrapper {
-            position: relative;
-        }
-
-        .input-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.2em;
-            color: #999;
-            transition: color 0.3s;
         }
 
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 14px 15px 14px 45px;
+            padding: 12px 15px;
             border: 2px solid #e0e0e0;
-            border-radius: 12px;
+            border-radius: 8px;
             font-size: 1em;
-            transition: all 0.3s;
-            font-family: 'Poppins', sans-serif;
+            transition: border-color 0.3s;
         }
 
         .form-group input:focus,
         .form-group select:focus {
             outline: none;
             border-color: #4facfe;
-            box-shadow: 0 0 0 4px rgba(79, 172, 254, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .form-group input:focus + .input-icon,
-        .form-group select:focus ~ .input-icon {
-            color: #4facfe;
         }
 
         .btn-login {
             width: 100%;
-            padding: 16px;
+            padding: 14px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 8px;
             font-size: 1.1em;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-            margin-top: 10px;
-        }
-
-        .btn-login::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn-login:hover::before {
-            left: 100%;
+            transition: transform 0.2s;
         }
 
         .btn-login:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-login:active {
-            transform: translateY(-1px);
+            transform: translateY(-2px);
         }
 
         .register-link {
             text-align: center;
-            margin-top: 25px;
+            margin-top: 20px;
             color: #666;
-            animation: fadeIn 1s ease-out 1s both;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
 
         .register-link a {
             color: #667eea;
             text-decoration: none;
             font-weight: 600;
-            position: relative;
-            transition: color 0.3s;
-        }
-
-        .register-link a::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -2px;
-            left: 0;
-            background: #667eea;
-            transition: width 0.3s;
-        }
-
-        .register-link a:hover::after {
-            width: 100%;
         }
 
         .alert {
-            padding: 14px 20px;
-            border-radius: 12px;
+            padding: 12px 20px;
+            border-radius: 8px;
             margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            animation: slideDown 0.5s ease-out;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .alert-danger {
@@ -326,36 +137,6 @@
             border: 1px solid #ffeaa7;
         }
 
-        /* Floating Icons */
-        .floating-icons {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-
-        .floating-icon {
-            position: absolute;
-            font-size: 40px;
-            opacity: 0.1;
-            animation: floatIcon 20s infinite ease-in-out;
-        }
-
-        @keyframes floatIcon {
-            0%, 100% {
-                transform: translate(0, 0) rotate(0deg);
-            }
-            25% {
-                transform: translate(50px, -50px) rotate(90deg);
-            }
-            50% {
-                transform: translate(0, -100px) rotate(180deg);
-            }
-            75% {
-                transform: translate(-50px, -50px) rotate(270deg);
-            }
-        }
-
         @media (max-width: 768px) {
             .login-container {
                 flex-direction: column;
@@ -368,76 +149,48 @@
             .login-right {
                 padding: 40px 30px;
             }
-
-            .hospital-icon {
-                font-size: 80px;
-            }
-
-            .login-left h1 {
-                font-size: 1.8em;
-            }
         }
     </style>
 </head>
 <body>
-    <!-- Animated Background -->
-    <div class="particles" id="particles"></div>
-
     <div class="login-container">
-        <!-- Floating Medical Icons -->
-        <div class="floating-icons">
-            <div class="floating-icon" style="top: 10%; left: 10%; animation-delay: 0s;">💊</div>
-            <div class="floating-icon" style="top: 20%; right: 15%; animation-delay: 2s;">🩺</div>
-            <div class="floating-icon" style="bottom: 20%; left: 15%; animation-delay: 4s;">💉</div>
-            <div class="floating-icon" style="bottom: 15%; right: 20%; animation-delay: 6s;">🏥</div>
-        </div>
-
         <div class="login-left">
-            <div class="hospital-icon">🏥</div>
-            <h1>Hospital Management System</h1>
-            <p>Your health, our priority. Experience seamless healthcare management with cutting-edge technology and compassionate care.</p>
+            <h1>🏥 Hospital Management System</h1>
+            <p>Welcome to our comprehensive healthcare management platform. Manage appointments, medical records, and billing all in one place.</p>
         </div>
-
         <div class="login-right">
-            <h2>Welcome Back!</h2>
-            <p class="login-subtitle">Please login to continue</p>
-
-            <div class="alert alert-danger" style="display: none;">
-                <span>⚠️</span>
-                <span>Invalid credentials</span>
-            </div>
+            <h2>Login</h2>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
 
             <form method="POST" action="/login" onsubmit="return validateLogin()">
                 <div class="form-group">
                     <label for="role">Select Role</label>
-                    <div class="input-wrapper">
-                        <span class="input-icon">👤</span>
-                        <select id="role" name="role" required>
-                            <option value="">Choose your role</option>
-                            <option value="admin">🔐 Admin</option>
-                            <option value="doctor">👨‍⚕️ Doctor</option>
-                            <option value="patient">🧑‍🦱 Patient</option>
-                        </select>
-                    </div>
+                    <select id="role" name="role" required>
+                        <option value="">Choose your role</option>
+                        <option value="admin">Admin</option>
+                        <option value="doctor">Doctor</option>
+                        <option value="patient">Patient</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
                     <label for="email">Email Address</label>
-                    <div class="input-wrapper">
-                        <span class="input-icon">📧</span>
-                        <input type="email" id="email" name="email" placeholder="Enter your email" required>
-                    </div>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
                 </div>
 
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <div class="input-wrapper">
-                        <span class="input-icon">🔒</span>
-                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
-                    </div>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
                 </div>
 
-                <button type="submit" class="btn-login">Login to Continue</button>
+                <button type="submit" class="btn-login">Login</button>
             </form>
 
             <div class="register-link">
@@ -447,20 +200,6 @@
     </div>
 
     <script>
-        // Create animated particles
-        const particlesContainer = document.getElementById('particles');
-        for (let i = 0; i < 20; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.width = Math.random() * 60 + 20 + 'px';
-            particle.style.height = particle.style.width;
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.top = Math.random() * 100 + '%';
-            particle.style.animationDelay = Math.random() * 15 + 's';
-            particle.style.animationDuration = Math.random() * 10 + 10 + 's';
-            particlesContainer.appendChild(particle);
-        }
-
         function validateLogin() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
@@ -478,17 +217,6 @@
 
             return true;
         }
-
-        // Add input animation effects
-        document.querySelectorAll('input, select').forEach(input => {
-            input.addEventListener('focus', function() {
-                this.parentElement.style.transform = 'scale(1.02)';
-            });
-            
-            input.addEventListener('blur', function() {
-                this.parentElement.style.transform = 'scale(1)';
-            });
-        });
     </script>
 </body>
 </html>
