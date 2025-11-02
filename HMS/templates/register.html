@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - Hospital Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,104 +13,287 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 40px 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Background */
+        .background-animation {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        .bg-shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(50px, -50px) scale(1.1); }
+            66% { transform: translate(-50px, 50px) scale(0.9); }
         }
 
         .register-container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 600px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+            max-width: 700px;
             margin: 0 auto;
-            padding: 50px 40px;
+            padding: 50px 50px 40px;
+            position: relative;
+            z-index: 10;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-icon {
+            text-align: center;
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
         }
 
         h1 {
             color: #333;
             text-align: center;
             margin-bottom: 10px;
-            font-size: 2.2em;
+            font-size: 2.5em;
+            font-weight: 700;
+            animation: fadeIn 0.8s ease-out 0.2s both;
         }
 
         .subtitle {
             text-align: center;
             color: #666;
-            margin-bottom: 30px;
+            margin-bottom: 35px;
+            font-size: 1em;
+            animation: fadeIn 0.8s ease-out 0.4s both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            position: relative;
+            animation: slideInLeft 0.6s ease-out both;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-group:nth-child(3) { animation-delay: 0.3s; }
+        .form-group:nth-child(4) { animation-delay: 0.4s; }
+        .form-group:nth-child(5) { animation-delay: 0.5s; }
+        .form-group:nth-child(6) { animation-delay: 0.6s; }
+        .form-group:nth-child(7) { animation-delay: 0.7s; }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             color: #555;
             font-weight: 500;
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2em;
+            transition: all 0.3s;
+            z-index: 2;
         }
 
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 12px 15px;
+            padding: 14px 15px 14px 45px;
             border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 1em;
-            transition: border-color 0.3s;
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
+            background: white;
         }
 
         .form-group input:focus,
         .form-group select:focus {
             outline: none;
-            border-color: #4facfe;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-group input:focus ~ .input-icon,
+        .form-group select:focus ~ .input-icon {
+            transform: translateY(-50%) scale(1.2);
+            color: #667eea;
         }
 
         .form-group small {
             color: #888;
             font-size: 0.85em;
+            margin-top: 5px;
+            display: block;
         }
 
         #specializationGroup {
             display: none;
+            overflow: hidden;
+        }
+
+        #specializationGroup.show {
+            animation: expandDown 0.4s ease-out;
+        }
+
+        @keyframes expandDown {
+            from {
+                max-height: 0;
+                opacity: 0;
+            }
+            to {
+                max-height: 200px;
+                opacity: 1;
+            }
         }
 
         .btn-register {
             width: 100%;
-            padding: 14px;
+            padding: 16px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 1.1em;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s;
-            margin-top: 10px;
+            transition: all 0.3s;
+            margin-top: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-register::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-register:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .btn-register:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-register:active {
+            transform: translateY(-1px);
         }
 
         .login-link {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 25px;
             color: #666;
+            animation: fadeIn 1s ease-out 0.8s both;
         }
 
         .login-link a {
             color: #667eea;
             text-decoration: none;
             font-weight: 600;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .login-link a::after {
+            content: '→';
+            margin-left: 5px;
+            display: inline-block;
+            transition: transform 0.3s;
+        }
+
+        .login-link a:hover::after {
+            transform: translateX(5px);
         }
 
         .alert {
-            padding: 12px 20px;
-            border-radius: 8px;
+            padding: 14px 20px;
+            border-radius: 12px;
             margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: shake 0.5s ease-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
         }
 
         .alert-success {
@@ -129,64 +313,165 @@
             color: #0c5460;
             border: 1px solid #bee5eb;
         }
+
+        /* Password Strength Indicator */
+        .password-strength {
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .password-strength.active {
+            opacity: 1;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0;
+            transition: all 0.3s;
+            border-radius: 2px;
+        }
+
+        .strength-weak { background: #ff4444; width: 33%; }
+        .strength-medium { background: #ffaa00; width: 66%; }
+        .strength-strong { background: #00cc44; width: 100%; }
+
+        /* Floating Medical Icons */
+        .decorative-icons {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .deco-icon {
+            position: absolute;
+            font-size: 50px;
+            opacity: 0.08;
+            animation: rotate3d 30s infinite linear;
+        }
+
+        @keyframes rotate3d {
+            from { transform: rotate(0deg) translateY(0); }
+            to { transform: rotate(360deg) translateY(-20px); }
+        }
+
+        @media (max-width: 768px) {
+            .register-container {
+                padding: 40px 30px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .header-icon {
+                font-size: 60px;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Animated Background -->
+    <div class="background-animation">
+        <div class="bg-shape" style="width: 300px; height: 300px; top: 10%; left: 5%; background: #4facfe;"></div>
+        <div class="bg-shape" style="width: 200px; height: 200px; top: 60%; right: 10%; background: #00f2fe; animation-delay: 3s;"></div>
+        <div class="bg-shape" style="width: 250px; height: 250px; bottom: 10%; left: 20%; background: #667eea; animation-delay: 6s;"></div>
+    </div>
+
+    <!-- Decorative Icons -->
+    <div class="decorative-icons">
+        <div class="deco-icon" style="top: 10%; left: 15%;">💊</div>
+        <div class="deco-icon" style="top: 20%; right: 10%; animation-delay: 5s;">🩺</div>
+        <div class="deco-icon" style="bottom: 15%; left: 10%; animation-delay: 10s;">💉</div>
+        <div class="deco-icon" style="bottom: 25%; right: 15%; animation-delay: 15s;">❤️</div>
+        <div class="deco-icon" style="top: 50%; left: 5%; animation-delay: 20s;">🏥</div>
+    </div>
+
     <div class="register-container">
-        <h1>🏥 Create Account</h1>
+        <div class="header-icon">✨🏥</div>
+        <h1>Create Account</h1>
         <p class="subtitle">Join our Hospital Management System</p>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+        <div class="alert alert-success" style="display: none;">
+            <span>✅</span>
+            <span>Registration successful!</span>
+        </div>
 
         <form method="POST" action="/register" onsubmit="return validateForm()">
             <div class="form-group">
-                <label for="name">Full Name</label>
-                <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                <label for="name">👤 Full Name</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">👤</span>
+                    <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                </div>
             </div>
 
             <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                <label for="email">📧 Email Address</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">📧</span>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
             </div>
 
             <div class="form-group">
-                <label for="contact">Contact Number</label>
-                <input type="tel" id="contact" name="contact" placeholder="Enter your contact number" required>
+                <label for="contact">📱 Contact Number</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">📱</span>
+                    <input type="tel" id="contact" name="contact" placeholder="Enter your contact number" required>
+                </div>
             </div>
 
             <div class="form-group">
-                <label for="role">Register As</label>
-                <select id="role" name="role" onchange="toggleSpecialization()" required>
-                    <option value="">Select role</option>
-                    <option value="patient">Patient</option>
-                    <option value="doctor">Doctor</option>
-                </select>
+                <label for="role">🎭 Register As</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">🎭</span>
+                    <select id="role" name="role" onchange="toggleSpecialization()" required>
+                        <option value="">Select role</option>
+                        <option value="patient">🧑‍🦱 Patient</option>
+                        <option value="doctor">👨‍⚕️ Doctor</option>
+                    </select>
+                </div>
             </div>
 
             <div class="form-group" id="specializationGroup">
-                <label for="specialization">Specialization</label>
-                <input type="text" id="specialization" name="specialization" placeholder="e.g., Cardiology, Pediatrics">
+                <label for="specialization">🩺 Specialization</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">🩺</span>
+                    <input type="text" id="specialization" name="specialization" placeholder="e.g., Cardiology, Pediatrics">
+                </div>
                 <small>Required for doctor registration</small>
             </div>
 
             <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="Create a password" required>
+                <label for="password">🔒 Password</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">🔒</span>
+                    <input type="password" id="password" name="password" placeholder="Create a password" required oninput="checkPasswordStrength()">
+                </div>
+                <div class="password-strength" id="passwordStrength">
+                    <div class="password-strength-bar" id="strengthBar"></div>
+                </div>
                 <small>Minimum 6 characters</small>
             </div>
 
             <div class="form-group">
-                <label for="confirm_password">Confirm Password</label>
-                <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter password" required>
+                <label for="confirm_password">🔐 Confirm Password</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">🔐</span>
+                    <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter password" required>
+                </div>
             </div>
 
-            <button type="submit" class="btn-register">Register</button>
+            <button type="submit" class="btn-register">Create Account</button>
         </form>
 
         <div class="login-link">
@@ -202,10 +487,34 @@
             
             if (role === 'doctor') {
                 specializationGroup.style.display = 'block';
+                specializationGroup.classList.add('show');
                 specializationInput.required = true;
             } else {
                 specializationGroup.style.display = 'none';
+                specializationGroup.classList.remove('show');
                 specializationInput.required = false;
+            }
+        }
+
+        function checkPasswordStrength() {
+            const password = document.getElementById('password').value;
+            const strengthIndicator = document.getElementById('passwordStrength');
+            const strengthBar = document.getElementById('strengthBar');
+            
+            if (password.length === 0) {
+                strengthIndicator.classList.remove('active');
+                return;
+            }
+            
+            strengthIndicator.classList.add('active');
+            strengthBar.className = 'password-strength-bar';
+            
+            if (password.length < 6) {
+                strengthBar.classList.add('strength-weak');
+            } else if (password.length < 10) {
+                strengthBar.classList.add('strength-medium');
+            } else {
+                strengthBar.classList.add('strength-strong');
             }
         }
 
@@ -233,9 +542,8 @@
                 return false;
             }
 
-            // Fixed: Check actual password length without trim
             if (password.length < 6) {
-                alert('Password must be at least 6 characters long. Current length: ' + password.length);
+                alert('Password must be at least 6 characters long');
                 return false;
             }
 
@@ -251,6 +559,17 @@
 
             return true;
         }
+
+        // Add input animations
+        document.querySelectorAll('input, select').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
     </script>
 </body>
 </html>
