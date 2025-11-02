@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medical Records - Hospital Management System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,300 +12,87 @@
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #e0f2f7 0%, #90caf9 100%);
-            min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        /* Animated Medical Document Background */
-        .documents-bg {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .doc-icon {
-            position: absolute;
-            font-size: 50px;
-            opacity: 0.04;
-            animation: floatDoc 22s infinite ease-in-out;
-        }
-
-        @keyframes floatDoc {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-90px) rotate(180deg); }
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
         }
 
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 25px 40px;
+            padding: 20px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            animation: slideDown 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        @keyframes slideDown {
-            from {
-                transform: translateY(-100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .header h1 {
-            font-size: 1.9em;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            animation: bounceIn 1s ease-out;
-        }
-
-        @keyframes bounceIn {
-            0% { transform: scale(0) rotate(-180deg); }
-            50% { transform: scale(1.1) rotate(10deg); }
-            100% { transform: scale(1) rotate(0deg); }
-        }
-
-        .clipboard-icon {
-            animation: tilt 3s ease-in-out infinite;
-        }
-
-        @keyframes tilt {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(-8deg); }
-            75% { transform: rotate(8deg); }
+            font-size: 1.8em;
         }
 
         .user-info {
             display: flex;
             align-items: center;
             gap: 20px;
-            animation: fadeIn 0.8s ease-out 0.3s both;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateX(30px); }
-            to { opacity: 1; transform: translateX(0); }
         }
 
         .btn-logout, .btn-back {
             background: rgba(255, 255, 255, 0.2);
             color: white;
             border: 2px solid white;
-            padding: 10px 25px;
-            border-radius: 25px;
+            padding: 8px 20px;
+            border-radius: 5px;
             cursor: pointer;
             text-decoration: none;
-            transition: all 0.3s;
-            font-weight: 500;
+            transition: background 0.3s;
         }
 
         .btn-logout:hover, .btn-back:hover {
-            background: white;
-            color: #667eea;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.3);
         }
 
         .container {
             max-width: 1400px;
             margin: 30px auto;
             padding: 0 20px;
-            position: relative;
-            z-index: 10;
-        }
-
-        .alert {
-            padding: 16px 25px;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            animation: slideInDown 0.5s ease-out;
-            border-left: 5px solid;
-        }
-
-        @keyframes slideInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .alert-success {
-            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-            color: #155724;
-            border-left-color: #28a745;
-        }
-
-        .alert-info {
-            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
-            color: #0c5460;
-            border-left-color: #17a2b8;
-        }
-
-        .health-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-bottom: 35px;
-        }
-
-        .health-card {
-            background: white;
-            padding: 35px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.4s;
-            animation: zoomIn 0.6s ease-out both;
-        }
-
-        .health-card:nth-child(1) { animation-delay: 0.1s; }
-        .health-card:nth-child(2) { animation-delay: 0.2s; }
-        .health-card:nth-child(3) { animation-delay: 0.3s; }
-
-        @keyframes zoomIn {
-            from {
-                opacity: 0;
-                transform: scale(0.5) rotate(-5deg);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1) rotate(0deg);
-            }
-        }
-
-        .health-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            transition: left 0.5s;
-        }
-
-        .health-card:hover::before {
-            left: 0;
-        }
-
-        .health-card:hover {
-            transform: translateY(-15px) rotate(-2deg);
-            box-shadow: 0 25px 50px rgba(102, 126, 234, 0.3);
-        }
-
-        .health-icon {
-            font-size: 3.5em;
-            margin-bottom: 15px;
-            display: inline-block;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .health-card h3 {
-            font-size: 1.4em;
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .health-card p {
-            color: #666;
-            font-size: 1em;
-            line-height: 1.6;
         }
 
         .card {
             background: white;
-            border-radius: 20px;
-            padding: 35px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            margin-bottom: 25px;
-            animation: fadeInUp 0.6s ease-out 0.4s both;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
         }
 
         .section-title {
-            font-size: 1.8em;
+            font-size: 1.5em;
             color: #333;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid;
-            border-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%) 1;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
         }
 
         .form-group {
-            margin-bottom: 25px;
-            animation: slideRight 0.5s ease-out both;
-        }
-
-        .form-group:nth-child(1) { animation-delay: 0.1s; }
-        .form-group:nth-child(2) { animation-delay: 0.2s; }
-        .form-group:nth-child(3) { animation-delay: 0.3s; }
-        .form-group:nth-child(4) { animation-delay: 0.4s; }
-
-        @keyframes slideRight {
-            from {
-                opacity: 0;
-                transform: translateX(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            margin-bottom: 20px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             color: #555;
             font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .form-group input,
         .form-group select,
         .form-group textarea {
             width: 100%;
-            padding: 14px 18px;
+            padding: 12px 15px;
             border: 2px solid #e0e0e0;
-            border-radius: 12px;
+            border-radius: 8px;
             font-size: 1em;
-            transition: all 0.3s;
-            font-family: 'Poppins', sans-serif;
+            transition: border-color 0.3s;
         }
 
         .form-group input:focus,
@@ -314,178 +100,78 @@
         .form-group textarea:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-            transform: translateY(-2px);
         }
 
         .form-group small {
             color: #888;
             font-size: 0.85em;
-            margin-top: 5px;
-            display: block;
-        }
-
-        .file-upload {
-            position: relative;
-            display: inline-block;
-            width: 100%;
-        }
-
-        .file-upload input[type="file"] {
-            opacity: 0;
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
-
-        .file-upload-label {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 14px 18px;
-            border: 2px dashed #e0e0e0;
-            border-radius: 12px;
-            background: #f8f9fa;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .file-upload-label:hover {
-            border-color: #667eea;
-            background: #f0f3ff;
         }
 
         .btn-submit {
-            padding: 16px 40px;
+            padding: 12px 30px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 12px;
-            font-size: 1.1em;
+            border-radius: 8px;
+            font-size: 1em;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-submit::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .btn-submit:hover::before {
-            width: 400px;
-            height: 400px;
+            transition: transform 0.2s;
         }
 
         .btn-submit:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.5);
+            transform: translateY(-2px);
         }
 
         table {
             width: 100%;
-            border-collapse: separate;
-            border-spacing: 0 12px;
+            border-collapse: collapse;
             margin-top: 20px;
         }
 
-        thead tr {
-            background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
         }
 
         th {
-            padding: 16px;
-            text-align: left;
+            background: #f8f9fa;
             font-weight: 600;
-            color: #3f51b5;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            color: #555;
         }
 
-        th:first-child { border-radius: 10px 0 0 10px; }
-        th:last-child { border-radius: 0 10px 10px 0; }
-
-        tbody tr {
-            background: white;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s;
-            animation: slideInUp 0.5s ease-out both;
+        tr:hover {
+            background: #f8f9fa;
         }
 
-        tbody tr:nth-child(odd) { animation-delay: 0.1s; }
-        tbody tr:nth-child(even) { animation-delay: 0.2s; }
-
-        @keyframes slideInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .alert {
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
         }
 
-        tbody tr:hover {
-            transform: translateX(8px) scale(1.01);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
         }
 
-        td {
-            padding: 18px 16px;
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-size: 1.1em;
         }
-
-        td:first-child { border-radius: 10px 0 0 10px; }
-        td:last-child { border-radius: 0 10px 10px 0; }
 
         .download-link {
             color: #667eea;
             text-decoration: none;
             font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            transition: all 0.3s;
-            padding: 5px 12px;
-            border-radius: 8px;
         }
 
         .download-link:hover {
-            background: #f0f3ff;
-            transform: translateY(-2px);
-        }
-
-        .no-data {
-            text-align: center;
-            padding: 80px 40px;
-            color: #999;
-            font-size: 1.2em;
-        }
-
-        .no-data::before {
-            content: '📋';
-            display: block;
-            font-size: 5em;
-            margin-bottom: 20px;
-            animation: bounce 2s ease-in-out infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+            text-decoration: underline;
         }
 
         @media (max-width: 768px) {
@@ -494,183 +180,156 @@
                 gap: 15px;
             }
 
-            .health-stats {
-                grid-template-columns: 1fr;
-            }
-
             table {
+                font-size: 0.9em;
                 display: block;
                 overflow-x: auto;
+            }
+
+            th, td {
+                padding: 8px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Documents Background -->
-    <div class="documents-bg">
-        <div class="doc-icon" style="top: 8%; left: 5%; animation-delay: 0s;">📋</div>
-        <div class="doc-icon" style="top: 22%; right: 8%; animation-delay: 4s;">📄</div>
-        <div class="doc-icon" style="bottom: 18%; left: 10%; animation-delay: 8s;">📝</div>
-        <div class="doc-icon" style="bottom: 32%; right: 12%; animation-delay: 12s;">🗂️</div>
-        <div class="doc-icon" style="top: 48%; left: 3%; animation-delay: 16s;">📑</div>
-    </div>
-
     <div class="header">
-        <h1>
-            <span class="clipboard-icon">📋</span>
-            Medical Records
-        </h1>
+        <h1>📋 Medical Records</h1>
         <div class="user-info">
-            <span>Dr. Smith</span>
-            <a href="/doctor/dashboard" class="btn-back">← Dashboard</a>
+            <span>{{ session.user_name }}</span>
+            {% if session.user_role == 'doctor' %}
+                <a href="/doctor/dashboard" class="btn-back">← Dashboard</a>
+            {% elif session.user_role == 'patient' %}
+                <a href="/patient/dashboard" class="btn-back">← Dashboard</a>
+            {% elif session.user_role == 'admin' %}
+                <a href="/admin/dashboard" class="btn-back">← Dashboard</a>
+            {% endif %}
             <a href="/logout" class="btn-logout">Logout</a>
         </div>
     </div>
 
     <div class="container">
-        <div class="alert alert-success">
-            <span>✅</span>
-            <span>Medical record for John Doe has been successfully added!</span>
-        </div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
-        <div class="health-stats">
-            <div class="health-card">
-                <div class="health-icon">🩺</div>
-                <h3>Complete Records</h3>
-                <p>Access comprehensive patient health history, diagnoses, and treatments all in one place.</p>
-            </div>
-            <div class="health-card">
-                <div class="health-icon">💊</div>
-                <h3>Prescriptions</h3>
-                <p>View detailed medication plans and prescription history for better care management.</p>
-            </div>
-            <div class="health-card">
-                <div class="health-icon">📊</div>
-                <h3>Test Reports</h3>
-                <p>Download and review laboratory reports, X-rays, and diagnostic results instantly.</p>
-            </div>
-        </div>
-
+        {% if session.user_role == 'doctor' %}
         <div class="card">
-            <h2 class="section-title">
-                <span>➕</span>
-                Add New Medical Record (Doctor Only)
-            </h2>
-            <form>
+            <h2 class="section-title">Add Medical Record</h2>
+            <form method="POST" action="/add_medical_record" enctype="multipart/form-data" onsubmit="return validateRecord()">
                 <div class="form-group">
-                    <label>👤 Select Patient</label>
-                    <select required>
+                    <label for="patient_id">Select Patient</label>
+                    <select id="patient_id" name="patient_id" required>
                         <option value="">Choose a patient</option>
-                        <option>John Doe</option>
-                        <option>Jane Smith</option>
-                        <option>Mike Wilson</option>
+                        {% if patients %}
+                            {% for patient in patients %}
+                            <option value="{{ patient.id }}">{{ patient.name }}</option>
+                            {% endfor %}
+                        {% endif %}
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label>🩺 Diagnosis</label>
-                    <textarea rows="3" placeholder="Enter diagnosis details" required></textarea>
+                    <label for="diagnosis">Diagnosis</label>
+                    <textarea id="diagnosis" name="diagnosis" rows="3" placeholder="Enter diagnosis details" required></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label>💊 Prescription</label>
-                    <textarea rows="4" placeholder="Enter prescription details" required></textarea>
+                    <label for="prescription">Prescription</label>
+                    <textarea id="prescription" name="prescription" rows="4" placeholder="Enter prescription details" required></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label>📎 Upload Report (Optional)</label>
-                    <div class="file-upload">
-                        <input type="file" id="report-file" accept=".pdf,.jpg,.jpeg,.png">
-                        <label for="report-file" class="file-upload-label">
-                            <span>📄</span>
-                            <span>Choose File</span>
-                        </label>
-                    </div>
+                    <label for="report">Upload Report (Optional)</label>
+                    <input type="file" id="report" name="report" accept=".pdf,.jpg,.jpeg,.png">
                     <small>Accepted formats: PDF, JPG, PNG (Max 16MB)</small>
                 </div>
 
                 <button type="submit" class="btn-submit">Add Medical Record</button>
             </form>
         </div>
+        {% endif %}
 
         <div class="card">
-            <h2 class="section-title">
-                <span>📚</span>
-                Medical Records History
-            </h2>
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Patient Name</th>
-                            <th>Doctor Name</th>
-                            <th>Date</th>
-                            <th>Diagnosis</th>
-                            <th>Prescription</th>
-                            <th>Report</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>John Doe</td>
-                            <td>Dr. John Smith</td>
-                            <td>2025-11-01</td>
-                            <td>Hypertension</td>
-                            <td>Amlodipine 5mg daily</td>
-                            <td>
-                                <a href="#" class="download-link">
-                                    📥 Download
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>Jane Smith</td>
-                            <td>Dr. Sarah Johnson</td>
-                            <td>2025-11-02</td>
-                            <td>Common Cold</td>
-                            <td>Paracetamol 500mg TDS</td>
-                            <td>-</td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>Mike Wilson</td>
-                            <td>Dr. John Smith</td>
-                            <td>2025-11-03</td>
-                            <td>Diabetes Type 2</td>
-                            <td>Metformin 500mg BD</td>
-                            <td>
-                                <a href="#" class="download-link">
-                                    📥 Download
-                                </a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <h2 class="section-title">Medical Records History</h2>
+            {% if records %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        {% if session.user_role == 'doctor' %}
+                        <th>Patient Name</th>
+                        {% elif session.user_role == 'patient' %}
+                        <th>Doctor Name</th>
+                        {% else %}
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        {% endif %}
+                        <th>Date</th>
+                        <th>Diagnosis</th>
+                        <th>Prescription</th>
+                        <th>Report</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in records %}
+                    <tr>
+                        <td>{{ record.id }}</td>
+                        {% if session.user_role == 'doctor' %}
+                        <td>{{ record.patient_name }}</td>
+                        {% elif session.user_role == 'patient' %}
+                        <td>Dr. {{ record.doctor_name }}</td>
+                        {% else %}
+                        <td>{{ record.patient_name }}</td>
+                        <td>Dr. {{ record.doctor_name }}</td>
+                        {% endif %}
+                        <td>{{ record.date }}</td>
+                        <td>{{ record.diagnosis }}</td>
+                        <td>{{ record.prescription }}</td>
+                        <td>
+                            {% if record.report_filename %}
+                            <a href="/static/uploads/{{ record.report_filename }}" class="download-link" target="_blank">📥 Download</a>
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="no-data">No medical records found.</p>
+            {% endif %}
         </div>
     </div>
 
     <script>
-        // File upload preview
-        document.getElementById('report-file').addEventListener('change', function(e) {
-            const fileName = e.target.files[0]?.name;
-            if (fileName) {
-                const label = document.querySelector('.file-upload-label');
-                label.innerHTML = `<span>✅</span><span>${fileName}</span>`;
-                label.style.borderColor = '#667eea';
-                label.style.background = '#f0f3ff';
-            }
-        });
+        function validateRecord() {
+            const patientId = document.getElementById('patient_id').value;
+            const diagnosis = document.getElementById('diagnosis').value;
+            const prescription = document.getElementById('prescription').value;
 
-        // Add animations on load
-        window.addEventListener('load', () => {
-            document.querySelectorAll('tbody tr').forEach((row, index) => {
-                row.style.animationDelay = `${index * 0.1}s`;
-            });
-        });
+            if (!patientId || !diagnosis || !prescription) {
+                alert('Please fill in all required fields');
+                return false;
+            }
+
+            if (diagnosis.trim().length < 10) {
+                alert('Please provide a detailed diagnosis (at least 10 characters)');
+                return false;
+            }
+
+            if (prescription.trim().length < 10) {
+                alert('Please provide a detailed prescription (at least 10 characters)');
+                return false;
+            }
+
+            return true;
+        }
     </script>
 </body>
 </html>
