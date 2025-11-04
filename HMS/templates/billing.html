@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Billing - Hospital Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -12,22 +13,116 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f2f5;
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated coin rain */
+        .coins-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .coin {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.1);
+            font-size: 30px;
+            animation: coin-fall 12s linear infinite;
+        }
+
+        .coin:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .coin:nth-child(2) { left: 20%; animation-delay: 2s; }
+        .coin:nth-child(3) { left: 30%; animation-delay: 4s; }
+        .coin:nth-child(4) { left: 40%; animation-delay: 1s; }
+        .coin:nth-child(5) { left: 50%; animation-delay: 3s; }
+        .coin:nth-child(6) { left: 60%; animation-delay: 5s; }
+        .coin:nth-child(7) { left: 70%; animation-delay: 2.5s; }
+        .coin:nth-child(8) { left: 80%; animation-delay: 4.5s; }
+        .coin:nth-child(9) { left: 90%; animation-delay: 1.5s; }
+
+        @keyframes coin-fall {
+            0% {
+                top: -10%;
+                transform: rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                top: 110%;
+                transform: rotate(720deg);
+                opacity: 0;
+            }
         }
 
         .header {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 20px 40px;
+            padding: 25px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            animation: slideDown 0.6s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         .header h1 {
-            font-size: 1.8em;
+            font-size: 28px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .billing-icon {
+            width: 55px;
+            height: 55px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            animation: spin-pulse 4s infinite ease-in-out;
+        }
+
+        @keyframes spin-pulse {
+            0%, 100% {
+                transform: rotate(0deg) scale(1);
+            }
+            50% {
+                transform: rotate(180deg) scale(1.1);
+            }
         }
 
         .user-info {
@@ -39,60 +134,182 @@
         .btn-logout, .btn-back {
             background: rgba(255, 255, 255, 0.2);
             color: white;
-            border: 2px solid white;
-            padding: 8px 20px;
-            border-radius: 5px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 25px;
+            border-radius: 50px;
             cursor: pointer;
             text-decoration: none;
-            transition: background 0.3s;
+            transition: all 0.3s;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .btn-logout:hover, .btn-back:hover {
             background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
         .container {
             max-width: 1400px;
             margin: 30px auto;
             padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .alert {
+            padding: 18px 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            animation: slideInRight 0.5s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .alert-success {
+            background: rgba(212, 237, 218, 0.95);
+            color: #155724;
+            border-left: 5px solid #28a745;
+            box-shadow: 0 10px 30px rgba(40, 167, 69, 0.2);
+        }
+
+        .summary-box {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            color: #333;
+            padding: 40px;
+            border-radius: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .summary-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, rgba(240, 147, 251, 0.1), rgba(245, 87, 108, 0.1));
+            border-radius: 50%;
+            transform: translate(50%, -50%);
+        }
+
+        .summary-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .summary-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(240, 147, 251, 0.4);
+        }
+
+        .summary-text h3 {
+            font-size: 48px;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .summary-text p {
+            font-size: 18px;
+            color: #666;
+            font-weight: 600;
         }
 
         .card {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
             margin-bottom: 30px;
+            animation: fadeInUp 0.8s ease 0.2s both;
         }
 
         .section-title {
-            font-size: 1.5em;
+            font-size: 28px;
             color: #333;
-            margin-bottom: 20px;
-            border-bottom: 3px solid #f093fb;
-            padding-bottom: 10px;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid;
+            border-image: linear-gradient(90deg, #f093fb, #f5576c) 1;
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
-            color: #555;
-            font-weight: 500;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .form-group input,
         .form-group select,
         .form-group textarea {
             width: 100%;
-            padding: 12px 15px;
+            padding: 15px 20px;
             border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1em;
-            transition: border-color 0.3s;
+            border-radius: 15px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background: #f8f9fa;
+            font-family: inherit;
         }
 
         .form-group input:focus,
@@ -100,149 +317,221 @@
         .form-group textarea:focus {
             outline: none;
             border-color: #f093fb;
+            background: white;
+            box-shadow: 0 10px 30px rgba(240, 147, 251, 0.15);
+            transform: translateY(-3px);
         }
 
         .btn-submit {
-            padding: 12px 30px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 16px 40px;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 1em;
-            font-weight: 600;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 700;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(240, 147, 251, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .btn-submit:hover {
-            transform: translateY(-2px);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(240, 147, 251, 0.4);
         }
 
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0 15px;
             margin-top: 20px;
         }
 
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
+        thead tr {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
         }
 
         th {
-            background: #f8f9fa;
+            padding: 18px;
+            text-align: left;
             font-weight: 600;
-            color: #555;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        tr:hover {
-            background: #f8f9fa;
+        th:first-child {
+            border-radius: 15px 0 0 15px;
+        }
+
+        th:last-child {
+            border-radius: 0 15px 15px 0;
+        }
+
+        tbody tr {
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(240, 147, 251, 0.25);
+        }
+
+        td {
+            padding: 18px;
+        }
+
+        td:first-child {
+            border-radius: 15px 0 0 15px;
+        }
+
+        td:last-child {
+            border-radius: 0 15px 15px 0;
+        }
+
+        .amount {
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .badge {
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            animation: bounceIn 0.6s ease;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0);
+            }
+            50% {
+                transform: scale(1.15);
+            }
+            100% {
+                transform: scale(1);
+            }
         }
 
         .badge-success {
-            background: #d4edda;
-            color: #155724;
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
         }
 
         .badge-danger {
-            background: #f8d7da;
+            background: linear-gradient(135deg, #fa709a, #fee140);
             color: #721c24;
         }
 
         .btn {
-            padding: 6px 15px;
+            padding: 10px 20px;
             border: none;
-            border-radius: 5px;
+            border-radius: 50px;
             cursor: pointer;
-            font-size: 0.9em;
-            transition: all 0.2s;
-            margin: 2px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin: 3px;
             text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
 
         .btn-pay {
-            background: #28a745;
+            background: linear-gradient(135deg, #11998e, #38ef7d);
             color: white;
-        }
-
-        .btn-pay:hover {
-            background: #218838;
-        }
-
-        .alert {
-            padding: 12px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
         }
 
         .no-data {
             text-align: center;
-            padding: 40px;
+            padding: 80px;
             color: #999;
-            font-size: 1.1em;
+            font-size: 18px;
         }
 
-        .summary-box {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 30px;
-        }
-
-        .summary-box h3 {
-            font-size: 2em;
-            margin-bottom: 5px;
-        }
-
-        .summary-box p {
-            opacity: 0.9;
+        .no-data i {
+            font-size: 80px;
+            margin-bottom: 25px;
+            opacity: 0.3;
+            display: block;
         }
 
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
                 gap: 15px;
+                padding: 20px;
+            }
+
+            .summary-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .card {
+                padding: 25px;
             }
 
             table {
-                font-size: 0.9em;
+                font-size: 13px;
             }
 
             th, td {
-                padding: 8px;
+                padding: 12px;
             }
         }
     </style>
 </head>
 <body>
+    <div class="coins-background">
+        <i class="fas fa-coins coin"></i>
+        <i class="fas fa-dollar-sign coin"></i>
+        <i class="fas fa-coins coin"></i>
+        <i class="fas fa-rupee-sign coin"></i>
+        <i class="fas fa-coins coin"></i>
+        <i class="fas fa-money-bill-wave coin"></i>
+        <i class="fas fa-coins coin"></i>
+        <i class="fas fa-dollar-sign coin"></i>
+        <i class="fas fa-coins coin"></i>
+    </div>
+
     <div class="header">
-        <h1>💰 Billing & Payments</h1>
+        <h1>
+            <div class="billing-icon">
+                <i class="fas fa-receipt"></i>
+            </div>
+            Billing & Payments
+        </h1>
         <div class="user-info">
-            <span>{{ session.user_name }}</span>
+            <span style="font-weight: 600;">{{ session.user_name }}</span>
             {% if session.user_role == 'doctor' %}
-                <a href="/doctor/dashboard" class="btn-back">← Dashboard</a>
+                <a href="/doctor/dashboard" class="btn-back"><i class="fas fa-arrow-left"></i> Dashboard</a>
             {% elif session.user_role == 'patient' %}
-                <a href="/patient/dashboard" class="btn-back">← Dashboard</a>
+                <a href="/patient/dashboard" class="btn-back"><i class="fas fa-arrow-left"></i> Dashboard</a>
             {% elif session.user_role == 'admin' %}
-                <a href="/admin/dashboard" class="btn-back">← Dashboard</a>
+                <a href="/admin/dashboard" class="btn-back"><i class="fas fa-arrow-left"></i> Dashboard</a>
             {% endif %}
-            <a href="/logout" class="btn-logout">Logout</a>
+            <a href="/logout" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
     </div>
 
@@ -250,24 +539,36 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                    <div class="alert alert-{{ category }}">
+                        <i class="fas fa-check-circle" style="font-size: 22px;"></i>
+                        <span>{{ message }}</span>
+                    </div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
 
         {% if session.user_role == 'patient' %}
         <div class="summary-box">
-            <h3>₹{{ bills|sum(attribute='total_amount') if bills else 0 }}</h3>
-            <p>Total Outstanding Amount</p>
+            <div class="summary-content">
+                <div class="summary-icon">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div class="summary-text">
+                    <h3>₹{{ bills|sum(attribute='total_amount') if bills else 0 }}</h3>
+                    <p>Total Outstanding Amount</p>
+                </div>
+            </div>
         </div>
         {% endif %}
 
         {% if session.user_role == 'admin' %}
         <div class="card">
-            <h2 class="section-title">Generate New Bill</h2>
+            <h2 class="section-title">
+                <i class="fas fa-plus-circle"></i> Generate New Bill
+            </h2>
             <form method="POST" action="/add_bill" onsubmit="return validateBill()">
                 <div class="form-group">
-                    <label for="patient_id">Select Patient</label>
+                    <label><i class="fas fa-user"></i> Select Patient</label>
                     <select id="patient_id" name="patient_id" required>
                         <option value="">Choose a patient</option>
                         {% for patient in patients %}
@@ -277,7 +578,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="doctor_id">Select Doctor</label>
+                    <label><i class="fas fa-user-md"></i> Select Doctor</label>
                     <select id="doctor_id" name="doctor_id" required>
                         <option value="">Choose a doctor</option>
                         {% for doctor in doctors %}
@@ -287,23 +588,28 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="description">Description</label>
+                    <label><i class="fas fa-file-alt"></i> Description</label>
                     <textarea id="description" name="description" rows="3" placeholder="Enter billing description (e.g., Consultation, Tests, Medicine)" required></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label for="total_amount">Total Amount (₹)</label>
+                    <label><i class="fas fa-rupee-sign"></i> Total Amount (₹)</label>
                     <input type="number" id="total_amount" name="total_amount" step="0.01" min="0" placeholder="Enter amount" required>
                 </div>
 
-                <button type="submit" class="btn-submit">Create Bill</button>
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-paper-plane"></i> Create Bill
+                </button>
             </form>
         </div>
         {% endif %}
 
         <div class="card">
-            <h2 class="section-title">Billing History</h2>
+            <h2 class="section-title">
+                <i class="fas fa-history"></i> Billing History
+            </h2>
             {% if bills %}
+            <div style="overflow-x: auto;">
             <table>
                 <thead>
                     <tr>
@@ -328,31 +634,33 @@
                 <tbody>
                     {% for bill in bills %}
                     <tr>
-                        <td>{{ bill.id }}</td>
+                        <td><strong>#{{ bill.id }}</strong></td>
                         {% if session.user_role == 'doctor' %}
-                        <td>{{ bill.patient_name }}</td>
+                        <td><i class="fas fa-user"></i> {{ bill.patient_name }}</td>
                         {% elif session.user_role == 'patient' %}
-                        <td>{{ bill.doctor_name }}</td>
+                        <td><i class="fas fa-user-md"></i> Dr. {{ bill.doctor_name }}</td>
                         {% else %}
-                        <td>{{ bill.patient_name }}</td>
-                        <td>{{ bill.doctor_name }}</td>
+                        <td><i class="fas fa-user"></i> {{ bill.patient_name }}</td>
+                        <td><i class="fas fa-user-md"></i> Dr. {{ bill.doctor_name }}</td>
                         {% endif %}
                         <td>{{ bill.description }}</td>
-                        <td>₹{{ bill.total_amount }}</td>
-                        <td>{{ bill.date }}</td>
+                        <td class="amount">₹{{ bill.total_amount }}</td>
+                        <td><i class="fas fa-calendar"></i> {{ bill.date }}</td>
                         <td>
                             {% if bill.status == 'Paid' %}
-                                <span class="badge badge-success">{{ bill.status }}</span>
+                                <span class="badge badge-success"><i class="fas fa-check-circle"></i> {{ bill.status }}</span>
                             {% else %}
-                                <span class="badge badge-danger">{{ bill.status }}</span>
+                                <span class="badge badge-danger"><i class="fas fa-times-circle"></i> {{ bill.status }}</span>
                             {% endif %}
                         </td>
                         {% if session.user_role == 'admin' or session.user_role == 'patient' %}
                         <td>
                             {% if bill.status == 'Unpaid' %}
-                                <a href="/update_bill_status/{{ bill.id }}/Paid" class="btn btn-pay">Mark as Paid</a>
+                                <a href="/update_bill_status/{{ bill.id }}/Paid" class="btn btn-pay">
+                                    <i class="fas fa-credit-card"></i> Mark as Paid
+                                </a>
                             {% else %}
-                                -
+                                <span style="color: #999;">-</span>
                             {% endif %}
                         </td>
                         {% endif %}
@@ -360,8 +668,12 @@
                     {% endfor %}
                 </tbody>
             </table>
+            </div>
             {% else %}
-            <p class="no-data">No billing records found.</p>
+            <div class="no-data">
+                <i class="fas fa-receipt"></i>
+                <p>No billing records found.</p>
+            </div>
             {% endif %}
         </div>
     </div>
@@ -385,6 +697,38 @@
 
             return true;
         }
+
+        // Add ripple effect
+        document.querySelectorAll('.btn-submit, .btn-pay').forEach(el => {
+            el.addEventListener('click', function(e) {
+                const ripple = document.createElement('div');
+                ripple.style.position = 'absolute';
+                ripple.style.borderRadius = '50%';
+                ripple.style.background = 'rgba(255, 255, 255, 0.6)';
+                ripple.style.width = ripple.style.height = '100px';
+                ripple.style.left = e.clientX - this.getBoundingClientRect().left - 50 + 'px';
+                ripple.style.top = e.clientY - this.getBoundingClientRect().top - 50 + 'px';
+                ripple.style.animation = 'ripple-effect 0.6s';
+                ripple.style.pointerEvents = 'none';
+                
+                this.style.position = 'relative';
+                this.style.overflow = 'hidden';
+                this.appendChild(ripple);
+                
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple-effect {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
