@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doctor Dashboard - Hospital Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -12,22 +13,133 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f2f5;
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated grid background */
+        .grid-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: grid-move 20s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes grid-move {
+            0% {
+                transform: translate(0, 0);
+            }
+            100% {
+                transform: translate(50px, 50px);
+            }
+        }
+
+        /* Floating medical elements */
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .medical-element {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.1);
+            font-size: 40px;
+            animation: float-medical 15s infinite ease-in-out;
+        }
+
+        .element1 { top: 15%; left: 10%; animation-delay: 0s; }
+        .element2 { top: 65%; right: 15%; animation-delay: 3s; }
+        .element3 { bottom: 25%; left: 20%; animation-delay: 6s; }
+        .element4 { top: 40%; right: 30%; animation-delay: 9s; }
+        .element5 { bottom: 15%; right: 10%; animation-delay: 12s; }
+
+        @keyframes float-medical {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0.1;
+            }
+            50% {
+                transform: translateY(-50px) rotate(180deg);
+                opacity: 0.2;
+            }
         }
 
         .header {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 20px 40px;
+            padding: 25px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            animation: slideDown 0.6s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .doctor-badge {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 10px 30px rgba(79, 172, 254, 0.4);
+            animation: pulse-rotate 4s infinite;
+        }
+
+        @keyframes pulse-rotate {
+            0%, 100% {
+                box-shadow: 0 10px 30px rgba(79, 172, 254, 0.4);
+                transform: scale(1) rotate(0deg);
+            }
+            50% {
+                box-shadow: 0 15px 40px rgba(79, 172, 254, 0.6);
+                transform: scale(1.05) rotate(180deg);
+            }
         }
 
         .header h1 {
-            font-size: 1.8em;
+            font-size: 28px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
 
         .user-info {
@@ -36,207 +148,458 @@
             gap: 20px;
         }
 
+        .doctor-info {
+            text-align: right;
+        }
+
+        .doctor-name {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .doctor-title {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
         .btn-logout {
             background: rgba(255, 255, 255, 0.2);
             color: white;
-            border: 2px solid white;
-            padding: 8px 20px;
-            border-radius: 5px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 25px;
+            border-radius: 50px;
             cursor: pointer;
             text-decoration: none;
-            transition: background 0.3s;
+            transition: all 0.3s;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .btn-logout:hover {
             background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
         .container {
             max-width: 1400px;
             margin: 30px auto;
             padding: 0 20px;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-
-        .nav-links a {
-            padding: 12px 25px;
-            background: white;
-            color: #333;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.3s;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            font-weight: 500;
-        }
-
-        .nav-links a:hover {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-
-        .section-title {
-            font-size: 1.5em;
-            color: #333;
-            margin-bottom: 20px;
-            border-bottom: 3px solid #4facfe;
-            padding-bottom: 10px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        th {
-            background: #f8f9fa;
-            font-weight: 600;
-            color: #555;
-        }
-
-        tr:hover {
-            background: #f8f9fa;
-        }
-
-        .badge {
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: 600;
-        }
-
-        .badge-success {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .badge-warning {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .badge-danger {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .btn {
-            padding: 6px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: all 0.2s;
-            margin: 2px;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-complete {
-            background: #28a745;
-            color: white;
-        }
-
-        .btn-complete:hover {
-            background: #218838;
-        }
-
-        .btn-cancel {
-            background: #dc3545;
-            color: white;
-        }
-
-        .btn-cancel:hover {
-            background: #c82333;
+            position: relative;
+            z-index: 1;
         }
 
         .alert {
-            padding: 12px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            padding: 18px 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            animation: slideInRight 0.5s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
         .alert-success {
-            background-color: #d4edda;
+            background: rgba(212, 237, 218, 0.95);
             color: #155724;
-            border: 1px solid #c3e6cb;
+            border-left: 5px solid #28a745;
+            box-shadow: 0 10px 30px rgba(40, 167, 69, 0.2);
         }
 
-        .no-data {
-            text-align: center;
-            padding: 40px;
-            color: #999;
-            font-size: 1.1em;
+        .nav-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .nav-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, rgba(79, 172, 254, 0.1), transparent);
+            border-radius: 0 25px 0 100%;
+            transition: all 0.4s;
+        }
+
+        .nav-card:hover::after {
+            width: 200px;
+            height: 200px;
+        }
+
+        .nav-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
+            color: white;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(79, 172, 254, 0.3);
+            transition: all 0.3s;
+            position: relative;
+            z-index: 1;
+        }
+
+        .nav-card:hover .nav-icon {
+            transform: scale(1.1) rotate(-10deg);
+        }
+
+        .nav-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #333;
+            position: relative;
+            z-index: 1;
+        }
+
+        .nav-desc {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
         }
 
         .stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease 0.4s both;
         }
 
         .stat-card {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
             color: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 35px;
+            border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(79, 172, 254, 0.3);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+            animation: rotate-slow 20s linear infinite;
+        }
+
+        @keyframes rotate-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 60px rgba(79, 172, 254, 0.4);
+        }
+
+        .stat-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+            opacity: 0.3;
+            position: absolute;
+            right: 25px;
+            top: 25px;
         }
 
         .stat-card h3 {
-            font-size: 2em;
-            margin-bottom: 5px;
+            font-size: 52px;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+            animation: countUp 1.5s ease;
+        }
+
+        @keyframes countUp {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         .stat-card p {
-            font-size: 1em;
-            opacity: 0.9;
+            font-size: 16px;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            animation: fadeInUp 0.8s ease 0.6s both;
+        }
+
+        .section-title {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid;
+            border-image: linear-gradient(90deg, #4facfe, #00f2fe) 1;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 15px;
+            margin-top: 20px;
+        }
+
+        thead tr {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+        }
+
+        th {
+            padding: 18px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        th:first-child {
+            border-radius: 15px 0 0 15px;
+        }
+
+        th:last-child {
+            border-radius: 0 15px 15px 0;
+        }
+
+        tbody tr {
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            transform: translateX(10px);
+            box-shadow: 0 10px 30px rgba(79, 172, 254, 0.25);
+        }
+
+        td {
+            padding: 18px;
+        }
+
+        td:first-child {
+            border-radius: 15px 0 0 15px;
+        }
+
+        td:last-child {
+            border-radius: 0 15px 15px 0;
+        }
+
+        .badge {
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            animation: bounceIn 0.6s ease;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0);
+            }
+            50% {
+                transform: scale(1.15);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .badge-success {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+        }
+
+        .badge-warning {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+        }
+
+        .badge-danger {
+            background: linear-gradient(135deg, #fa709a, #fee140);
+            color: #721c24;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin: 3px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn-complete {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+        }
+
+        .btn-cancel {
+            background: linear-gradient(135deg, #fa709a, #fee140);
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 80px;
+            color: #999;
+            font-size: 18px;
+        }
+
+        .no-data i {
+            font-size: 80px;
+            margin-bottom: 25px;
+            opacity: 0.3;
+            display: block;
         }
 
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
                 gap: 15px;
+                padding: 20px;
+            }
+
+            .header-left {
+                flex-direction: column;
+            }
+
+            .doctor-info {
+                text-align: center;
+            }
+
+            .nav-links {
+                grid-template-columns: 1fr;
             }
 
             table {
-                font-size: 0.9em;
+                font-size: 13px;
             }
 
             th, td {
-                padding: 8px;
+                padding: 12px;
             }
         }
     </style>
 </head>
 <body>
+    <div class="grid-background"></div>
+    
+    <div class="floating-elements">
+        <i class="fas fa-stethoscope medical-element element1"></i>
+        <i class="fas fa-heartbeat medical-element element2"></i>
+        <i class="fas fa-syringe medical-element element3"></i>
+        <i class="fas fa-prescription-bottle medical-element element4"></i>
+        <i class="fas fa-notes-medical medical-element element5"></i>
+    </div>
+
     <div class="header">
-        <h1>👨‍⚕️ Doctor Dashboard</h1>
+        <div class="header-left">
+            <div class="doctor-badge">
+                <i class="fas fa-user-md"></i>
+            </div>
+            <h1><i class="fas fa-hospital"></i> Doctor's Dashboard</h1>
+        </div>
         <div class="user-info">
-            <span>Dr. {{ session.user_name }}</span>
-            <a href="/logout" class="btn-logout">Logout</a>
+            <div class="doctor-info">
+                <div class="doctor-name">Dr. {{ session.user_name }}</div>
+                <div class="doctor-title">Medical Professional</div>
+            </div>
+            <a href="/logout" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
         </div>
     </div>
 
@@ -244,35 +607,56 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                    <div class="alert alert-{{ category }}">
+                        <i class="fas fa-check-circle" style="font-size: 22px;"></i>
+                        <span>{{ message }}</span>
+                    </div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
 
         <div class="nav-links">
-            <a href="/appointments">📅 All Appointments</a>
-            <a href="/medical_records">📋 Medical Records</a>
-            <a href="/billing">💰 Billing</a>
+            <a href="/appointments" class="nav-card">
+                <div class="nav-icon"><i class="fas fa-calendar-check"></i></div>
+                <div class="nav-title">All Appointments</div>
+                <div class="nav-desc">View and manage patient appointments</div>
+            </a>
+            <a href="/medical_records" class="nav-card">
+                <div class="nav-icon"><i class="fas fa-file-medical"></i></div>
+                <div class="nav-title">Medical Records</div>
+                <div class="nav-desc">Create and manage patient medical records</div>
+            </a>
+            <a href="/billing" class="nav-card">
+                <div class="nav-icon"><i class="fas fa-receipt"></i></div>
+                <div class="nav-title">Billing</div>
+                <div class="nav-desc">View billing information and invoices</div>
+            </a>
         </div>
 
         <div class="stats">
             <div class="stat-card">
+                <i class="fas fa-calendar-alt stat-icon"></i>
                 <h3>{{ appointments|length }}</h3>
-                <p>Total Appointments</p>
+                <p><i class="fas fa-list"></i> Total Appointments</p>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                <i class="fas fa-clock stat-icon"></i>
                 <h3>{{ appointments|selectattr('status', 'equalto', 'Pending')|list|length }}</h3>
-                <p>Pending</p>
+                <p><i class="fas fa-hourglass-half"></i> Pending</p>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" style="background: linear-gradient(135deg, #11998e, #38ef7d);">
+                <i class="fas fa-check-circle stat-icon"></i>
                 <h3>{{ appointments|selectattr('status', 'equalto', 'Completed')|list|length }}</h3>
-                <p>Completed</p>
+                <p><i class="fas fa-check-double"></i> Completed</p>
             </div>
         </div>
 
         <div class="card">
-            <h2 class="section-title">My Appointments</h2>
+            <h2 class="section-title">
+                <i class="fas fa-calendar-check"></i> My Appointments
+            </h2>
             {% if appointments %}
+            <div style="overflow-x: auto;">
             <table>
                 <thead>
                     <tr>
@@ -289,25 +673,29 @@
                 <tbody>
                     {% for appointment in appointments %}
                     <tr>
-                        <td>{{ appointment.id }}</td>
-                        <td>{{ appointment.patient_name }}</td>
-                        <td>{{ appointment.contact }}</td>
-                        <td>{{ appointment.date }}</td>
-                        <td>{{ appointment.time }}</td>
+                        <td><strong>#{{ appointment.id }}</strong></td>
+                        <td><i class="fas fa-user"></i> {{ appointment.patient_name }}</td>
+                        <td><i class="fas fa-phone"></i> {{ appointment.contact }}</td>
+                        <td><i class="fas fa-calendar"></i> {{ appointment.date }}</td>
+                        <td><i class="fas fa-clock"></i> {{ appointment.time }}</td>
                         <td>{{ appointment.reason }}</td>
                         <td>
                             {% if appointment.status == 'Completed' %}
-                                <span class="badge badge-success">{{ appointment.status }}</span>
+                                <span class="badge badge-success"><i class="fas fa-check-circle"></i> {{ appointment.status }}</span>
                             {% elif appointment.status == 'Cancelled' %}
-                                <span class="badge badge-danger">{{ appointment.status }}</span>
+                                <span class="badge badge-danger"><i class="fas fa-times-circle"></i> {{ appointment.status }}</span>
                             {% else %}
-                                <span class="badge badge-warning">{{ appointment.status }}</span>
+                                <span class="badge badge-warning"><i class="fas fa-clock"></i> {{ appointment.status }}</span>
                             {% endif %}
                         </td>
                         <td>
                             {% if appointment.status == 'Pending' %}
-                                <a href="/doctor/update_appointment/{{ appointment.id }}/Completed" class="btn btn-complete">Complete</a>
-                                <a href="/doctor/update_appointment/{{ appointment.id }}/Cancelled" class="btn btn-cancel" onclick="return confirm('Cancel this appointment?')">Cancel</a>
+                                <a href="/doctor/update_appointment/{{ appointment.id }}/Completed" class="btn btn-complete">
+                                    <i class="fas fa-check"></i> Complete
+                                </a>
+                                <a href="/doctor/update_appointment/{{ appointment.id }}/Cancelled" class="btn btn-cancel" onclick="return confirm('Cancel this appointment?')">
+                                    <i class="fas fa-times"></i> Cancel
+                                </a>
                             {% else %}
                                 -
                             {% endif %}
@@ -316,10 +704,49 @@
                     {% endfor %}
                 </tbody>
             </table>
+            </div>
             {% else %}
-            <p class="no-data">No appointments scheduled.</p>
+            <div class="no-data">
+                <i class="fas fa-calendar-times"></i>
+                <p>No appointments scheduled.</p>
+            </div>
             {% endif %}
         </div>
     </div>
+
+    <script>
+        document.querySelectorAll('.btn, .nav-card').forEach(el => {
+            el.addEventListener('click', function(e) {
+                if (this.classList.contains('nav-card')) {
+                    const ripple = document.createElement('div');
+                    ripple.style.position = 'absolute';
+                    ripple.style.borderRadius = '50%';
+                    ripple.style.background = 'rgba(79, 172, 254, 0.5)';
+                    ripple.style.width = ripple.style.height = '100px';
+                    ripple.style.left = e.clientX - this.getBoundingClientRect().left - 50 + 'px';
+                    ripple.style.top = e.clientY - this.getBoundingClientRect().top - 50 + 'px';
+                    ripple.style.animation = 'ripple-effect 0.8s';
+                    ripple.style.pointerEvents = 'none';
+                    
+                    this.style.position = 'relative';
+                    this.style.overflow = 'hidden';
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => ripple.remove(), 800);
+                }
+            });
+        });
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple-effect {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
 </body>
 </html>
