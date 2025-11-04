@@ -3,433 +3,503 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Hospital Management System</title>
+    <title>MediCare Pro - Login & Register</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* General Reset */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        /* Body and Background */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            /* Enhanced gradient with a deeper feel */
+            background: linear-gradient(135deg, #434c9c 0%, #6a40a2 50%, #d463d6 100%);
             min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            overflow-x: hidden;
             position: relative;
-            overflow: hidden;
         }
 
-        /* Animated Background Particles */
-        .particle {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            animation: float 15s infinite ease-in-out;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0; }
-            50% { opacity: 1; }
-        }
-
-        .particle:nth-child(1) { width: 80px; height: 80px; left: 10%; animation-delay: 0s; }
-        .particle:nth-child(2) { width: 60px; height: 60px; right: 15%; animation-delay: 2s; }
-        .particle:nth-child(3) { width: 40px; height: 40px; left: 30%; animation-delay: 4s; }
-        .particle:nth-child(4) { width: 100px; height: 100px; right: 30%; animation-delay: 6s; }
-        .particle:nth-child(5) { width: 50px; height: 50px; left: 60%; animation-delay: 8s; }
-
-        .login-container {
+        /* Animated background elements */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 450px;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        /* Existing floating shapes style */
+        .floating-shape {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.15); /* Slightly less transparent */
+            backdrop-filter: blur(15px); /* Stronger blur for a 'frosted glass' look */
+            border-radius: 50%;
+            animation: float 25s infinite ease-in-out; /* Slower animation */
+            border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle border for definition */
+        }
+
+        .shape1 {
+            width: 350px;
+            height: 350px;
+            top: -175px;
+            left: -175px;
+            animation-delay: 0s;
+        }
+
+        .shape2 {
+            width: 250px;
+            height: 250px;
+            top: 60%;
+            right: -125px;
+            animation-delay: 8s;
+        }
+
+        .shape3 {
+            width: 180px;
+            height: 180px;
+            bottom: -90px;
+            left: 20%;
+            animation-delay: 16s;
+        }
+
+        /* Keyframe: Float (slightly adjusted for scale) */
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg) scale(1);
+            }
+            33% {
+                transform: translate(60px, -60px) rotate(100deg) scale(1.05);
+            }
+            66% {
+                transform: translate(-60px, 60px) rotate(260deg) scale(0.95);
+            }
+        }
+
+        /* Medical cross animation (made larger and more ethereal) */
+        .medical-cross {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.03); /* More transparent */
+            font-size: 150px; /* Larger */
+            animation: pulse 4s infinite; /* Slower pulse */
+            pointer-events: none;
+        }
+
+        .cross1 { top: 5%; left: 5%; animation-delay: 0s; }
+        .cross2 { top: 80%; right: 10%; animation-delay: 1.5s; }
+        .cross3 { bottom: 5%; left: 40%; animation-delay: 3s; }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.03;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.1;
+                transform: scale(1.05);
+            }
+        }
+
+        /* Main Container */
+        .container {
             position: relative;
-            z-index: 10;
-            animation: slideUp 0.8s ease-out;
+            z-index: 10; /* Higher z-index for main content */
+            background: rgba(255, 255, 255, 1); /* Opaque white for clarity */
+            border-radius: 30px;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4); /* Deeper shadow */
+            overflow: hidden;
+            max-width: 480px; /* Slightly wider */
+            width: 90%;
+            animation: slideUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smoother animation curve */
         }
 
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .login-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 25px;
-            padding: 50px 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        /* Logo Section - The 'Cooler and Sexier' part */
+        .logo-section {
+            /* Deeper, more refined gradient */
+            background: linear-gradient(135deg, #434c9c 0%, #764ba2 100%);
+            padding: 50px 30px; /* More padding */
+            text-align: center;
             position: relative;
             overflow: hidden;
         }
 
-        .login-card::before {
+        /* Radial 'Shine' on Logo Section */
+        .logo-section::before {
             content: '';
             position: absolute;
             top: -50%;
             left: -50%;
             width: 200%;
             height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(102, 126, 234, 0.1), transparent);
-            animation: shine 3s infinite;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%); /* Stronger shine */
+            animation: rotate 25s linear infinite;
         }
 
-        @keyframes shine {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
-        .logo-section {
-            text-align: center;
-            margin-bottom: 40px;
+        /* Logo Icon - Custom Heartbeat */
+        .logo-icon {
+            font-size: 100px; /* Larger icon */
+            color: #ffb8d9; /* Lighter, more vibrant color */
+            margin-bottom: 20px;
+            animation: customHeartbeat 2.5s infinite ease-in-out; /* Slower, smoother heartbeat */
             position: relative;
             z-index: 1;
+            text-shadow: 0 0 20px rgba(255, 184, 217, 0.8); /* Glow effect */
         }
 
-        .logo-icon {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4); }
-            50% { transform: scale(1.05); box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6); }
-        }
-
-        .logo-icon i {
-            font-size: 50px;
-            color: white;
+        /* Custom Heartbeat Keyframes */
+        @keyframes customHeartbeat {
+            0% { transform: scale(1); opacity: 0.8; }
+            15% { transform: scale(1.15) rotate(-3deg); opacity: 1; }
+            30% { transform: scale(0.95) rotate(3deg); opacity: 0.9; }
+            50% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 0.8; }
         }
 
         .logo-section h1 {
-            font-size: 2em;
-            color: #333;
+            color: white;
+            font-size: 32px; /* Larger title */
+            font-weight: 800; /* Bolder */
             margin-bottom: 10px;
-            font-weight: 700;
-        }
-
-        .logo-section p {
-            color: #666;
-            font-size: 0.95em;
-        }
-
-        .alert {
-            padding: 15px 20px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            animation: slideDown 0.5s ease-out;
-            position: relative;
-            z-index: 1;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .alert-success { background-color: #d4edda; color: #155724; border-left: 4px solid #28a745; }
-        .alert-danger { background-color: #f8d7da; color: #721c24; border-left: 4px solid #dc3545; }
-        .alert-warning { background-color: #fff3cd; color: #856404; border-left: 4px solid #ffc107; }
-        .alert-info { background-color: #d1ecf1; color: #0c5460; border-left: 4px solid #17a2b8; }
-
-        .form-group {
-            margin-bottom: 25px;
+            letter-spacing: 1px;
             position: relative;
             z-index: 1;
         }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 10px;
-            color: #555;
+        /* Tagline Style - New! */
+        .logo-section h2 {
+            color: #ffb8d9; /* Same color as icon for unity */
+            font-size: 18px;
             font-weight: 600;
-            font-size: 0.95em;
-            transition: color 0.3s;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+            font-style: italic;
         }
 
-        .input-wrapper {
+        /* Information Paragraph Style - New! */
+        .logo-section p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 13px;
+            line-height: 1.5;
             position: relative;
+            z-index: 1;
+            max-width: 80%;
+            margin: 0 auto;
+        }
+
+        /* Form Section */
+        .form-section {
+            padding: 40px 40px;
+        }
+
+        /* Tabs */
+        .tab-btn {
+            padding: 14px; /* More clickable area */
+            border-radius: 15px; /* Softer corners */
+        }
+
+        .tab-btn.active::before {
+            background: linear-gradient(135deg, #434c9c, #764ba2); /* Match new gradient */
+        }
+
+        /* Input Group */
+        .input-group {
+            margin-bottom: 30px;
+        }
+
+        .form-input {
+            padding: 16px 15px 16px 50px; /* Increased padding and icon space */
+            border-radius: 15px;
+            border-color: #ddd;
         }
 
         .input-icon {
-            position: absolute;
-            left: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #999;
-            transition: color 0.3s;
-            font-size: 1.1em;
+            left: 20px; /* Move icon slightly right */
+            color: #434c9c; /* Match new primary color */
         }
 
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 15px 15px 15px 50px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            font-size: 1em;
-            transition: all 0.3s;
-            background: white;
+        .form-input:focus {
+            border-color: #434c9c;
+            box-shadow: 0 5px 20px rgba(67, 76, 156, 0.2);
         }
 
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-            transform: translateY(-2px);
+        .form-input:focus + .input-icon {
+            color: #6a40a2;
         }
 
-        .form-group input:focus ~ label,
-        .form-group select:focus ~ label {
-            color: #667eea;
+        /* Role Selector */
+        .role-option input:checked + .role-label {
+            border-color: #434c9c;
+            background: linear-gradient(135deg, #434c9c, #764ba2);
         }
 
-        .form-group input:focus + .input-icon,
-        .form-group select:focus + .input-icon {
-            color: #667eea;
+        /* Submit Button */
+        .btn-submit {
+            padding: 18px; /* Bigger button */
+            border-radius: 15px;
+            background: linear-gradient(135deg, #434c9c 0%, #764ba2 100%); /* Match new gradient */
+            box-shadow: 0 15px 40px rgba(67, 76, 156, 0.3);
+            font-size: 18px;
         }
 
-        .btn-login {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
+        .btn-submit:hover {
+            box-shadow: 0 20px 50px rgba(67, 76, 156, 0.5);
         }
 
-        .btn-login::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn-login:hover::before {
-            left: 100%;
-        }
-
-        .btn-login:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-login:active {
-            transform: translateY(-1px);
-        }
-
-        .divider {
-            text-align: center;
-            margin: 30px 0;
-            position: relative;
-            z-index: 1;
-        }
-
-        .divider::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            width: 100%;
-            height: 1px;
-            background: #ddd;
-        }
-
-        .divider span {
-            background: white;
-            padding: 0 20px;
-            color: #999;
-            position: relative;
-            z-index: 1;
-        }
-
-        .register-link {
-            text-align: center;
-            position: relative;
-            z-index: 1;
-        }
-
-        .register-link a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s;
-            display: inline-block;
-        }
-
-        .register-link a:hover {
-            color: #764ba2;
-            transform: translateX(5px);
-        }
-
-        /* Loading Animation */
-        .btn-login.loading {
-            pointer-events: none;
-            opacity: 0.7;
-        }
-
-        .btn-login.loading::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            animation: spin 0.6s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: translateY(-50%) rotate(360deg); }
-        }
-
+        /* Media Queries - Ensure Responsiveness */
         @media (max-width: 768px) {
-            .login-card {
-                padding: 40px 30px;
+            .container {
+                margin: 20px 10px;
             }
 
+            .logo-section {
+                padding: 40px 20px;
+            }
+            
             .logo-section h1 {
-                font-size: 1.5em;
+                font-size: 28px;
             }
 
             .logo-icon {
-                width: 80px;
-                height: 80px;
+                font-size: 80px;
             }
 
-            .logo-icon i {
-                font-size: 40px;
+            .form-section {
+                padding: 30px 20px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Animated Background Particles -->
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
+    <div class="bg-animation">
+        <div class="floating-shape shape1"></div>
+        <div class="floating-shape shape2"></div>
+        <div class="floating-shape shape3"></div>
+        <i class="fas fa-microscope medical-cross cross1"></i> 
+        <i class="fas fa-x-ray medical-cross cross2"></i>
+        <i class="fas fa-file-medical medical-cross cross3"></i>
+    </div>
 
-    <div class="login-container">
-        <div class="login-card">
-            <div class="logo-section">
-                <div class="logo-icon">
-                    <i class="fas fa-hospital"></i>
-                </div>
-                <h1>Hospital Management</h1>
-                <p>Login to your account</p>
-            </div>
+    <div class="container">
+        <div class="logo-section">
+            <div class="logo-icon">
+                <i class="fas fa-clinic-medical"></i> </div>
+            <h1>MediCare Pro</h1>
+            <h2>The Future of Healthcare Management.</h2>
+            <p>
+                Seamlessly connect patients, doctors, and administration with our advanced system.
+                <strong>Efficiency meets Excellence.</strong>
+            </p>
+        </div>
 
+        <div class="form-section">
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
                         <div class="alert alert-{{ category }}">
-                            <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'danger' %}exclamation-circle{% elif category == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
-                            {{ message }}
+                            <i class="fas fa-info-circle"></i>
+                            <span>{{ message }}</span>
                         </div>
                     {% endfor %}
                 {% endif %}
             {% endwith %}
 
-            <form method="POST" action="/login" id="loginForm">
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-envelope input-icon"></i>
-                        <input type="email" id="email" name="email" placeholder="Enter your email" required>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-lock input-icon"></i>
-                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="role">Login As</label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-user-tag input-icon"></i>
-                        <select id="role" name="role" required>
-                            <option value="">Select Role</option>
-                            <option value="admin">👨‍💼 Admin</option>
-                            <option value="doctor">👨‍⚕️ Doctor</option>
-                            <option value="patient">🧑‍🦱 Patient</option>
-                        </select>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-login" id="loginBtn">
-                    <i class="fas fa-sign-in-alt"></i> Login
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('login')">
+                    <span><i class="fas fa-sign-in-alt"></i> Access Portal</span>
                 </button>
-            </form>
-
-            <div class="divider">
-                <span>OR</span>
+                <button class="tab-btn" onclick="switchTab('register')">
+                    <span><i class="fas fa-user-plus"></i> Join Network</span>
+                </button>
             </div>
 
-            <div class="register-link">
-                <p>Don't have an account? <a href="/register"><i class="fas fa-user-plus"></i> Register Now</a></p>
+            <div id="login-form" class="form-content active">
+                <form method="POST" action="/login">
+                    <div class="input-group">
+                        <label>Email Address</label>
+                        <div class="input-wrapper">
+                            <input type="email" name="email" class="form-input" placeholder="Enter your professional email" required>
+                            <i class="fas fa-envelope input-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" name="password" class="form-input" placeholder="Enter your secure password" required>
+                            <i class="fas fa-lock input-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Login As</label>
+                        <div class="role-selector">
+                            <div class="role-option">
+                                <input type="radio" name="role" value="admin" id="login-admin">
+                                <label for="login-admin" class="role-label">
+                                    <i class="fas fa-user-shield role-icon"></i>
+                                    <span class="role-name">Admin</span>
+                                </label>
+                            </div>
+                            <div class="role-option">
+                                <input type="radio" name="role" value="doctor" id="login-doctor" checked>
+                                <label for="login-doctor" class="role-label">
+                                    <i class="fas fa-user-md role-icon"></i>
+                                    <span class="role-name">Doctor</span>
+                                </label>
+                            </div>
+                            <div class="role-option">
+                                <input type="radio" name="role" value="patient" id="login-patient">
+                                <label for="login-patient" class="role-label">
+                                    <i class="fas fa-user role-icon"></i>
+                                    <span class="role-name">Patient</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-sign-in-alt"></i> Login Now
+                    </button>
+                </form>
+            </div>
+
+            <div id="register-form" class="form-content">
+                <form method="POST" action="/register">
+                    <div class="input-group">
+                        <label>Full Name</label>
+                        <div class="input-wrapper">
+                            <input type="text" name="name" class="form-input" placeholder="Enter your full name" required>
+                            <i class="fas fa-user input-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Email Address</label>
+                        <div class="input-wrapper">
+                            <input type="email" name="email" class="form-input" placeholder="Enter your email" required>
+                            <i class="fas fa-envelope input-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" name="password" class="form-input" placeholder="Create a secure password" required>
+                            <i class="fas fa-lock input-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Contact Number</label>
+                        <div class="input-wrapper">
+                            <input type="tel" name="contact" class="form-input" placeholder="Enter your phone number" required>
+                            <i class="fas fa-phone input-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Register As</label>
+                        <div class="role-selector">
+                            <div class="role-option">
+                                <input type="radio" name="role" value="doctor" id="register-doctor" checked onclick="toggleSpecialization(true)">
+                                <label for="register-doctor" class="role-label">
+                                    <i class="fas fa-user-md role-icon"></i>
+                                    <span class="role-name">Doctor</span>
+                                </label>
+                            </div>
+                            <div class="role-option">
+                                <input type="radio" name="role" value="patient" id="register-patient" onclick="toggleSpecialization(false)">
+                                <label for="register-patient" class="role-label">
+                                    <i class="fas fa-user role-icon"></i>
+                                    <span class="role-name">Patient</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group" id="specialization-group">
+                        <label>Specialization</label>
+                        <div class="input-wrapper">
+                            <input type="text" name="specialization" class="form-input" placeholder="e.g., Cardiology, Neurology" required>
+                            <i class="fas fa-stethoscope input-icon"></i>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-user-plus"></i> Create Account
+                    </button>
+                </form>
             </div>
         </div>
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            const btn = document.getElementById('loginBtn');
-            btn.classList.add('loading');
-            btn.innerHTML = '<i class="fas fa-spinner"></i> Logging in...';
+        // Initial call to hide specialization for patient role, if needed
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if the initial selection is 'doctor' on load
+            if (document.getElementById('register-doctor') && document.getElementById('register-doctor').checked) {
+                toggleSpecialization(true);
+            } else {
+                toggleSpecialization(false);
+            }
         });
 
-        // Add floating animation to particles
-        document.querySelectorAll('.particle').forEach((particle, index) => {
-            particle.style.top = Math.random() * 100 + '%';
-            particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+        function switchTab(tab) {
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const tabBtns = document.querySelectorAll('.tab-btn');
+
+            tabBtns.forEach(btn => btn.classList.remove('active'));
+
+            if (tab === 'login') {
+                loginForm.classList.add('active');
+                registerForm.classList.remove('active');
+                // Assuming login tab is the first button
+                document.querySelector('.tabs button:nth-child(1)').classList.add('active');
+            } else {
+                registerForm.classList.add('active');
+                loginForm.classList.remove('active');
+                // Assuming register tab is the second button
+                document.querySelector('.tabs button:nth-child(2)').classList.add('active');
+            }
+        }
+
+        function toggleSpecialization(show) {
+            const specializationGroup = document.getElementById('specialization-group');
+            const specializationInput = specializationGroup.querySelector('input[name="specialization"]');
+
+            if (show) {
+                specializationGroup.style.display = 'block';
+                specializationInput.required = true; // Make field required for doctors
+            } else {
+                specializationGroup.style.display = 'none';
+                specializationInput.required = false; // Remove required for patients
+            }
+        }
+
+        // Add floating animation to inputs on focus (improved)
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transition = 'transform 0.2s ease-out';
+                this.parentElement.style.transform = 'translateY(-3px)';
+            });
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'translateY(0)';
+            });
         });
     </script>
 </body>
