@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Dashboard - Hospital Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -12,22 +13,142 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f2f5;
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated wave background */
+        .wave-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: wave 10s infinite linear;
+        }
+
+        .wave:nth-child(2) {
+            animation-delay: -2s;
+            opacity: 0.5;
+            animation-duration: 12s;
+        }
+
+        .wave:nth-child(3) {
+            animation-delay: -4s;
+            opacity: 0.3;
+            animation-duration: 14s;
+        }
+
+        @keyframes wave {
+            0% { transform: translateX(-50%) translateY(0) rotate(0deg); }
+            100% { transform: translateX(-50%) translateY(20px) rotate(360deg); }
+        }
+
+        /* Floating medical icons */
+        .floating-icon {
+            position: fixed;
+            color: rgba(255, 255, 255, 0.08);
+            font-size: 60px;
+            animation: float-icon 20s infinite ease-in-out;
+            z-index: 0;
+        }
+
+        .icon1 { top: 10%; left: 5%; animation-delay: 0s; }
+        .icon2 { top: 60%; right: 10%; animation-delay: 5s; }
+        .icon3 { bottom: 20%; left: 15%; animation-delay: 10s; }
+        .icon4 { top: 30%; right: 25%; animation-delay: 15s; }
+
+        @keyframes float-icon {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-30px) rotate(5deg);
+            }
+            50% {
+                transform: translateY(0) rotate(-5deg);
+            }
+            75% {
+                transform: translateY(30px) rotate(5deg);
+            }
         }
 
         .header {
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 20px 40px;
+            padding: 25px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            animation: slideDown 0.6s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .patient-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #43e97b, #38f9d7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 10px 30px rgba(67, 233, 123, 0.4);
+            animation: pulse-glow 3s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% {
+                box-shadow: 0 10px 30px rgba(67, 233, 123, 0.4);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 15px 40px rgba(67, 233, 123, 0.6);
+                transform: scale(1.05);
+            }
         }
 
         .header h1 {
-            font-size: 1.8em;
+            font-size: 28px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
 
         .user-info {
@@ -36,122 +157,307 @@
             gap: 20px;
         }
 
+        .welcome-text {
+            text-align: right;
+        }
+
+        .welcome-text .name {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .welcome-text .role {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
         .btn-logout {
             background: rgba(255, 255, 255, 0.2);
             color: white;
-            border: 2px solid white;
-            padding: 8px 20px;
-            border-radius: 5px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 25px;
+            border-radius: 50px;
             cursor: pointer;
             text-decoration: none;
-            transition: background 0.3s;
-            font-weight: 500;
+            transition: all 0.3s;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .btn-logout:hover {
             background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
         .container {
             max-width: 1400px;
             margin: 30px auto;
             padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .alert {
+            padding: 18px 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            animation: slideInRight 0.5s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .alert-success {
+            background: rgba(212, 237, 218, 0.95);
+            color: #155724;
+            border-left: 5px solid #28a745;
+            box-shadow: 0 10px 30px rgba(40, 167, 69, 0.2);
+        }
+
+        .alert-danger {
+            background: rgba(248, 215, 218, 0.95);
+            color: #721c24;
+            border-left: 5px solid #dc3545;
+            box-shadow: 0 10px 30px rgba(220, 53, 69, 0.2);
+        }
+
+        .alert-warning {
+            background: rgba(255, 243, 205, 0.95);
+            color: #856404;
+            border-left: 5px solid #ffc107;
+            box-shadow: 0 10px 30px rgba(255, 193, 7, 0.2);
+        }
+
+        .alert-info {
+            background: rgba(209, 236, 241, 0.95);
+            color: #0c5460;
+            border-left: 5px solid #17a2b8;
+            box-shadow: 0 10px 30px rgba(23, 162, 184, 0.2);
         }
 
         .nav-links {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease 0.2s both;
         }
 
-        .nav-links a {
-            padding: 12px 25px;
-            background: white;
-            color: #333;
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .nav-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 25px;
             text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.3s;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            font-weight: 500;
+            color: #333;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
         }
 
-        .nav-links a:hover {
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        .nav-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(67, 233, 123, 0.3), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .nav-card:hover::before {
+            left: 100%;
+        }
+
+        .nav-card:hover {
+            transform: translateY(-15px) rotate(2deg);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #43e97b, #38f9d7);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
             color: white;
-            transform: translateY(-2px);
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(67, 233, 123, 0.3);
+            transition: all 0.3s;
+        }
+
+        .nav-card:hover .nav-icon {
+            transform: scale(1.1) rotate(10deg);
+        }
+
+        .nav-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .nav-desc {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
         }
 
         .tabs {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 15px;
+            margin-bottom: 30px;
             flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease 0.4s both;
         }
 
         .tab-button {
-            padding: 12px 25px;
-            background: white;
+            padding: 15px 35px;
+            background: rgba(255, 255, 255, 0.9);
             border: none;
-            border-radius: 8px;
+            border-radius: 50px;
             cursor: pointer;
-            font-size: 1em;
-            transition: all 0.3s;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            font-weight: 500;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            color: #333;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #43e97b, #38f9d7);
+            transition: all 0.6s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .tab-button.active::before {
+            width: 500px;
+            height: 500px;
         }
 
         .tab-button.active {
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
             color: white;
+            box-shadow: 0 15px 35px rgba(67, 233, 123, 0.4);
+            transform: translateY(-3px);
+        }
+
+        .tab-button span {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-button:hover:not(.active) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
         }
 
         .tab-content {
             display: none;
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
         }
 
         .tab-content.active {
             display: block;
-            animation: fadeIn 0.3s;
+            animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         .section-title {
-            font-size: 1.5em;
+            font-size: 28px;
             color: #333;
-            margin-bottom: 20px;
-            border-bottom: 3px solid #43e97b;
-            padding-bottom: 10px;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid;
+            border-image: linear-gradient(90deg, #43e97b, #38f9d7) 1;
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
-            color: #555;
-            font-weight: 500;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .form-group input,
         .form-group select,
         .form-group textarea {
             width: 100%;
-            padding: 12px 15px;
+            padding: 15px 20px;
             border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1em;
-            transition: border-color 0.3s;
+            border-radius: 15px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background: #f8f9fa;
+            font-family: inherit;
         }
 
         .form-group input:focus,
@@ -159,150 +465,226 @@
         .form-group textarea:focus {
             outline: none;
             border-color: #43e97b;
+            background: white;
+            box-shadow: 0 10px 30px rgba(67, 233, 123, 0.15);
+            transform: translateY(-3px);
         }
 
         .btn-submit {
-            padding: 12px 30px;
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            padding: 16px 40px;
+            background: linear-gradient(135deg, #43e97b, #38f9d7);
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 1em;
-            font-weight: 600;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 700;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(67, 233, 123, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .btn-submit:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(67, 233, 123, 0.4);
+        }
+
+        .btn-submit:active {
             transform: translateY(-2px);
         }
 
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0 15px;
             margin-top: 20px;
         }
 
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
+        thead tr {
+            background: linear-gradient(135deg, #43e97b, #38f9d7);
+            color: white;
         }
 
         th {
-            background: #f8f9fa;
+            padding: 18px;
+            text-align: left;
             font-weight: 600;
-            color: #555;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        tr:hover {
-            background: #f8f9fa;
+        th:first-child {
+            border-radius: 15px 0 0 15px;
+        }
+
+        th:last-child {
+            border-radius: 0 15px 15px 0;
+        }
+
+        tbody tr {
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            transform: translateY(-5px) scale(1.01);
+            box-shadow: 0 10px 30px rgba(67, 233, 123, 0.2);
+        }
+
+        td {
+            padding: 18px;
+        }
+
+        td:first-child {
+            border-radius: 15px 0 0 15px;
+        }
+
+        td:last-child {
+            border-radius: 0 15px 15px 0;
         }
 
         .badge {
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            animation: bounceIn 0.6s ease;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0);
+            }
+            50% {
+                transform: scale(1.15);
+            }
+            100% {
+                transform: scale(1);
+            }
         }
 
         .badge-success {
-            background: #d4edda;
-            color: #155724;
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
         }
 
         .badge-warning {
-            background: #fff3cd;
-            color: #856404;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
         }
 
         .badge-danger {
-            background: #f8d7da;
+            background: linear-gradient(135deg, #fa709a, #fee140);
             color: #721c24;
         }
 
         .btn {
-            padding: 6px 15px;
+            padding: 10px 20px;
             border: none;
-            border-radius: 5px;
+            border-radius: 50px;
             cursor: pointer;
-            font-size: 0.9em;
-            transition: all 0.2s;
-            margin: 2px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin: 3px;
             text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             color: white;
         }
 
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
         .btn-cancel {
-            background: #dc3545;
-        }
-
-        .btn-cancel:hover {
-            background: #c82333;
-        }
-
-        .alert {
-            padding: 12px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .alert-danger {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .alert-warning {
-            background-color: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-        }
-
-        .alert-info {
-            background-color: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
+            background: linear-gradient(135deg, #fa709a, #fee140);
         }
 
         .no-data {
             text-align: center;
-            padding: 40px;
+            padding: 80px;
             color: #999;
-            font-size: 1.1em;
+            font-size: 18px;
+        }
+
+        .no-data i {
+            font-size: 80px;
+            margin-bottom: 25px;
+            opacity: 0.3;
+            display: block;
         }
 
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
                 gap: 15px;
+                padding: 20px;
+            }
+
+            .header-left {
+                flex-direction: column;
+            }
+
+            .welcome-text {
+                text-align: center;
+            }
+
+            .nav-links {
+                grid-template-columns: 1fr;
             }
 
             table {
-                font-size: 0.9em;
-                display: block;
-                overflow-x: auto;
+                font-size: 13px;
             }
 
             th, td {
-                padding: 8px;
+                padding: 12px;
+            }
+
+            .tab-button {
+                padding: 12px 20px;
+                font-size: 14px;
             }
         }
     </style>
 </head>
 <body>
+    <div class="wave-background">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
+
+    <i class="fas fa-heartbeat floating-icon icon1"></i>
+    <i class="fas fa-pills floating-icon icon2"></i>
+    <i class="fas fa-user-md floating-icon icon3"></i>
+    <i class="fas fa-hospital floating-icon icon4"></i>
+
     <div class="header">
-        <h1>🏥 Patient Dashboard</h1>
+        <div class="header-left">
+            <div class="patient-icon">
+                <i class="fas fa-user"></i>
+            </div>
+            <h1><i class="fas fa-hospital-user"></i> Patient Portal</h1>
+        </div>
         <div class="user-info">
-            <span>Welcome, {{ session.user_name }}</span>
-            <a href="/logout" class="btn-logout">Logout</a>
+            <div class="welcome-text">
+                <div class="name">{{ session.user_name }}</div>
+                <div class="role">Patient Account</div>
+            </div>
+            <a href="/logout" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
         </div>
     </div>
 
@@ -310,27 +692,48 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                    <div class="alert alert-{{ category }}">
+                        <i class="fas fa-info-circle" style="font-size: 22px;"></i>
+                        <span>{{ message }}</span>
+                    </div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
 
         <div class="nav-links">
-            <a href="/appointments">📅 Appointments</a>
-            <a href="/medical_records">📋 Medical Records</a>
-            <a href="/billing">💰 View Bills</a>
+            <a href="/appointments" class="nav-card">
+                <div class="nav-icon"><i class="fas fa-calendar-check"></i></div>
+                <div class="nav-title">My Appointments</div>
+                <div class="nav-desc">Schedule and manage your doctor appointments</div>
+            </a>
+            <a href="/medical_records" class="nav-card">
+                <div class="nav-icon"><i class="fas fa-file-medical-alt"></i></div>
+                <div class="nav-title">Medical Records</div>
+                <div class="nav-desc">View your complete medical history and reports</div>
+            </a>
+            <a href="/billing" class="nav-card">
+                <div class="nav-icon"><i class="fas fa-receipt"></i></div>
+                <div class="nav-title">My Bills</div>
+                <div class="nav-desc">Check and pay your medical bills online</div>
+            </a>
         </div>
 
         <div class="tabs">
-            <button class="tab-button active" data-tab="book-appointment">📝 Book Appointment</button>
-            <button class="tab-button" data-tab="my-appointments">📋 My Appointments</button>
+            <button class="tab-button active" data-tab="book-appointment">
+                <span><i class="fas fa-plus-circle"></i> Book Appointment</span>
+            </button>
+            <button class="tab-button" data-tab="my-appointments">
+                <span><i class="fas fa-list"></i> My Appointments</span>
+            </button>
         </div>
 
         <div id="book-appointment" class="tab-content active">
-            <h2 class="section-title">Book New Appointment</h2>
+            <h2 class="section-title">
+                <i class="fas fa-calendar-plus"></i> Book New Appointment
+            </h2>
             <form method="POST" action="/appointments" onsubmit="return validateAppointment()">
                 <div class="form-group">
-                    <label for="doctor_id">Select Doctor</label>
+                    <label><i class="fas fa-user-md"></i> Select Doctor</label>
                     <select id="doctor_id" name="doctor_id" required>
                         <option value="">Choose a doctor</option>
                         {% for doctor in doctors %}
@@ -340,26 +743,30 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="date">Appointment Date</label>
+                    <label><i class="fas fa-calendar"></i> Appointment Date</label>
                     <input type="date" id="date" name="date" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="time">Appointment Time</label>
+                    <label><i class="fas fa-clock"></i> Appointment Time</label>
                     <input type="time" id="time" name="time" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="reason">Reason for Visit</label>
-                    <textarea id="reason" name="reason" rows="4" placeholder="Describe your symptoms or reason for appointment" required></textarea>
+                    <label><i class="fas fa-notes-medical"></i> Reason for Visit</label>
+                    <textarea id="reason" name="reason" rows="4" placeholder="Describe your symptoms or reason for appointment..." required></textarea>
                 </div>
 
-                <button type="submit" class="btn-submit">Book Appointment</button>
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-check-circle"></i> Book Appointment Now
+                </button>
             </form>
         </div>
 
         <div id="my-appointments" class="tab-content">
-            <h2 class="section-title">My Appointments</h2>
+            <h2 class="section-title">
+                <i class="fas fa-calendar-alt"></i> My Appointments
+            </h2>
             {% if appointments %}
             <div style="overflow-x: auto;">
             <table>
@@ -378,24 +785,26 @@
                 <tbody>
                     {% for appointment in appointments %}
                     <tr>
-                        <td>{{ appointment.id }}</td>
-                        <td>Dr. {{ appointment.doctor_name }}</td>
-                        <td>{{ appointment.specialization }}</td>
-                        <td>{{ appointment.date }}</td>
-                        <td>{{ appointment.time }}</td>
+                        <td><strong>#{{ appointment.id }}</strong></td>
+                        <td><i class="fas fa-user-md"></i> Dr. {{ appointment.doctor_name }}</td>
+                        <td><i class="fas fa-stethoscope"></i> {{ appointment.specialization }}</td>
+                        <td><i class="fas fa-calendar"></i> {{ appointment.date }}</td>
+                        <td><i class="fas fa-clock"></i> {{ appointment.time }}</td>
                         <td>{{ appointment.reason }}</td>
                         <td>
                             {% if appointment.status == 'Completed' %}
-                                <span class="badge badge-success">✓ {{ appointment.status }}</span>
+                                <span class="badge badge-success"><i class="fas fa-check-circle"></i> {{ appointment.status }}</span>
                             {% elif appointment.status == 'Cancelled' %}
-                                <span class="badge badge-danger">✗ {{ appointment.status }}</span>
+                                <span class="badge badge-danger"><i class="fas fa-times-circle"></i> {{ appointment.status }}</span>
                             {% else %}
-                                <span class="badge badge-warning">⏳ {{ appointment.status }}</span>
+                                <span class="badge badge-warning"><i class="fas fa-clock"></i> {{ appointment.status }}</span>
                             {% endif %}
                         </td>
                         <td>
                             {% if appointment.status == 'Pending' %}
-                                <a href="/patient/cancel_appointment/{{ appointment.id }}" class="btn btn-cancel" onclick="return confirm('Are you sure you want to cancel this appointment?')">Cancel</a>
+                                <a href="/patient/cancel_appointment/{{ appointment.id }}" class="btn btn-cancel" onclick="return confirm('Are you sure you want to cancel this appointment?')">
+                                    <i class="fas fa-times"></i> Cancel
+                                </a>
                             {% else %}
                                 -
                             {% endif %}
@@ -406,13 +815,15 @@
             </table>
             </div>
             {% else %}
-            <p class="no-data">No appointments booked yet.</p>
+            <div class="no-data">
+                <i class="fas fa-calendar-times"></i>
+                <p>No appointments booked yet. Book your first appointment now!</p>
+            </div>
             {% endif %}
         </div>
     </div>
 
     <script>
-        // Fixed tab switching function
         function showTab(tabName) {
             const tabs = document.querySelectorAll('.tab-content');
             const buttons = document.querySelectorAll('.tab-button');
@@ -450,16 +861,13 @@
             return true;
         }
 
-        // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
-            // Set minimum date to today
             const dateInput = document.getElementById('date');
             if (dateInput) {
                 const today = new Date().toISOString().split('T')[0];
                 dateInput.setAttribute('min', today);
             }
 
-            // Add event listeners to tab buttons
             const tabButtons = document.querySelectorAll('.tab-button');
             tabButtons.forEach(button => {
                 button.addEventListener('click', function() {
@@ -467,7 +875,39 @@
                     showTab(tabName);
                 });
             });
+
+            // Add ripple effect
+            document.querySelectorAll('.btn, .tab-button, .nav-card').forEach(el => {
+                el.addEventListener('click', function(e) {
+                    const ripple = document.createElement('div');
+                    ripple.style.position = 'absolute';
+                    ripple.style.borderRadius = '50%';
+                    ripple.style.background = 'rgba(255, 255, 255, 0.6)';
+                    ripple.style.width = ripple.style.height = '100px';
+                    ripple.style.left = e.clientX - this.getBoundingClientRect().left - 50 + 'px';
+                    ripple.style.top = e.clientY - this.getBoundingClientRect().top - 50 + 'px';
+                    ripple.style.animation = 'ripple-effect 0.6s';
+                    ripple.style.pointerEvents = 'none';
+                    
+                    this.style.position = 'relative';
+                    this.style.overflow = 'hidden';
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => ripple.remove(), 600);
+                });
+            });
         });
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple-effect {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
