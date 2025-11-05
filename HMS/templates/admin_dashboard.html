@@ -455,14 +455,12 @@
             {% endif %}
         {% endwith %}
 
-        <!-- Navigation Buttons -->
         <div class="nav-buttons">
             <a href="/appointments">📅 View All Appointments</a>
             <a href="/medical_records">📋 View Medical Records</a>
             <a href="/billing">💰 Manage Billing</a>
         </div>
 
-        <!-- Statistics Cards -->
         <div class="stats-grid">
             <div class="stat-card">
                 <h3>{{ doctors|length }}</h3>
@@ -482,7 +480,6 @@
             </div>
         </div>
 
-        <!-- Tab Buttons -->
         <div class="tabs">
             <button class="tab-button active" onclick="showTab('doctors')">👨‍⚕️ Manage Doctors</button>
             <button class="tab-button" onclick="showTab('patients')">👥 Manage Patients</button>
@@ -490,7 +487,6 @@
             <button class="tab-button" onclick="showTab('billing')">💰 View Billing</button>
         </div>
 
-        <!-- Doctors Tab -->
         <div id="doctors" class="tab-content active">
             <h2 class="section-title">Manage Doctors</h2>
             {% if doctors %}
@@ -539,7 +535,6 @@
             {% endif %}
         </div>
 
-        <!-- Patients Tab -->
         <div id="patients" class="tab-content">
             <h2 class="section-title">Manage Patients</h2>
             {% if patients %}
@@ -575,7 +570,6 @@
             {% endif %}
         </div>
 
-        <!-- Appointments Tab -->
         <div id="appointments" class="tab-content">
             <h2 class="section-title">All Appointments</h2>
             {% if appointments %}
@@ -620,7 +614,6 @@
             {% endif %}
         </div>
 
-        <!-- Billing Tab -->
         <div id="billing" class="tab-content">
             <h2 class="section-title">All Billing Records</h2>
             {% if billing %}
@@ -664,7 +657,6 @@
         </div>
     </div>
 
-    <!-- Edit Doctor Modal -->
     <div id="editDoctorModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -700,7 +692,6 @@
         </div>
     </div>
 
-    <!-- Edit Patient Modal -->
     <div id="editPatientModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
