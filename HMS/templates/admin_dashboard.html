@@ -3,24 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Hospital Management System</title>
+    <title>Nexus Health: Admin Console</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* New Professional Global Styles */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        :root {
+            --primary-color: #00bcd4; /* Teal Blue Accent */
+            --secondary-color: #2196f3; /* Bright Blue */
+            --dark-bg: #1f2937; /* Dark Charcoal */
+            --light-bg: #2d3748; /* Slightly lighter dark background */
+            --text-light: #e2e8f0;
+            --text-dark: #1a202c;
+            --card-hover-shadow: 0 10px 30px rgba(0, 188, 212, 0.3);
+        }
+
         body {
-            font-family: 'Poppins', 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+            /* Deeper, more sophisticated dark blue gradient */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #10151d 0%, #1a1f26 50%, #1f2937 100%);
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
+            color: var(--text-light);
         }
 
-        /* Animated particles background */
+        /* Animated particles (Enhanced Subtlety) */
         .particles {
             position: fixed;
             top: 0;
@@ -33,22 +46,16 @@
 
         .particle {
             position: absolute;
-            background: rgba(255, 255, 255, 0.1);
+            /* Subtler particle color/opacity */
+            background: rgba(255, 255, 255, 0.05); 
             border-radius: 50%;
-            animation: particle-float 15s infinite;
+            animation: particle-float 20s infinite linear; /* Slower, linear animation */
         }
 
         @keyframes particle-float {
-            0%, 100% {
-                transform: translateY(0) translateX(0);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
+            0% { transform: translateY(0) translateX(0); opacity: 0; }
+            5% { opacity: 0.8; }
+            95% { opacity: 0.8; }
             100% {
                 transform: translateY(-100vh) translateX(50px);
                 opacity: 0;
@@ -56,15 +63,17 @@
         }
 
         .header {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 25px 40px;
+            /* Glassmorphism/Neumorphism style dark header */
+            background: rgba(26, 31, 38, 0.8);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            padding: 20px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            /* Softer, more professional shadow */
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5); 
             position: sticky;
             top: 0;
             z-index: 100;
@@ -72,85 +81,46 @@
         }
 
         @keyframes slideDown {
-            from {
-                transform: translateY(-100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .logo {
-            font-size: 40px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.1);
-            }
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         .header h1 {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 700;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary-color); /* Highlight the title */
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
         }
 
         .user-info {
             display: flex;
             align-items: center;
             gap: 20px;
-        }
-
-        .user-avatar {
-            width: 45px;
-            height: 45px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-            animation: rotate 10s linear infinite;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            font-weight: 500;
         }
 
         .btn-logout {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            padding: 10px 25px;
-            border-radius: 50px;
+            /* Sleek, dark button with border */
+            background: transparent;
+            color: var(--text-light);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 20px;
+            border-radius: 20px;
             cursor: pointer;
             text-decoration: none;
             transition: all 0.3s;
             font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            font-size: 0.9em;
         }
 
         .btn-logout:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            background: rgba(0, 188, 212, 0.2); /* Subtle hover effect */
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(0, 188, 212, 0.15);
         }
 
         .container {
@@ -161,592 +131,387 @@
             z-index: 1;
         }
 
+        /* Flash Message Alerts - Enhanced look */
+        .alert {
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            font-weight: 500;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            font-size: 1.05em;
+        }
+
+        .alert-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-danger { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .alert-warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .alert-info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+
+
         .nav-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            display: flex;
+            gap: 15px;
             margin-bottom: 40px;
+            flex-wrap: wrap;
             animation: fadeInUp 0.8s ease 0.2s both;
         }
 
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .nav-card {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 25px;
-            border-radius: 20px;
+        .nav-buttons a {
+            /* Action Buttons - Primary Color */
+            padding: 12px 25px;
+            background: var(--primary-color);
+            color: var(--dark-bg);
             text-decoration: none;
-            color: #333;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .nav-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .nav-card:hover::before {
-            left: 100%;
-        }
-
-        .nav-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-        }
-
-        .nav-icon {
-            font-size: 40px;
-            margin-bottom: 15px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .nav-title {
-            font-size: 18px;
+            border-radius: 8px;
             font-weight: 700;
-            margin-bottom: 8px;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 188, 212, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .nav-desc {
-            font-size: 13px;
-            color: #666;
+        .nav-buttons a:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 188, 212, 0.6);
+            background: #00a4b7;
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
             animation: fadeInUp 0.8s ease 0.4s both;
         }
 
         .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+            /* Dark, clean card style */
+            background: var(--light-bg);
+            color: var(--text-light);
+            padding: 40px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             position: relative;
             overflow: hidden;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         .stat-card::before {
+            /* Subtle, less distracting visual element */
             content: '';
             position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            animation: rotate 15s linear infinite;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at top left, rgba(0, 188, 212, 0.1) 0%, transparent 50%);
+            z-index: 0;
+            opacity: 0.8;
+            transition: opacity 0.4s;
+        }
+
+        .stat-card:hover::before {
+             opacity: 1;
         }
 
         .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 45px rgba(102, 126, 234, 0.4);
-        }
-
-        .stat-icon {
-            font-size: 45px;
-            margin-bottom: 15px;
-            opacity: 0.3;
-            position: absolute;
-            right: 20px;
-            top: 20px;
+            transform: translateY(-8px);
+            box-shadow: var(--card-hover-shadow);
         }
 
         .stat-card h3 {
-            font-size: 48px;
+            font-size: 56px;
             margin-bottom: 5px;
             position: relative;
             z-index: 1;
-            animation: countUp 1s ease;
-        }
-
-        @keyframes countUp {
-            from {
-                opacity: 0;
-                transform: scale(0.5);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+            font-weight: 700;
+            color: var(--primary-color);
         }
 
         .stat-card p {
-            font-size: 16px;
-            opacity: 0.9;
+            font-size: 18px;
+            opacity: 0.8;
             position: relative;
             z-index: 1;
         }
 
         .tabs {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             margin-bottom: 30px;
             flex-wrap: wrap;
             animation: fadeInUp 0.8s ease 0.6s both;
+            border-bottom: 2px solid var(--light-bg);
+            padding-bottom: 5px;
         }
 
         .tab-button {
-            padding: 15px 30px;
-            background: rgba(255, 255, 255, 0.9);
+            padding: 12px 20px;
+            background: var(--light-bg);
             border: none;
-            border-radius: 50px;
+            border-radius: 8px 8px 0 0;
             cursor: pointer;
             font-size: 15px;
             font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            color: #333;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .tab-button::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            transition: all 0.6s ease;
-            transform: translate(-50%, -50%);
-        }
-
-        .tab-button.active::before {
-            width: 400px;
-            height: 400px;
+            transition: all 0.3s;
+            box-shadow: none;
+            color: var(--text-light);
+            border-bottom: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .tab-button.active {
-            color: white;
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--text-dark);
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2);
+            border-bottom: 3px solid var(--primary-color);
         }
 
-        .tab-button span {
-            position: relative;
-            z-index: 1;
-        }
-
-        .tab-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        .tab-button:hover:not(.active) {
+            background: #2d3748;
+            transform: translateY(-2px);
+            color: var(--primary-color);
         }
 
         .tab-content {
             display: none;
+            /* White content area inside dark dashboard */
             background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 35px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            border-radius: 0 15px 15px 15px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
             backdrop-filter: blur(10px);
         }
 
         .tab-content.active {
             display: block;
-            animation: fadeInScale 0.5s ease;
+            animation: fadeIn 0.3s;
         }
 
-        @keyframes fadeInScale {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .section-title {
-            font-size: 28px;
-            color: #333;
+            font-size: 1.8em;
+            color: var(--text-dark);
             margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid;
-            border-image: linear-gradient(90deg, #667eea, #764ba2) 1;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .section-title i {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 10px;
+            font-weight: 600;
         }
 
         table {
             width: 100%;
-            border-collapse: separate;
-            border-spacing: 0 10px;
+            border-collapse: collapse;
             margin-top: 20px;
+            border-radius: 10px;
+            overflow: hidden;
         }
 
-        thead tr {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+            color: var(--text-dark);
         }
 
         th {
-            padding: 15px;
-            text-align: left;
-            font-weight: 600;
-            font-size: 14px;
+            background: #f1f5f9;
+            font-weight: 700;
+            color: #333;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        th:first-child {
-            border-radius: 10px 0 0 10px;
-        }
-
-        th:last-child {
-            border-radius: 0 10px 10px 0;
-        }
-
-        tbody tr {
-            background: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
+            font-size: 0.9em;
         }
 
         tbody tr:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
-        }
-
-        td {
-            padding: 15px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        td:first-child {
-            border-radius: 10px 0 0 10px;
-        }
-
-        td:last-child {
-            border-radius: 0 10px 10px 0;
+            background: #eef2f6;
         }
 
         .badge {
-            padding: 6px 14px;
-            border-radius: 50px;
-            font-size: 12px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
             font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            animation: bounceIn 0.5s ease;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
 
-        @keyframes bounceIn {
-            0% {
-                transform: scale(0);
-            }
-            50% {
-                transform: scale(1.1);
-            }
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        .badge-success {
-            background: linear-gradient(135deg, #11998e, #38ef7d);
-            color: white;
-        }
-
-        .badge-warning {
-            background: linear-gradient(135deg, #f093fb, #f5576c);
-            color: white;
-        }
-
-        .badge-danger {
-            background: linear-gradient(135deg, #fa709a, #fee140);
-            color: #721c24;
-        }
+        .badge-success { background: #1a7e48; color: white; }
+        .badge-warning { background: #ffc107; color: #333; }
+        .badge-danger { background: #dc3545; color: white; }
 
         .btn {
             padding: 8px 18px;
             border: none;
-            border-radius: 50px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.3s;
+            font-size: 0.9em;
+            transition: all 0.2s;
             margin: 3px;
             text-decoration: none;
-            display: inline-flex;
+            display: inline-flex; /* Use flex for icon alignment */
             align-items: center;
-            gap: 6px;
+            gap: 5px;
+            font-weight: 600;
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
+        .btn-approve { background: #28a745; color: white; }
+        .btn-approve:hover { background: #1e7e34; transform: scale(1.05); }
 
-        .btn-approve {
-            background: linear-gradient(135deg, #11998e, #38ef7d);
-            color: white;
-        }
+        .btn-edit { background: var(--secondary-color); color: white; }
+        .btn-edit:hover { background: #0b7dda; transform: scale(1.05); }
 
-        .btn-edit {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-        }
-
-        .btn-delete {
-            background: linear-gradient(135deg, #fa709a, #fee140);
-            color: white;
-        }
-
-        .alert {
-            padding: 15px 20px;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            animation: slideInRight 0.5s ease;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 500;
-        }
-
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .alert-success {
-            background: linear-gradient(135deg, #d4edda, #c3e6cb);
-            color: #155724;
-            border-left: 5px solid #28a745;
-        }
-
-        .alert-danger {
-            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
-            color: #721c24;
-            border-left: 5px solid #dc3545;
-        }
-
-        .alert-warning {
-            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
-            color: #856404;
-            border-left: 5px solid #ffc107;
-        }
-
-        .alert-info {
-            background: linear-gradient(135deg, #d1ecf1, #bee5eb);
-            color: #0c5460;
-            border-left: 5px solid #17a2b8;
-        }
+        .btn-delete { background: #dc3545; color: white; }
+        .btn-delete:hover { background: #c82333; transform: scale(1.05); }
 
         .no-data {
             text-align: center;
-            padding: 60px;
+            padding: 50px;
             color: #999;
-            font-size: 18px;
+            font-size: 1.2em;
+            font-style: italic;
         }
 
-        .no-data i {
-            font-size: 60px;
-            margin-bottom: 20px;
-            opacity: 0.3;
-        }
-
-        /* Modal Styles */
+        /* Modal Styles - Updated for Dark Theme integration */
         .modal {
             display: none;
             position: fixed;
-            z-index: 1000;
+            z-index: 2000;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(5px);
+            background-color: rgba(0, 0, 0, 0.7);
             animation: fadeIn 0.3s;
         }
 
         .modal-content {
-            background: white;
+            background-color: #f8f9fa; /* Light modal on dark background */
             margin: 5% auto;
-            padding: 40px;
-            border-radius: 25px;
+            padding: 30px;
+            border-radius: 12px;
             width: 90%;
             max-width: 600px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: zoomIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            animation: slideUp 0.4s ease-out;
+            color: var(--text-dark);
         }
-
-        @keyframes zoomIn {
-            from {
-                transform: scale(0.8);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
+        
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #f0f0f0;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 15px;
         }
 
         .modal-header h2 {
-            color: #333;
-            font-size: 26px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            color: var(--primary-color);
+            font-size: 1.8em;
+            font-weight: 600;
         }
 
         .close {
-            color: #aaa;
+            color: #777;
             font-size: 32px;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
+            transition: color 0.3s;
         }
 
         .close:hover {
-            background: #f0f0f0;
-            color: #000;
-            transform: rotate(90deg);
+            color: #dc3545;
         }
 
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 10px;
-            color: #333;
+            margin-bottom: 8px;
+            color: #555;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 0.95em;
         }
 
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 14px 18px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            font-size: 15px;
-            transition: all 0.3s;
-            background: #f8f9fa;
+            padding: 12px 15px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
         .form-group input:focus,
         .form-group select:focus {
             outline: none;
-            border-color: #667eea;
-            background: white;
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.1);
-            transform: translateY(-2px);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.2);
         }
 
         .btn-save {
-            padding: 14px 35px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
+            padding: 12px 30px;
+            background: var(--primary-color);
+            color: var(--dark-bg);
             border: none;
-            border-radius: 50px;
-            font-size: 16px;
+            border-radius: 6px;
+            font-size: 1em;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
+            transition: transform 0.2s, background 0.2s;
         }
 
         .btn-save:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            transform: translateY(-2px);
+            background: #00a4b7;
         }
 
         .btn-cancel-modal {
-            padding: 14px 35px;
+            padding: 12px 30px;
             background: #6c757d;
             color: white;
             border: none;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: 700;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
             cursor: pointer;
             margin-left: 10px;
-            transition: all 0.3s;
+            transition: background 0.2s;
         }
 
         .btn-cancel-modal:hover {
             background: #5a6268;
-            transform: translateY(-3px);
         }
 
+        /* Media Queries remain the same, ensure responsiveness */
         @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            table {
-                font-size: 13px;
-            }
-
-            th, td {
-                padding: 10px;
-            }
+            .header { flex-direction: column; gap: 15px; text-align: center; padding: 15px 20px; }
+            .nav-buttons { flex-direction: column; gap: 10px; }
+            .stats-grid { grid-template-columns: 1fr; }
+            table { font-size: 0.85em; display: block; overflow-x: auto; }
+            th, td { padding: 8px; white-space: nowrap; }
+            .modal-content { width: 95%; margin: 10% auto; padding: 20px; }
+            .header h1 { font-size: 22px; }
+            .stat-card h3 { font-size: 40px; }
         }
     </style>
 </head>
@@ -754,20 +519,10 @@
     <div class="particles" id="particles"></div>
 
     <div class="header">
-        <div class="header-left">
-            <div class="logo">
-                <i class="fas fa-hospital"></i>
-            </div>
-            <h1><i class="fas fa-user-shield"></i> Admin Control Center</h1>
-        </div>
+        <h1><i class="fas fa-hospital-alt"></i> Nexus Health: Admin Console</h1>
         <div class="user-info">
-            <div class="user-avatar">
-                <i class="fas fa-user-tie"></i>
-            </div>
-            <span style="font-size: 16px; font-weight: 600;">{{ session.user_name }}</span>
-            <a href="/logout" class="btn-logout">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </a>
+            <span>Welcome, **{{ session.user_name }}**</span>
+            <a href="/logout" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
     </div>
 
@@ -775,78 +530,45 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">
-                        <i class="fas fa-info-circle" style="font-size: 20px;"></i>
-                        <span>{{ message }}</span>
-                    </div>
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
 
-        <!-- Navigation Cards -->
         <div class="nav-buttons">
-            <a href="/appointments" class="nav-card">
-                <div class="nav-icon"><i class="fas fa-calendar-check"></i></div>
-                <div class="nav-title">Appointments</div>
-                <div class="nav-desc">View and manage all appointments</div>
-            </a>
-            <a href="/medical_records" class="nav-card">
-                <div class="nav-icon"><i class="fas fa-file-medical"></i></div>
-                <div class="nav-title">Medical Records</div>
-                <div class="nav-desc">Access patient medical history</div>
-            </a>
-            <a href="/billing" class="nav-card">
-                <div class="nav-icon"><i class="fas fa-money-bill-wave"></i></div>
-                <div class="nav-title">Billing & Finance</div>
-                <div class="nav-desc">Manage payments and invoices</div>
-            </a>
+            <a href="/appointments"><i class="fas fa-calendar-check"></i> View All Appointments</a>
+            <a href="/medical_records"><i class="fas fa-file-medical"></i> View Medical Records</a>
+            <a href="/billing"><i class="fas fa-file-invoice-dollar"></i> Manage Billing</a>
         </div>
 
-        <!-- Statistics Cards -->
         <div class="stats-grid">
             <div class="stat-card">
-                <i class="fas fa-user-md stat-icon"></i>
                 <h3>{{ doctors|length }}</h3>
-                <p><i class="fas fa-stethoscope"></i> Total Doctors</p>
+                <p>Total Doctors</p>
             </div>
-            <div class="stat-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
-                <i class="fas fa-users stat-icon"></i>
+            <div class="stat-card">
                 <h3>{{ patients|length }}</h3>
-                <p><i class="fas fa-heartbeat"></i> Total Patients</p>
+                <p>Total Patients</p>
             </div>
-            <div class="stat-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
-                <i class="fas fa-calendar-alt stat-icon"></i>
+            <div class="stat-card">
                 <h3>{{ appointments|length }}</h3>
-                <p><i class="fas fa-clock"></i> Total Appointments</p>
+                <p>Total Appointments</p>
             </div>
-            <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                <i class="fas fa-dollar-sign stat-icon"></i>
+            <div class="stat-card">
                 <h3>{{ billing|length }}</h3>
-                <p><i class="fas fa-receipt"></i> Billing Records</p>
+                <p>Billing Records</p>
             </div>
         </div>
 
-        <!-- Tab Buttons -->
         <div class="tabs">
-            <button class="tab-button active" onclick="showTab('doctors')">
-                <span><i class="fas fa-user-md"></i> Manage Doctors</span>
-            </button>
-            <button class="tab-button" onclick="showTab('patients')">
-                <span><i class="fas fa-users"></i> Manage Patients</span>
-            </button>
-            <button class="tab-button" onclick="showTab('appointments')">
-                <span><i class="fas fa-calendar-check"></i> View Appointments</span>
-            </button>
-            <button class="tab-button" onclick="showTab('billing')">
-                <span><i class="fas fa-money-bill-wave"></i> View Billing</span>
-            </button>
+            <button class="tab-button active" onclick="showTab('doctors')"><i class="fas fa-user-md"></i> Manage Doctors</button>
+            <button class="tab-button" onclick="showTab('patients')"><i class="fas fa-procedures"></i> Manage Patients</button>
+            <button class="tab-button" onclick="showTab('appointments')"><i class="fas fa-calendar-day"></i> View Appointments</button>
+            <button class="tab-button" onclick="showTab('billing')"><i class="fas fa-dollar-sign"></i> View Billing</button>
         </div>
 
-        <!-- Doctors Tab -->
         <div id="doctors" class="tab-content active">
-            <h2 class="section-title">
-                <i class="fas fa-user-md"></i> Doctor Management
-            </h2>
+            <h2 class="section-title"><i class="fas fa-user-md"></i> Doctors Management</h2>
             {% if doctors %}
             <div style="overflow-x: auto;">
             <table>
@@ -864,11 +586,11 @@
                 <tbody>
                     {% for doctor in doctors %}
                     <tr>
-                        <td><strong>#{{ doctor.id }}</strong></td>
-                        <td><i class="fas fa-user-circle"></i> {{ doctor.name }}</td>
-                        <td><i class="fas fa-envelope"></i> {{ doctor.email }}</td>
-                        <td><i class="fas fa-stethoscope"></i> {{ doctor.specialization }}</td>
-                        <td><i class="fas fa-phone"></i> {{ doctor.contact }}</td>
+                        <td>{{ doctor.id }}</td>
+                        <td>{{ doctor.name }}</td>
+                        <td>{{ doctor.email }}</td>
+                        <td>{{ doctor.specialization }}</td>
+                        <td>{{ doctor.contact }}</td>
                         <td>
                             {% if doctor.approved %}
                                 <span class="badge badge-success"><i class="fas fa-check-circle"></i> Approved</span>
@@ -878,9 +600,10 @@
                         </td>
                         <td>
                             {% if not doctor.approved %}
-                                <a href="/admin/delete_user/{{ patient.id }}" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete {{ patient.name }}?')">
-                                <i class="fas fa-trash"></i> Delete
-                            </a>
+                                <a href="/admin/approve_doctor/{{ doctor.id }}" class="btn btn-approve"><i class="fas fa-thumbs-up"></i> Approve</a>
+                            {% endif %}
+                            <button class="btn btn-edit" onclick='editDoctor({{ doctor.id }}, "{{ doctor.name }}", "{{ doctor.email }}", "{{ doctor.specialization }}", "{{ doctor.contact }}")'><i class="fas fa-edit"></i> Edit</button>
+                            <a href="/admin/delete_user/{{ doctor.id }}" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete Dr. {{ doctor.name }}?')"><i class="fas fa-trash-alt"></i> Delete</a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -888,18 +611,47 @@
             </table>
             </div>
             {% else %}
-            <div class="no-data">
-                <i class="fas fa-users"></i>
-                <p>No patients registered yet.</p>
-            </div>
+            <p class="no-data"><i class="fas fa-folder-open"></i> No doctors registered yet.</p>
             {% endif %}
         </div>
 
-        <!-- Appointments Tab -->
+        <div id="patients" class="tab-content">
+            <h2 class="section-title"><i class="fas fa-procedures"></i> Patients Management</h2>
+            {% if patients %}
+            <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Contact</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for patient in patients %}
+                    <tr>
+                        <td>{{ patient.id }}</td>
+                        <td>{{ patient.name }}</td>
+                        <td>{{ patient.email }}</td>
+                        <td>{{ patient.contact }}</td>
+                        <td>
+                            <button class="btn btn-edit" onclick='editPatient({{ patient.id }}, "{{ patient.name }}", "{{ patient.email }}", "{{ patient.contact }}")'><i class="fas fa-edit"></i> Edit</button>
+                            <a href="/admin/delete_user/{{ patient.id }}" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete {{ patient.name }}?')"><i class="fas fa-trash-alt"></i> Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+            {% else %}
+            <p class="no-data"><i class="fas fa-folder-open"></i> No patients registered yet.</p>
+            {% endif %}
+        </div>
+
         <div id="appointments" class="tab-content">
-            <h2 class="section-title">
-                <i class="fas fa-calendar-check"></i> All Appointments
-            </h2>
+            <h2 class="section-title"><i class="fas fa-calendar-day"></i> All Appointments</h2>
             {% if appointments %}
             <div style="overflow-x: auto;">
             <table>
@@ -917,19 +669,19 @@
                 <tbody>
                     {% for appointment in appointments %}
                     <tr>
-                        <td><strong>#{{ appointment.id }}</strong></td>
-                        <td><i class="fas fa-user"></i> {{ appointment.patient_name }}</td>
-                        <td><i class="fas fa-user-md"></i> Dr. {{ appointment.doctor_name }}</td>
-                        <td><i class="fas fa-calendar"></i> {{ appointment.date }}</td>
-                        <td><i class="fas fa-clock"></i> {{ appointment.time }}</td>
+                        <td>{{ appointment.id }}</td>
+                        <td>{{ appointment.patient_name }}</td>
+                        <td>Dr. {{ appointment.doctor_name }}</td>
+                        <td>{{ appointment.date }}</td>
+                        <td>{{ appointment.time }}</td>
                         <td>{{ appointment.reason }}</td>
                         <td>
                             {% if appointment.status == 'Completed' %}
-                                <span class="badge badge-success"><i class="fas fa-check-circle"></i> {{ appointment.status }}</span>
+                                <span class="badge badge-success"><i class="fas fa-check"></i> {{ appointment.status }}</span>
                             {% elif appointment.status == 'Cancelled' %}
-                                <span class="badge badge-danger"><i class="fas fa-times-circle"></i> {{ appointment.status }}</span>
+                                <span class="badge badge-danger"><i class="fas fa-times"></i> {{ appointment.status }}</span>
                             {% else %}
-                                <span class="badge badge-warning"><i class="fas fa-clock"></i> {{ appointment.status }}</span>
+                                <span class="badge badge-warning"><i class="fas fa-hourglass-half"></i> {{ appointment.status }}</span>
                             {% endif %}
                         </td>
                     </tr>
@@ -938,18 +690,12 @@
             </table>
             </div>
             {% else %}
-            <div class="no-data">
-                <i class="fas fa-calendar-times"></i>
-                <p>No appointments found.</p>
-            </div>
+            <p class="no-data"><i class="fas fa-folder-open"></i> No appointments found.</p>
             {% endif %}
         </div>
 
-        <!-- Billing Tab -->
         <div id="billing" class="tab-content">
-            <h2 class="section-title">
-                <i class="fas fa-money-bill-wave"></i> All Billing Records
-            </h2>
+            <h2 class="section-title"><i class="fas fa-file-invoice-dollar"></i> All Billing Records</h2>
             {% if billing %}
             <div style="overflow-x: auto;">
             <table>
@@ -967,17 +713,17 @@
                 <tbody>
                     {% for bill in billing %}
                     <tr>
-                        <td><strong>#{{ bill.id }}</strong></td>
-                        <td><i class="fas fa-user"></i> {{ bill.patient_name }}</td>
-                        <td><i class="fas fa-user-md"></i> Dr. {{ bill.doctor_name }}</td>
+                        <td>{{ bill.id }}</td>
+                        <td>{{ bill.patient_name }}</td>
+                        <td>Dr. {{ bill.doctor_name }}</td>
                         <td>{{ bill.description }}</td>
-                        <td><strong style="color: #667eea;">₹{{ bill.total_amount }}</strong></td>
-                        <td><i class="fas fa-calendar"></i> {{ bill.date }}</td>
+                        <td>₹{{ bill.total_amount }}</td>
+                        <td>{{ bill.date }}</td>
                         <td>
                             {% if bill.status == 'Paid' %}
-                                <span class="badge badge-success"><i class="fas fa-check-circle"></i> {{ bill.status }}</span>
+                                <span class="badge badge-success"><i class="fas fa-money-check-alt"></i> {{ bill.status }}</span>
                             {% else %}
-                                <span class="badge badge-danger"><i class="fas fa-times-circle"></i> {{ bill.status }}</span>
+                                <span class="badge badge-danger"><i class="fas fa-exclamation-triangle"></i> {{ bill.status }}</span>
                             {% endif %}
                         </td>
                     </tr>
@@ -986,106 +732,94 @@
             </table>
             </div>
             {% else %}
-            <div class="no-data">
-                <i class="fas fa-receipt"></i>
-                <p>No billing records found.</p>
-            </div>
+            <p class="no-data"><i class="fas fa-folder-open"></i> No billing records found.</p>
             {% endif %}
         </div>
     </div>
 
-    <!-- Edit Doctor Modal -->
     <div id="editDoctorModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2><i class="fas fa-user-edit"></i> Edit Doctor Details</h2>
+                <h2><i class="fas fa-stethoscope"></i> Edit Doctor Details</h2>
                 <span class="close" onclick="closeModal('editDoctorModal')">&times;</span>
             </div>
             <form action="/admin/update_doctor" method="POST" onsubmit="return validateDoctorForm()">
                 <input type="hidden" id="doctor_id" name="user_id">
                 
                 <div class="form-group">
-                    <label><i class="fas fa-user"></i> Full Name</label>
+                    <label>Full Name</label>
                     <input type="text" id="doctor_name" name="name" required>
                 </div>
 
                 <div class="form-group">
-                    <label><i class="fas fa-envelope"></i> Email Address</label>
+                    <label>Email Address</label>
                     <input type="email" id="doctor_email" name="email" required>
                 </div>
 
                 <div class="form-group">
-                    <label><i class="fas fa-stethoscope"></i> Specialization</label>
+                    <label>Specialization</label>
                     <input type="text" id="doctor_specialization" name="specialization" required>
                 </div>
 
                 <div class="form-group">
-                    <label><i class="fas fa-phone"></i> Contact Number</label>
+                    <label>Contact Number</label>
                     <input type="tel" id="doctor_contact" name="contact" required>
                 </div>
 
-                <button type="submit" class="btn-save">
-                    <i class="fas fa-save"></i> Save Changes
-                </button>
-                <button type="button" class="btn-cancel-modal" onclick="closeModal('editDoctorModal')">
-                    <i class="fas fa-times"></i> Cancel
-                </button>
+                <button type="submit" class="btn-save"><i class="fas fa-save"></i> Save Changes</button>
+                <button type="button" class="btn-cancel-modal" onclick="closeModal('editDoctorModal')">Cancel</button>
             </form>
         </div>
     </div>
 
-    <!-- Edit Patient Modal -->
     <div id="editPatientModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2><i class="fas fa-user-edit"></i> Edit Patient Details</h2>
+                <h2><i class="fas fa-user-injured"></i> Edit Patient Details</h2>
                 <span class="close" onclick="closeModal('editPatientModal')">&times;</span>
             </div>
             <form action="/admin/update_patient" method="POST" onsubmit="return validatePatientForm()">
                 <input type="hidden" id="patient_id" name="user_id">
                 
                 <div class="form-group">
-                    <label><i class="fas fa-user"></i> Full Name</label>
+                    <label>Full Name</label>
                     <input type="text" id="patient_name" name="name" required>
                 </div>
 
                 <div class="form-group">
-                    <label><i class="fas fa-envelope"></i> Email Address</label>
+                    <label>Email Address</label>
                     <input type="email" id="patient_email" name="email" required>
                 </div>
 
                 <div class="form-group">
-                    <label><i class="fas fa-phone"></i> Contact Number</label>
+                    <label>Contact Number</label>
                     <input type="tel" id="patient_contact" name="contact" required>
                 </div>
 
-                <button type="submit" class="btn-save">
-                    <i class="fas fa-save"></i> Save Changes
-                </button>
-                <button type="button" class="btn-cancel-modal" onclick="closeModal('editPatientModal')">
-                    <i class="fas fa-times"></i> Cancel
-                </button>
+                <button type="submit" class="btn-save"><i class="fas fa-save"></i> Save Changes</button>
+                <button type="button" class="btn-cancel-modal" onclick="closeModal('editPatientModal')">Cancel</button>
             </form>
         </div>
     </div>
 
     <script>
-        // Create animated particles
+        // Create particles (slightly adjusted animation properties for speed and feel)
         function createParticles() {
             const particlesContainer = document.getElementById('particles');
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 30; i++) { // Increased particle count slightly
                 const particle = document.createElement('div');
                 particle.className = 'particle';
-                particle.style.width = Math.random() * 10 + 5 + 'px';
+                particle.style.width = Math.random() * 8 + 3 + 'px'; // Smaller particles
                 particle.style.height = particle.style.width;
                 particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 15 + 's';
-                particle.style.animationDuration = Math.random() * 10 + 10 + 's';
+                particle.style.animationDelay = Math.random() * 20 + 's'; // Longer delay range
+                particle.style.animationDuration = Math.random() * 10 + 15 + 's'; // Slower duration for a floating effect
                 particlesContainer.appendChild(particle);
             }
         }
         createParticles();
 
+        // All existing JavaScript functions (showTab, editDoctor, editPatient, closeModal, validation) remain unchanged
         function showTab(tabName) {
             const tabs = document.querySelectorAll('.tab-content');
             const buttons = document.querySelectorAll('.tab-button');
@@ -1094,7 +828,13 @@
             buttons.forEach(btn => btn.classList.remove('active'));
             
             document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
+            // Check if event.target exists and is a button before adding active class
+            if (event && event.target && event.target.tagName === 'BUTTON') {
+                event.target.classList.add('active');
+            } else {
+                // Fallback for initial load or manual call (optional: find the corresponding button)
+                document.querySelector(`.tab-button[onclick*="'${tabName}'"]`).classList.add('active');
+            }
         }
 
         function editDoctor(id, name, email, specialization, contact) {
@@ -1135,7 +875,7 @@
             }
 
             if (contact.length < 10) {
-                alert('Please enter a valid contact number');
+                alert('Please enter a valid contact number (at least 10 digits)');
                 return false;
             }
 
@@ -1158,7 +898,7 @@
             }
 
             if (contact.length < 10) {
-                alert('Please enter a valid contact number');
+                alert('Please enter a valid contact number (at least 10 digits)');
                 return false;
             }
 
@@ -1177,96 +917,13 @@
             }
         }
 
-        // Add ripple effect to buttons
-        document.querySelectorAll('.btn, .tab-button').forEach(button => {
-            button.addEventListener('click', function(e) {
-                const ripple = document.createElement('span');
-                const rect = this.getBoundingClientRect();
-                const size = Math.max(rect.width, rect.height);
-                const x = e.clientX - rect.left - size / 2;
-                const y = e.clientY - rect.top - size / 2;
-                
-                ripple.style.width = ripple.style.height = size + 'px';
-                ripple.style.left = x + 'px';
-                ripple.style.top = y + 'px';
-                ripple.style.position = 'absolute';
-                ripple.style.borderRadius = '50%';
-                ripple.style.background = 'rgba(255, 255, 255, 0.5)';
-                ripple.style.transform = 'scale(0)';
-                ripple.style.animation = 'ripple 0.6s ease-out';
-                ripple.style.pointerEvents = 'none';
-                
-                this.style.position = 'relative';
-                this.style.overflow = 'hidden';
-                this.appendChild(ripple);
-                
-                setTimeout(() => ripple.remove(), 600);
-            });
-        });
-
-        // Add CSS for ripple animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes ripple {
-                to {
-                    transform: scale(2);
-                    opacity: 0;
-                }
+        // Initialize with the 'doctors' tab active and button correctly styled on load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Find and click the 'Manage Doctors' button on load
+            const initialButton = document.querySelector('.tab-button[onclick*="doctors"]');
+            if (initialButton) {
+                initialButton.classList.add('active');
             }
-        `;
-        document.head.appendChild(style);
+        });
     </script>
-</body>
-</html>="/admin/approve_doctor/{{ doctor.id }}" class="btn btn-approve">
-                                    <i class="fas fa-check"></i> Approve
-                                </a>
-                            {% endif %}
-                            <button class="btn btn-edit" onclick='editDoctor({{ doctor.id }}, "{{ doctor.name }}", "{{ doctor.email }}", "{{ doctor.specialization }}", "{{ doctor.contact }}")'>
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                            <a href="/admin/delete_user/{{ doctor.id }}" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete Dr. {{ doctor.name }}?')">
-                                <i class="fas fa-trash"></i> Delete
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            </div>
-            {% else %}
-            <div class="no-data">
-                <i class="fas fa-user-md"></i>
-                <p>No doctors registered yet.</p>
-            </div>
-            {% endif %}
-        </div>
-
-        <!-- Patients Tab -->
-        <div id="patients" class="tab-content">
-            <h2 class="section-title">
-                <i class="fas fa-users"></i> Patient Management
-            </h2>
-            {% if patients %}
-            <div style="overflow-x: auto;">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Contact</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for patient in patients %}
-                    <tr>
-                        <td><strong>#{{ patient.id }}</strong></td>
-                        <td><i class="fas fa-user"></i> {{ patient.name }}</td>
-                        <td><i class="fas fa-envelope"></i> {{ patient.email }}</td>
-                        <td><i class="fas fa-phone"></i> {{ patient.contact }}</td>
-                        <td>
-                            <button class="btn btn-edit" onclick='editPatient({{ patient.id }}, "{{ patient.name }}", "{{ patient.email }}", "{{ patient.contact }}")'>
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                            <a href
+</html>
