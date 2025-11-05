@@ -699,6 +699,9 @@
             <button class="tab-button" data-tab="appointments">
                 <span><i class="fas fa-calendar-alt"></i> Appointments</span>
             </button>
+            <button class="tab-button" data-tab="medical-records">
+                <span><i class="fas fa-file-medical"></i> Medical Records</span>
+            </button>
             <button class="tab-button" data-tab="billing">
                 <span><i class="fas fa-receipt"></i> Billing</span>
             </button>
@@ -873,6 +876,71 @@
                 <div class="no-data">
                     <i class="fas fa-calendar-times"></i>
                     <p>No appointments found.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Medical Records Tab -->
+        <div id="medical-records" class="tab-content">
+            <div class="card">
+                <h2 class="section-title">
+                    <i class="fas fa-file-medical"></i> Medical Records Management
+                </h2>
+
+                <div class="search-box">
+                    <input type="text" id="recordSearch" placeholder="Search by patient or doctor name...">
+                </div>
+
+                {% if medical_records %}
+                <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Patient</th>
+                            <th>Doctor</th>
+                            <th>Diagnosis</th>
+                            <th>Prescription</th>
+                            <th>Date</th>
+                            <th>Report</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recordTable">
+                        {% for record in medical_records %}
+                        <tr class="record-row" data-record="{{ record.patient_name.lower() }} {{ record.doctor_name.lower() }}">
+                            <td><strong>#{{ record.id }}</strong></td>
+                            <td><i class="fas fa-user"></i> {{ record.patient_name }}</td>
+                            <td><i class="fas fa-user-md"></i> Dr. {{ record.doctor_name }}</td>
+                            <td>
+                                <span title="{{ record.diagnosis }}">
+                                    {{ record.diagnosis[:50] }}{% if record.diagnosis|length > 50 %}...{% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <span title="{{ record.prescription }}">
+                                    {{ record.prescription[:50] }}{% if record.prescription|length > 50 %}...{% endif %}
+                                </span>
+                            </td>
+                            <td><i class="fas fa-calendar"></i> {{ record.date }}</td>
+                            <td>
+                                {% if record.report_filename %}
+                                    <a href="/static/uploads/{{ record.report_filename }}" target="_blank" class="btn btn-success">
+                                        <i class="fas fa-download"></i> Download
+                                    </a>
+                                {% else %}
+                                    <span style="color: #999;">No file</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+                {% else %}
+                <div class="no-data">
+                    <i class="fas fa-file-medical"></i>
+                    <p>No medical records found.</p>
                 </div>
                 {% endif %}
             </div>
@@ -1158,6 +1226,17 @@
             
             rows.forEach(row => {
                 const text = row.getAttribute('data-patient') + ' ' + row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        // Medical Records Search
+        document.getElementById('recordSearch').addEventListener('keyup', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.record-row');
+            
+            rows.forEach(row => {
+                const text = row.getAttribute('data-record') + ' ' + row.textContent.toLowerCase();
                 row.style.display = text.includes(searchTerm) ? '' : 'none';
             });
         });
