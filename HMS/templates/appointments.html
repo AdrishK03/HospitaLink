@@ -13,14 +13,13 @@
         }
 
         body {
-            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
         }
 
-        /* Animated bubble background */
         .bubbles {
             position: fixed;
             width: 100%;
@@ -40,84 +39,16 @@
             animation: rise 15s infinite ease-in;
         }
 
-        .bubble:nth-child(1) {
-            width: 40px;
-            height: 40px;
-            left: 10%;
-            animation-duration: 8s;
-        }
-
-        .bubble:nth-child(2) {
-            width: 20px;
-            height: 20px;
-            left: 20%;
-            animation-duration: 5s;
-            animation-delay: 1s;
-        }
-
-        .bubble:nth-child(3) {
-            width: 50px;
-            height: 50px;
-            left: 35%;
-            animation-duration: 7s;
-            animation-delay: 2s;
-        }
-
-        .bubble:nth-child(4) {
-            width: 80px;
-            height: 80px;
-            left: 50%;
-            animation-duration: 11s;
-            animation-delay: 0s;
-        }
-
-        .bubble:nth-child(5) {
-            width: 35px;
-            height: 35px;
-            left: 55%;
-            animation-duration: 6s;
-            animation-delay: 1s;
-        }
-
-        .bubble:nth-child(6) {
-            width: 45px;
-            height: 45px;
-            left: 65%;
-            animation-duration: 8s;
-            animation-delay: 3s;
-        }
-
-        .bubble:nth-child(7) {
-            width: 90px;
-            height: 90px;
-            left: 70%;
-            animation-duration: 12s;
-            animation-delay: 2s;
-        }
-
-        .bubble:nth-child(8) {
-            width: 25px;
-            height: 25px;
-            left: 80%;
-            animation-duration: 6s;
-            animation-delay: 2s;
-        }
-
-        .bubble:nth-child(9) {
-            width: 15px;
-            height: 15px;
-            left: 70%;
-            animation-duration: 5s;
-            animation-delay: 1s;
-        }
-
-        .bubble:nth-child(10) {
-            width: 90px;
-            height: 90px;
-            left: 25%;
-            animation-duration: 10s;
-            animation-delay: 4s;
-        }
+        .bubble:nth-child(1) { width: 40px; height: 40px; left: 10%; animation-duration: 8s; }
+        .bubble:nth-child(2) { width: 20px; height: 20px; left: 20%; animation-duration: 5s; animation-delay: 1s; }
+        .bubble:nth-child(3) { width: 50px; height: 50px; left: 35%; animation-duration: 7s; animation-delay: 2s; }
+        .bubble:nth-child(4) { width: 80px; height: 80px; left: 50%; animation-duration: 11s; animation-delay: 0s; }
+        .bubble:nth-child(5) { width: 35px; height: 35px; left: 55%; animation-duration: 6s; animation-delay: 1s; }
+        .bubble:nth-child(6) { width: 45px; height: 45px; left: 65%; animation-duration: 8s; animation-delay: 3s; }
+        .bubble:nth-child(7) { width: 90px; height: 90px; left: 70%; animation-duration: 12s; animation-delay: 2s; }
+        .bubble:nth-child(8) { width: 25px; height: 25px; left: 80%; animation-duration: 6s; animation-delay: 2s; }
+        .bubble:nth-child(9) { width: 15px; height: 15px; left: 70%; animation-duration: 5s; animation-delay: 1s; }
+        .bubble:nth-child(10) { width: 90px; height: 90px; left: 25%; animation-duration: 10s; animation-delay: 4s; }
 
         @keyframes rise {
             0% {
@@ -167,30 +98,6 @@
             display: flex;
             align-items: center;
             gap: 15px;
-        }
-
-        .calendar-icon {
-            width: 50px;
-            height: 50px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            animation: rotate-wiggle 3s infinite;
-        }
-
-        @keyframes rotate-wiggle {
-            0%, 100% {
-                transform: rotate(0deg) scale(1);
-            }
-            25% {
-                transform: rotate(-10deg) scale(1.1);
-            }
-            75% {
-                transform: rotate(10deg) scale(1.1);
-            }
         }
 
         .user-info {
@@ -491,40 +398,6 @@
             box-shadow: 0 15px 40px rgba(250, 112, 154, 0.4);
         }
 
-        .filter-section {
-            background: rgba(248, 249, 250, 0.9);
-            padding: 25px;
-            border-radius: 20px;
-            margin-bottom: 25px;
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            align-items: flex-end;
-            backdrop-filter: blur(10px);
-        }
-
-        .filter-section .form-group {
-            margin-bottom: 0;
-            flex: 1;
-            min-width: 200px;
-        }
-
-        .btn-filter {
-            padding: 15px 30px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .btn-filter:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-        }
-
         table {
             width: 100%;
             border-collapse: separate;
@@ -657,14 +530,6 @@
                 grid-template-columns: 1fr;
             }
 
-            .filter-section {
-                flex-direction: column;
-            }
-
-            .filter-section .form-group {
-                width: 100%;
-            }
-
             table {
                 font-size: 13px;
             }
@@ -691,9 +556,7 @@
 
     <div class="header">
         <h1>
-            <div class="calendar-icon">
-                <i class="fas fa-calendar-alt"></i>
-            </div>
+            <i class="fas fa-calendar-alt"></i>
             Appointments Management
         </h1>
         <div class="user-info">
@@ -804,27 +667,6 @@
                     {% endif %}
                 </h2>
 
-                {% if session.user_role == 'admin' %}
-                <div class="filter-section">
-                    <div class="form-group">
-                        <label><i class="fas fa-filter"></i> Filter by Status</label>
-                        <select id="filter-status" onchange="filterTable()">
-                            <option value="">All Status</option>
-                            <option value="Pending">Pending</option>
-                            <option value="Completed">Completed</option>
-                            <option value="Cancelled">Cancelled</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fas fa-calendar"></i> Filter by Date</label>
-                        <input type="date" id="filter-date" onchange="filterTable()">
-                    </div>
-                    <button class="btn-filter" onclick="resetFilters()">
-                        <i class="fas fa-redo"></i> Reset Filters
-                    </button>
-                </div>
-                {% endif %}
-
                 {% if appointments %}
                 <div style="overflow-x: auto;">
                 <table id="appointmentsTable">
@@ -873,11 +715,11 @@
                             <td>{{ appointment.reason }}</td>
                             <td>
                                 {% if appointment.status == 'Completed' %}
-                                    <span class="badge badge-success"><i class="fas fa-check-circle"></i> {{ appointment.status }}</span>
+                                    <span class="badge badge-success"><i class="fas fa-check-circle"></i> Completed</span>
                                 {% elif appointment.status == 'Cancelled' %}
-                                    <span class="badge badge-danger"><i class="fas fa-times-circle"></i> {{ appointment.status }}</span>
+                                    <span class="badge badge-danger"><i class="fas fa-times-circle"></i> Cancelled</span>
                                 {% else %}
-                                    <span class="badge badge-warning"><i class="fas fa-clock"></i> {{ appointment.status }}</span>
+                                    <span class="badge badge-warning"><i class="fas fa-clock"></i> Pending</span>
                                 {% endif %}
                             </td>
                             {% if session.user_role != 'admin' %}
@@ -886,4 +728,157 @@
                                     <a href="/doctor/update_appointment/{{ appointment.id }}/Completed" class="btn btn-complete">
                                         <i class="fas fa-check"></i> Complete
                                     </a>
-                                    <a href="/doctor/update_appointment/{{ appointment.id }
+                                    <a href="/doctor/update_appointment/{{ appointment.id }}/Cancelled" class="btn btn-cancel" onclick="return confirm('Cancel this appointment?')">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </a>
+                                {% elif session.user_role == 'patient' and appointment.status == 'Pending' %}
+                                    <a href="/patient/cancel_appointment/{{ appointment.id }}" class="btn btn-cancel" onclick="return confirm('Are you sure you want to cancel this appointment?')">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </a>
+                                {% else %}
+                                    <span style="color: #999; font-size: 12px;">No actions</span>
+                                {% endif %}
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+                {% else %}
+                <div class="no-data">
+                    <i class="fas fa-calendar-times"></i>
+                    <p>No appointments found.</p>
+                </div>
+                {% endif %}
+            </div>
+
+        {% if session.user_role == 'patient' %}
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            const targetTab = document.getElementById(tabName);
+            const targetButton = document.querySelector(`[data-tab="${tabName}"]`);
+            
+            if (targetTab) targetTab.classList.add('active');
+            if (targetButton) targetButton.classList.add('active');
+        }
+
+        function validateAppointment() {
+            const doctorId = document.getElementById('doctor_id').value;
+            const date = document.getElementById('date').value;
+            const time = document.getElementById('time').value;
+            const reason = document.getElementById('reason').value;
+
+            if (!doctorId || !date || !time || !reason) {
+                alert('Please fill in all fields');
+                return false;
+            }
+
+            const selectedDate = new Date(date);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            if (selectedDate < today) {
+                alert('Please select a future date');
+                return false;
+            }
+
+            return true;
+        }
+
+        function filterTable() {
+            const statusFilter = document.getElementById('filter-status') ? document.getElementById('filter-status').value.toLowerCase() : '';
+            const dateFilter = document.getElementById('filter-date') ? document.getElementById('filter-date').value : '';
+            const table = document.getElementById('appointmentsTable');
+            if (!table) return;
+            
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                const status = row.getAttribute('data-status') ? row.getAttribute('data-status').toLowerCase() : '';
+                const date = row.getAttribute('data-date') || '';
+                
+                let showRow = true;
+                
+                if (statusFilter && !status.includes(statusFilter)) {
+                    showRow = false;
+                }
+                
+                if (dateFilter && date !== dateFilter) {
+                    showRow = false;
+                }
+                
+                row.style.display = showRow ? '' : 'none';
+            }
+        }
+
+        function resetFilters() {
+            const statusFilter = document.getElementById('filter-status');
+            const dateFilter = document.getElementById('filter-date');
+            if (statusFilter) statusFilter.value = '';
+            if (dateFilter) dateFilter.value = '';
+            filterTable();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.getElementById('date');
+            if (dateInput) {
+                const today = new Date().toISOString().split('T')[0];
+                dateInput.setAttribute('min', today);
+            }
+
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    showTab(tabName);
+                });
+            });
+
+            document.querySelectorAll('.btn, .tab-button').forEach(el => {
+                el.addEventListener('click', function(e) {
+                    if (e.target.tagName === 'A' && e.target.href) return;
+                    
+                    const ripple = document.createElement('div');
+                    ripple.style.position = 'absolute';
+                    ripple.style.borderRadius = '50%';
+                    ripple.style.background = 'rgba(255, 255, 255, 0.6)';
+                    ripple.style.width = ripple.style.height = '100px';
+                    ripple.style.left = e.clientX - this.getBoundingClientRect().left - 50 + 'px';
+                    ripple.style.top = e.clientY - this.getBoundingClientRect().top - 50 + 'px';
+                    ripple.style.animation = 'ripple-effect 0.6s';
+                    ripple.style.pointerEvents = 'none';
+                    
+                    this.style.position = 'relative';
+                    this.style.overflow = 'hidden';
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => ripple.remove(), 600);
+                });
+            });
+        });
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple-effect {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
