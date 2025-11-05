@@ -3,242 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus Health: Admin Console</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Admin Dashboard - Hospital Management System</title>
     <style>
-        /* New Professional Global Styles */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        :root {
-            --primary-color: #00bcd4; /* Teal Blue Accent */
-            --secondary-color: #2196f3; /* Bright Blue */
-            --dark-bg: #1f2937; /* Dark Charcoal */
-            --light-bg: #2d3748; /* Slightly lighter dark background */
-            --text-light: #e2e8f0;
-            --text-dark: #1a202c;
-            --card-hover-shadow: 0 10px 30px rgba(0, 188, 212, 0.3);
-        }
-
         body {
-            /* Deeper, more sophisticated dark blue gradient */
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background: linear-gradient(135deg, #10151d 0%, #1a1f26 50%, #1f2937 100%);
-            min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-            color: var(--text-light);
-        }
-
-        /* Animated particles (Enhanced Subtlety) */
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .particle {
-            position: absolute;
-            /* Subtler particle color/opacity */
-            background: rgba(255, 255, 255, 0.05); 
-            border-radius: 50%;
-            animation: particle-float 20s infinite linear; /* Slower, linear animation */
-        }
-
-        @keyframes particle-float {
-            0% { transform: translateY(0) translateX(0); opacity: 0; }
-            5% { opacity: 0.8; }
-            95% { opacity: 0.8; }
-            100% {
-                transform: translateY(-100vh) translateX(50px);
-                opacity: 0;
-            }
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
         }
 
         .header {
-            /* Glassmorphism/Neumorphism style dark header */
-            background: rgba(26, 31, 38, 0.8);
-            backdrop-filter: blur(15px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text-light);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
             padding: 20px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            /* Softer, more professional shadow */
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5); 
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            animation: slideDown 0.6s ease;
-        }
-
-        @keyframes slideDown {
-            from { transform: translateY(-100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .header h1 {
-            font-size: 26px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--primary-color); /* Highlight the title */
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            font-size: 1.8em;
         }
 
         .user-info {
             display: flex;
             align-items: center;
             gap: 20px;
-            font-weight: 500;
         }
 
         .btn-logout {
-            /* Sleek, dark button with border */
-            background: transparent;
-            color: var(--text-light);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
             padding: 8px 20px;
-            border-radius: 20px;
+            border-radius: 5px;
             cursor: pointer;
             text-decoration: none;
-            transition: all 0.3s;
-            font-weight: 600;
-            font-size: 0.9em;
+            transition: background 0.3s;
         }
 
         .btn-logout:hover {
-            background: rgba(0, 188, 212, 0.2); /* Subtle hover effect */
-            border-color: var(--primary-color);
-            transform: translateY(-1px);
-            box-shadow: 0 5px 15px rgba(0, 188, 212, 0.15);
+            background: rgba(255, 255, 255, 0.3);
         }
 
         .container {
             max-width: 1400px;
             margin: 30px auto;
             padding: 0 20px;
-            position: relative;
-            z-index: 1;
         }
-
-        /* Flash Message Alerts - Enhanced look */
-        .alert {
-            padding: 15px 25px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-            font-weight: 500;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            font-size: 1.05em;
-        }
-
-        .alert-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .alert-danger { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .alert-warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
-        .alert-info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
-
 
         .nav-buttons {
+            margin-bottom: 20px;
             display: flex;
-            gap: 15px;
-            margin-bottom: 40px;
+            gap: 10px;
             flex-wrap: wrap;
-            animation: fadeInUp 0.8s ease 0.2s both;
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .nav-buttons a {
-            /* Action Buttons - Primary Color */
             padding: 12px 25px;
-            background: var(--primary-color);
-            color: var(--dark-bg);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
             text-decoration: none;
             border-radius: 8px;
-            font-weight: 700;
-            transition: all 0.3s;
-            box-shadow: 0 5px 15px rgba(0, 188, 212, 0.4);
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            display: inline-block;
+            font-weight: 500;
+            transition: transform 0.2s;
         }
 
         .nav-buttons a:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 188, 212, 0.6);
-            background: #00a4b7;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            margin-bottom: 50px;
-            animation: fadeInUp 0.8s ease 0.4s both;
-        }
-
-        .stat-card {
-            /* Dark, clean card style */
-            background: var(--light-bg);
-            color: var(--text-light);
-            padding: 40px;
-            border-radius: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-
-        .stat-card::before {
-            /* Subtle, less distracting visual element */
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at top left, rgba(0, 188, 212, 0.1) 0%, transparent 50%);
-            z-index: 0;
-            opacity: 0.8;
-            transition: opacity 0.4s;
-        }
-
-        .stat-card:hover::before {
-             opacity: 1;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--card-hover-shadow);
-        }
-
-        .stat-card h3 {
-            font-size: 56px;
-            margin-bottom: 5px;
-            position: relative;
-            z-index: 1;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-
-        .stat-card p {
-            font-size: 18px;
-            opacity: 0.8;
-            position: relative;
-            z-index: 1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
 
         .tabs {
@@ -246,49 +85,35 @@
             gap: 10px;
             margin-bottom: 30px;
             flex-wrap: wrap;
-            animation: fadeInUp 0.8s ease 0.6s both;
-            border-bottom: 2px solid var(--light-bg);
-            padding-bottom: 5px;
         }
 
         .tab-button {
-            padding: 12px 20px;
-            background: var(--light-bg);
+            padding: 12px 25px;
+            background: white;
             border: none;
-            border-radius: 8px 8px 0 0;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 15px;
-            font-weight: 600;
+            font-size: 1em;
             transition: all 0.3s;
-            box-shadow: none;
-            color: var(--text-light);
-            border-bottom: 3px solid transparent;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            font-weight: 500;
         }
 
         .tab-button.active {
-            background: rgba(255, 255, 255, 0.95);
-            color: var(--text-dark);
-            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2);
-            border-bottom: 3px solid var(--primary-color);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
         }
 
-        .tab-button:hover:not(.active) {
-            background: #2d3748;
+        .tab-button:hover {
             transform: translateY(-2px);
-            color: var(--primary-color);
         }
 
         .tab-content {
             display: none;
-            /* White content area inside dark dashboard */
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 0 15px 15px 15px;
+            background: white;
+            border-radius: 12px;
             padding: 30px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .tab-content.active {
@@ -297,146 +122,226 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { 
+                opacity: 0; 
+                transform: translateY(10px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
         }
 
         .section-title {
-            font-size: 1.8em;
-            color: var(--text-dark);
-            margin-bottom: 25px;
-            border-bottom: 3px solid var(--primary-color);
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
             padding-bottom: 10px;
-            font-weight: 600;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            border-radius: 10px;
-            overflow: hidden;
         }
 
         th, td {
-            padding: 15px;
+            padding: 12px;
             text-align: left;
             border-bottom: 1px solid #e0e0e0;
-            color: var(--text-dark);
         }
 
         th {
-            background: #f1f5f9;
-            font-weight: 700;
-            color: #333;
-            text-transform: uppercase;
-            font-size: 0.9em;
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
         }
 
         tbody tr:hover {
-            background: #eef2f6;
+            background: #f8f9fa;
         }
 
         .badge {
             padding: 5px 12px;
             border-radius: 20px;
             font-size: 0.85em;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        .badge-success { background: #1a7e48; color: white; }
-        .badge-warning { background: #ffc107; color: #333; }
-        .badge-danger { background: #dc3545; color: white; }
-
-        .btn {
-            padding: 8px 18px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: all 0.2s;
-            margin: 3px;
-            text-decoration: none;
-            display: inline-flex; /* Use flex for icon alignment */
-            align-items: center;
-            gap: 5px;
             font-weight: 600;
         }
 
-        .btn-approve { background: #28a745; color: white; }
-        .btn-approve:hover { background: #1e7e34; transform: scale(1.05); }
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
 
-        .btn-edit { background: var(--secondary-color); color: white; }
-        .btn-edit:hover { background: #0b7dda; transform: scale(1.05); }
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
 
-        .btn-delete { background: #dc3545; color: white; }
-        .btn-delete:hover { background: #c82333; transform: scale(1.05); }
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .btn {
+            padding: 6px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s;
+            margin: 2px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-approve {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background: #218838;
+        }
+
+        .btn-edit {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #0056b3;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+
+        .alert {
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
 
         .no-data {
             text-align: center;
-            padding: 50px;
+            padding: 40px;
             color: #999;
-            font-size: 1.2em;
-            font-style: italic;
+            font-size: 1.1em;
         }
 
-        /* Modal Styles - Updated for Dark Theme integration */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card h3 {
+            font-size: 2.5em;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
-            z-index: 2000;
+            z-index: 1000;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.5);
             animation: fadeIn 0.3s;
         }
 
         .modal-content {
-            background-color: #f8f9fa; /* Light modal on dark background */
+            background-color: white;
             margin: 5% auto;
             padding: 30px;
             border-radius: 12px;
             width: 90%;
             max-width: 600px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-            animation: slideUp 0.4s ease-out;
-            color: var(--text-dark);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.3s;
         }
-        
-        @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            border-bottom: 2px solid #e0e0e0;
-            padding-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .modal-header h2 {
-            color: var(--primary-color);
-            font-size: 1.8em;
-            font-weight: 600;
+            color: #333;
+            font-size: 1.5em;
         }
 
         .close {
-            color: #777;
-            font-size: 32px;
+            color: #aaa;
+            font-size: 28px;
             font-weight: bold;
             cursor: pointer;
             transition: color 0.3s;
         }
 
         .close:hover {
-            color: #dc3545;
+            color: #000;
         }
 
         .form-group {
@@ -447,42 +352,39 @@
             display: block;
             margin-bottom: 8px;
             color: #555;
-            font-weight: 600;
-            font-size: 0.95em;
+            font-weight: 500;
         }
 
         .form-group input,
         .form-group select {
             width: 100%;
             padding: 12px 15px;
-            border: 1px solid #ced4da;
-            border-radius: 6px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
             font-size: 1em;
-            transition: border-color 0.3s, box-shadow 0.3s;
+            transition: border-color 0.3s;
         }
 
         .form-group input:focus,
         .form-group select:focus {
             outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.2);
+            border-color: #667eea;
         }
 
         .btn-save {
             padding: 12px 30px;
-            background: var(--primary-color);
-            color: var(--dark-bg);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 1em;
-            font-weight: 700;
+            font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s, background 0.2s;
+            transition: transform 0.2s;
         }
 
         .btn-save:hover {
             transform: translateY(-2px);
-            background: #00a4b7;
         }
 
         .btn-cancel-modal {
@@ -490,7 +392,7 @@
             background: #6c757d;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 1em;
             font-weight: 600;
             cursor: pointer;
@@ -502,27 +404,45 @@
             background: #5a6268;
         }
 
-        /* Media Queries remain the same, ensure responsiveness */
         @media (max-width: 768px) {
-            .header { flex-direction: column; gap: 15px; text-align: center; padding: 15px 20px; }
-            .nav-buttons { flex-direction: column; gap: 10px; }
-            .stats-grid { grid-template-columns: 1fr; }
-            table { font-size: 0.85em; display: block; overflow-x: auto; }
-            th, td { padding: 8px; white-space: nowrap; }
-            .modal-content { width: 95%; margin: 10% auto; padding: 20px; }
-            .header h1 { font-size: 22px; }
-            .stat-card h3 { font-size: 40px; }
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+            }
+
+            .nav-buttons a {
+                text-align: center;
+            }
+
+            table {
+                font-size: 0.9em;
+                display: block;
+                overflow-x: auto;
+            }
+
+            th, td {
+                padding: 8px;
+                white-space: nowrap;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="particles" id="particles"></div>
-
     <div class="header">
-        <h1><i class="fas fa-hospital-alt"></i> Nexus Health: Admin Console</h1>
+        <h1>🏥 Admin Dashboard</h1>
         <div class="user-info">
-            <span>Welcome, **{{ session.user_name }}**</span>
-            <a href="/logout" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            <span>Welcome, {{ session.user_name }}</span>
+            <a href="/logout" class="btn-logout">Logout</a>
         </div>
     </div>
 
@@ -535,12 +455,14 @@
             {% endif %}
         {% endwith %}
 
+        <!-- Navigation Buttons -->
         <div class="nav-buttons">
-            <a href="/appointments"><i class="fas fa-calendar-check"></i> View All Appointments</a>
-            <a href="/medical_records"><i class="fas fa-file-medical"></i> View Medical Records</a>
-            <a href="/billing"><i class="fas fa-file-invoice-dollar"></i> Manage Billing</a>
+            <a href="/appointments">📅 View All Appointments</a>
+            <a href="/medical_records">📋 View Medical Records</a>
+            <a href="/billing">💰 Manage Billing</a>
         </div>
 
+        <!-- Statistics Cards -->
         <div class="stats-grid">
             <div class="stat-card">
                 <h3>{{ doctors|length }}</h3>
@@ -560,15 +482,17 @@
             </div>
         </div>
 
+        <!-- Tab Buttons -->
         <div class="tabs">
-            <button class="tab-button active" onclick="showTab('doctors')"><i class="fas fa-user-md"></i> Manage Doctors</button>
-            <button class="tab-button" onclick="showTab('patients')"><i class="fas fa-procedures"></i> Manage Patients</button>
-            <button class="tab-button" onclick="showTab('appointments')"><i class="fas fa-calendar-day"></i> View Appointments</button>
-            <button class="tab-button" onclick="showTab('billing')"><i class="fas fa-dollar-sign"></i> View Billing</button>
+            <button class="tab-button active" onclick="showTab('doctors')">👨‍⚕️ Manage Doctors</button>
+            <button class="tab-button" onclick="showTab('patients')">👥 Manage Patients</button>
+            <button class="tab-button" onclick="showTab('appointments')">📅 View Appointments</button>
+            <button class="tab-button" onclick="showTab('billing')">💰 View Billing</button>
         </div>
 
+        <!-- Doctors Tab -->
         <div id="doctors" class="tab-content active">
-            <h2 class="section-title"><i class="fas fa-user-md"></i> Doctors Management</h2>
+            <h2 class="section-title">Manage Doctors</h2>
             {% if doctors %}
             <div style="overflow-x: auto;">
             <table>
@@ -593,17 +517,17 @@
                         <td>{{ doctor.contact }}</td>
                         <td>
                             {% if doctor.approved %}
-                                <span class="badge badge-success"><i class="fas fa-check-circle"></i> Approved</span>
+                                <span class="badge badge-success">✓ Approved</span>
                             {% else %}
-                                <span class="badge badge-warning"><i class="fas fa-clock"></i> Pending</span>
+                                <span class="badge badge-warning">⏳ Pending</span>
                             {% endif %}
                         </td>
                         <td>
                             {% if not doctor.approved %}
-                                <a href="/admin/approve_doctor/{{ doctor.id }}" class="btn btn-approve"><i class="fas fa-thumbs-up"></i> Approve</a>
+                                <a href="/admin/approve_doctor/{{ doctor.id }}" class="btn btn-approve">Approve</a>
                             {% endif %}
-                            <button class="btn btn-edit" onclick='editDoctor({{ doctor.id }}, "{{ doctor.name }}", "{{ doctor.email }}", "{{ doctor.specialization }}", "{{ doctor.contact }}")'><i class="fas fa-edit"></i> Edit</button>
-                            <a href="/admin/delete_user/{{ doctor.id }}" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete Dr. {{ doctor.name }}?')"><i class="fas fa-trash-alt"></i> Delete</a>
+                            <button class="btn btn-edit" onclick='editDoctor({{ doctor.id }}, "{{ doctor.name }}", "{{ doctor.email }}", "{{ doctor.specialization }}", "{{ doctor.contact }}")'>Edit</button>
+                            <a href="/admin/delete_user/{{ doctor.id }}" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete Dr. {{ doctor.name }}?')">Delete</a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -611,12 +535,13 @@
             </table>
             </div>
             {% else %}
-            <p class="no-data"><i class="fas fa-folder-open"></i> No doctors registered yet.</p>
+            <p class="no-data">📭 No doctors registered yet.</p>
             {% endif %}
         </div>
 
+        <!-- Patients Tab -->
         <div id="patients" class="tab-content">
-            <h2 class="section-title"><i class="fas fa-procedures"></i> Patients Management</h2>
+            <h2 class="section-title">Manage Patients</h2>
             {% if patients %}
             <div style="overflow-x: auto;">
             <table>
@@ -637,8 +562,8 @@
                         <td>{{ patient.email }}</td>
                         <td>{{ patient.contact }}</td>
                         <td>
-                            <button class="btn btn-edit" onclick='editPatient({{ patient.id }}, "{{ patient.name }}", "{{ patient.email }}", "{{ patient.contact }}")'><i class="fas fa-edit"></i> Edit</button>
-                            <a href="/admin/delete_user/{{ patient.id }}" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete {{ patient.name }}?')"><i class="fas fa-trash-alt"></i> Delete</a>
+                            <button class="btn btn-edit" onclick='editPatient({{ patient.id }}, "{{ patient.name }}", "{{ patient.email }}", "{{ patient.contact }}")'>Edit</button>
+                            <a href="/admin/delete_user/{{ patient.id }}" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete {{ patient.name }}?')">Delete</a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -646,12 +571,13 @@
             </table>
             </div>
             {% else %}
-            <p class="no-data"><i class="fas fa-folder-open"></i> No patients registered yet.</p>
+            <p class="no-data">📭 No patients registered yet.</p>
             {% endif %}
         </div>
 
+        <!-- Appointments Tab -->
         <div id="appointments" class="tab-content">
-            <h2 class="section-title"><i class="fas fa-calendar-day"></i> All Appointments</h2>
+            <h2 class="section-title">All Appointments</h2>
             {% if appointments %}
             <div style="overflow-x: auto;">
             <table>
@@ -677,11 +603,11 @@
                         <td>{{ appointment.reason }}</td>
                         <td>
                             {% if appointment.status == 'Completed' %}
-                                <span class="badge badge-success"><i class="fas fa-check"></i> {{ appointment.status }}</span>
+                                <span class="badge badge-success">✓ {{ appointment.status }}</span>
                             {% elif appointment.status == 'Cancelled' %}
-                                <span class="badge badge-danger"><i class="fas fa-times"></i> {{ appointment.status }}</span>
+                                <span class="badge badge-danger">✗ {{ appointment.status }}</span>
                             {% else %}
-                                <span class="badge badge-warning"><i class="fas fa-hourglass-half"></i> {{ appointment.status }}</span>
+                                <span class="badge badge-warning">⏳ {{ appointment.status }}</span>
                             {% endif %}
                         </td>
                     </tr>
@@ -690,12 +616,13 @@
             </table>
             </div>
             {% else %}
-            <p class="no-data"><i class="fas fa-folder-open"></i> No appointments found.</p>
+            <p class="no-data">📭 No appointments found.</p>
             {% endif %}
         </div>
 
+        <!-- Billing Tab -->
         <div id="billing" class="tab-content">
-            <h2 class="section-title"><i class="fas fa-file-invoice-dollar"></i> All Billing Records</h2>
+            <h2 class="section-title">All Billing Records</h2>
             {% if billing %}
             <div style="overflow-x: auto;">
             <table>
@@ -721,9 +648,9 @@
                         <td>{{ bill.date }}</td>
                         <td>
                             {% if bill.status == 'Paid' %}
-                                <span class="badge badge-success"><i class="fas fa-money-check-alt"></i> {{ bill.status }}</span>
+                                <span class="badge badge-success">✓ {{ bill.status }}</span>
                             {% else %}
-                                <span class="badge badge-danger"><i class="fas fa-exclamation-triangle"></i> {{ bill.status }}</span>
+                                <span class="badge badge-danger">✗ {{ bill.status }}</span>
                             {% endif %}
                         </td>
                     </tr>
@@ -732,94 +659,79 @@
             </table>
             </div>
             {% else %}
-            <p class="no-data"><i class="fas fa-folder-open"></i> No billing records found.</p>
+            <p class="no-data">📭 No billing records found.</p>
             {% endif %}
         </div>
     </div>
 
+    <!-- Edit Doctor Modal -->
     <div id="editDoctorModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2><i class="fas fa-stethoscope"></i> Edit Doctor Details</h2>
+                <h2>✏️ Edit Doctor Details</h2>
                 <span class="close" onclick="closeModal('editDoctorModal')">&times;</span>
             </div>
             <form action="/admin/update_doctor" method="POST" onsubmit="return validateDoctorForm()">
                 <input type="hidden" id="doctor_id" name="user_id">
                 
                 <div class="form-group">
-                    <label>Full Name</label>
+                    <label for="doctor_name">Full Name</label>
                     <input type="text" id="doctor_name" name="name" required>
                 </div>
 
                 <div class="form-group">
-                    <label>Email Address</label>
+                    <label for="doctor_email">Email Address</label>
                     <input type="email" id="doctor_email" name="email" required>
                 </div>
 
                 <div class="form-group">
-                    <label>Specialization</label>
+                    <label for="doctor_specialization">Specialization</label>
                     <input type="text" id="doctor_specialization" name="specialization" required>
                 </div>
 
                 <div class="form-group">
-                    <label>Contact Number</label>
+                    <label for="doctor_contact">Contact Number</label>
                     <input type="tel" id="doctor_contact" name="contact" required>
                 </div>
 
-                <button type="submit" class="btn-save"><i class="fas fa-save"></i> Save Changes</button>
+                <button type="submit" class="btn-save">💾 Save Changes</button>
                 <button type="button" class="btn-cancel-modal" onclick="closeModal('editDoctorModal')">Cancel</button>
             </form>
         </div>
     </div>
 
+    <!-- Edit Patient Modal -->
     <div id="editPatientModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2><i class="fas fa-user-injured"></i> Edit Patient Details</h2>
+                <h2>✏️ Edit Patient Details</h2>
                 <span class="close" onclick="closeModal('editPatientModal')">&times;</span>
             </div>
             <form action="/admin/update_patient" method="POST" onsubmit="return validatePatientForm()">
                 <input type="hidden" id="patient_id" name="user_id">
                 
                 <div class="form-group">
-                    <label>Full Name</label>
+                    <label for="patient_name">Full Name</label>
                     <input type="text" id="patient_name" name="name" required>
                 </div>
 
                 <div class="form-group">
-                    <label>Email Address</label>
+                    <label for="patient_email">Email Address</label>
                     <input type="email" id="patient_email" name="email" required>
                 </div>
 
                 <div class="form-group">
-                    <label>Contact Number</label>
+                    <label for="patient_contact">Contact Number</label>
                     <input type="tel" id="patient_contact" name="contact" required>
                 </div>
 
-                <button type="submit" class="btn-save"><i class="fas fa-save"></i> Save Changes</button>
+                <button type="submit" class="btn-save">💾 Save Changes</button>
                 <button type="button" class="btn-cancel-modal" onclick="closeModal('editPatientModal')">Cancel</button>
             </form>
         </div>
     </div>
 
     <script>
-        // Create particles (slightly adjusted animation properties for speed and feel)
-        function createParticles() {
-            const particlesContainer = document.getElementById('particles');
-            for (let i = 0; i < 30; i++) { // Increased particle count slightly
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.width = Math.random() * 8 + 3 + 'px'; // Smaller particles
-                particle.style.height = particle.style.width;
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 20 + 's'; // Longer delay range
-                particle.style.animationDuration = Math.random() * 10 + 15 + 's'; // Slower duration for a floating effect
-                particlesContainer.appendChild(particle);
-            }
-        }
-        createParticles();
-
-        // All existing JavaScript functions (showTab, editDoctor, editPatient, closeModal, validation) remain unchanged
         function showTab(tabName) {
             const tabs = document.querySelectorAll('.tab-content');
             const buttons = document.querySelectorAll('.tab-button');
@@ -828,13 +740,7 @@
             buttons.forEach(btn => btn.classList.remove('active'));
             
             document.getElementById(tabName).classList.add('active');
-            // Check if event.target exists and is a button before adding active class
-            if (event && event.target && event.target.tagName === 'BUTTON') {
-                event.target.classList.add('active');
-            } else {
-                // Fallback for initial load or manual call (optional: find the corresponding button)
-                document.querySelector(`.tab-button[onclick*="'${tabName}'"]`).classList.add('active');
-            }
+            event.target.classList.add('active');
         }
 
         function editDoctor(id, name, email, specialization, contact) {
@@ -875,7 +781,7 @@
             }
 
             if (contact.length < 10) {
-                alert('Please enter a valid contact number (at least 10 digits)');
+                alert('Please enter a valid contact number');
                 return false;
             }
 
@@ -898,13 +804,14 @@
             }
 
             if (contact.length < 10) {
-                alert('Please enter a valid contact number (at least 10 digits)');
+                alert('Please enter a valid contact number');
                 return false;
             }
 
             return true;
         }
 
+        // Close modal when clicking outside
         window.onclick = function(event) {
             const doctorModal = document.getElementById('editDoctorModal');
             const patientModal = document.getElementById('editPatientModal');
@@ -916,14 +823,6 @@
                 patientModal.style.display = 'none';
             }
         }
-
-        // Initialize with the 'doctors' tab active and button correctly styled on load
-        document.addEventListener('DOMContentLoaded', () => {
-            // Find and click the 'Manage Doctors' button on load
-            const initialButton = document.querySelector('.tab-button[onclick*="doctors"]');
-            if (initialButton) {
-                initialButton.classList.add('active');
-            }
-        });
     </script>
+</body>
 </html>
