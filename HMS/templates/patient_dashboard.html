@@ -793,11 +793,11 @@
                         <td>{{ appointment.reason }}</td>
                         <td>
                             {% if appointment.status == 'Completed' %}
-                                <span class="badge badge-success"><i class="fas fa-check-circle"></i> {{ appointment.status }}</span>
+                                <span class="badge badge-success"><i class="fas fa-check-circle"></i> Completed</span>
                             {% elif appointment.status == 'Cancelled' %}
-                                <span class="badge badge-danger"><i class="fas fa-times-circle"></i> {{ appointment.status }}</span>
+                                <span class="badge badge-danger"><i class="fas fa-times-circle"></i> Cancelled</span>
                             {% else %}
-                                <span class="badge badge-warning"><i class="fas fa-clock"></i> {{ appointment.status }}</span>
+                                <span class="badge badge-warning"><i class="fas fa-clock"></i> Pending</span>
                             {% endif %}
                         </td>
                         <td>
@@ -806,7 +806,7 @@
                                     <i class="fas fa-times"></i> Cancel
                                 </a>
                             {% else %}
-                                -
+                                <span style="color: #999; font-size: 12px;">No actions</span>
                             {% endif %}
                         </td>
                     </tr>
@@ -876,9 +876,10 @@
                 });
             });
 
-            // Add ripple effect
             document.querySelectorAll('.btn, .tab-button, .nav-card').forEach(el => {
                 el.addEventListener('click', function(e) {
+                    if (e.target.tagName === 'A' && e.target.href) return;
+                    
                     const ripple = document.createElement('div');
                     ripple.style.position = 'absolute';
                     ripple.style.borderRadius = '50%';
