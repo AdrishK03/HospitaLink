@@ -6,21 +6,25 @@
     <title>Hospital Management System - Login</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Set the font globally for better aesthetic consistency */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
-            overflow: hidden;
+            /* FIX 1: Allow vertical scrolling and prevent horizontal scrolling */
+            overflow-x: hidden;
+            overflow-y: auto; 
             position: relative;
         }
 
@@ -58,6 +62,8 @@
             display: flex;
             position: relative;
             z-index: 1;
+            /* Add vertical margin so content doesn't touch the top/bottom edges when scrolled */
+            margin: 40px 0; 
             animation: slideIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
@@ -257,6 +263,11 @@
             transition: all 0.3s;
             background: #f8f9fa;
         }
+        
+        /* Adjust select padding for better visual alignment */
+        .form-group select {
+             padding-right: 15px; /* Adjust right padding to accommodate dropdown arrow */
+        }
 
         .form-group input:focus,
         .form-group select:focus {
@@ -352,6 +363,8 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            /* Ensure the alert is always visible on top of other content */
+            z-index: 10;
         }
 
         @keyframes slideDown {
@@ -380,18 +393,44 @@
             color: #856404;
             border: 1px solid #ffeaa7;
         }
+        
+        /* Fix for select padding and icon placement */
+        .select-input-wrapper {
+            position: relative;
+        }
+        
+        .select-input-wrapper select {
+            /* Adjust left padding for icon visibility */
+             padding-left: 45px;
+        }
+        
+        /* Ensure the icon for select is positioned correctly */
+        .select-input-wrapper .input-icon {
+            left: 15px; 
+        }
+
 
         @media (max-width: 768px) {
+            /* FIX 2: Ensure content is not cut off on mobile by disabling flex centering */
+            body {
+                align-items: flex-start;
+                padding: 40px 20px;
+            }
+            
             .login-container {
                 flex-direction: column;
+                margin: 0 auto; /* Use padding from body */
             }
 
             .login-left {
                 padding: 40px 30px;
+                order: -1; /* Move the attractive left panel to the top of the column for better mobile view */
+                border-radius: 30px 30px 0 0;
             }
-
+            
             .login-right {
                 padding: 40px 30px;
+                border-radius: 0 0 30px 30px;
             }
 
             .feature-icons {
@@ -431,6 +470,8 @@
         <div class="login-right">
             <h2>Welcome Back!</h2>
             
+            <!-- Dynamic alerts will be inserted here by JavaScript -->
+            <!-- The following section for server-side messages is kept but will only render if used in a server environment -->
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
@@ -445,14 +486,15 @@
             <form method="POST" action="/login" onsubmit="return validateLogin()">
                 <div class="form-group">
                     <label for="role">Select Your Role</label>
-                    <div class="input-wrapper">
+                    <div class="select-input-wrapper">
                         <select id="role" name="role" required>
                             <option value="">Choose your role</option>
                             <option value="admin">👨‍💼 Admin</option>
                             <option value="doctor">👨‍⚕️ Doctor</option>
                             <option value="patient">🧑‍🦱 Patient</option>
                         </select>
-                        <i class="fas fa-user-tag input-icon"></i>
+                        <!-- Updated class name for icon alignment -->
+                        <i class="fas fa-user-tag input-icon"></i> 
                     </div>
                 </div>
 
@@ -508,28 +550,65 @@
         }
 
         createParticles();
+        
+        /**
+         * Custom function to display in-page messages (replacing alert()).
+         * @param {string} message - The message text.
+         * @param {string} category - 'danger' or 'warning'.
+         */
+        function displayMessage(message, category = 'danger') {
+            const loginRight = document.querySelector('.login-right');
+            const form = document.querySelector('form');
+            
+            // Remove any existing JS alerts first
+            document.querySelectorAll('.js-alert').forEach(el => el.remove());
+            
+            const alertBox = document.createElement('div');
+            alertBox.className = `alert alert-${category} js-alert`;
+            alertBox.innerHTML = `
+                <i class="fas fa-exclamation-circle"></i>
+                <span>${message}</span>
+            `;
+            
+            // Insert the alert before the form
+            loginRight.insertBefore(alertBox, form);
+
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                alertBox.remove();
+            }, 5000);
+        }
 
         function validateLogin() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const role = document.getElementById('role').value;
 
-            if (!email || !password || !role) {
-                alert('Please fill in all fields');
+            if (!role) {
+                displayMessage('Please select your role from the dropdown.', 'warning');
+                return false;
+            }
+
+            if (!email || !password) {
+                displayMessage('Email and password fields are required.', 'danger');
                 return false;
             }
 
             if (!email.includes('@')) {
-                alert('Please enter a valid email address');
+                displayMessage('Please enter a valid email address.', 'danger');
                 return false;
             }
 
+            // In a real application, you would make an AJAX call here to authenticate.
             return true;
         }
-
-        // Add shake animation to alerts
+        
+        // Add shake animation to server-side alerts (if they exist)
         document.querySelectorAll('.alert').forEach(alert => {
-            alert.style.animation = 'slideDown 0.5s ease-out, shake 0.5s ease-in-out 0.5s';
+             // Only apply the visual animation to non-JS generated alerts (server-side flashes)
+            if (!alert.classList.contains('js-alert')) {
+                alert.style.animation = 'slideDown 0.5s ease-out';
+            }
         });
     </script>
 </body>
